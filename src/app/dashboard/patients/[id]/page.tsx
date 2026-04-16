@@ -132,7 +132,7 @@ export default async function PatientPage({ params }: { params: Promise<{ id: st
         ) : (
           <div className="divide-y divide-slate-50">
             {historique.map((item: any) => (
-              <div key={item.id} className="flex items-start gap-4 px-5 py-4">
+              <div key={item.id} className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => item._type === 'bilan' && (window.location.href = `/dashboard/bilans/${item.id}`)}>
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
                   item._type === 'bilan' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
                 }`}>
