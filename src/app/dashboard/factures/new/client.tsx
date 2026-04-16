@@ -8,17 +8,47 @@ import { Patient } from '@/types'
 
 interface Acte { designation: string; quantite: number; prix_unitaire: number }
 
+const TARIFS: Record<string, Acte[]> = {
+  'saint-denis': [
+    { designation: 'Soin de pédicurie au cabinet', quantite: 1, prix_unitaire: 38 },
+    { designation: 'Soin de pédicurie + massage relaxant 20min', quantite: 1, prix_unitaire: 55 },
+    { designation: 'Soin de pédicurie à domicile', quantite: 1, prix_unitaire: 44 },
+    { designation: 'Soin de pédicurie diabétique POD (avec ordonnance)', quantite: 1, prix_unitaire: 30 },
+    { designation: "Pose d'orthonixie (appareil correcteur)", quantite: 1, prix_unitaire: 35 },
+    { designation: "Pose d'onychoplastie (faux ongle)", quantite: 1, prix_unitaire: 35 },
+    { designation: 'Traitement verrue verrucide (la séance)', quantite: 1, prix_unitaire: 25 },
+    { designation: 'Traitement verrue cryothérapie (la séance)', quantite: 1, prix_unitaire: 35 },
+    { designation: 'Bilan podologique', quantite: 1, prix_unitaire: 50 },
+    { designation: 'Semelles orthopédiques (supérieur à 37)', quantite: 1, prix_unitaire: 150 },
+    { designation: 'Semelles orthopédiques (entre 28 et 37)', quantite: 1, prix_unitaire: 140 },
+    { designation: 'Semelles orthopédiques (inférieur à 28)', quantite: 1, prix_unitaire: 135 },
+  ],
+  'livry-gargan': [
+    { designation: 'Soin de pédicurie', quantite: 1, prix_unitaire: 45 },
+    { designation: 'Bilan podologique + semelles orthopédiques', quantite: 1, prix_unitaire: 190 },
+  ],
+}
+
+const CABINETS = [
+  { value: 'saint-denis', label: 'Saint-Denis — 4 rue saint Just' },
+  { value: 'livry-gargan', label: 'Livry-Gargan' },
+]
+
 export default function NewFactureClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [patients, setPatients] = useState<Patient[]>([])
   const [patientId, setPatientId] = useState(searchParams.get('patient') || '')
+  const [cabinet, setCabinet] = useState('saint-denis')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [form, setForm] = useState({ date_facture: new Date().toISOString().split('T')[0], mode_paiement: 'Chèque', mention: '' })
-  const [actes, setActes] = useState<Acte[]>([{ designation: 'Séance de soins podologiques', quantite: 1, prix_unitaire: 35 }])
+  const [dateFact, setDateFact] = useState(new Date().toISOString().split('T')[0])
+  const [modePaiement, setModePaiement] = useState('Chèque')
+  const [mention, setMention] = useState('')
+  const [actes, setActes] = useState<Acte[]>([TARIFS['saint-denis'][0]])
   const [annee, setAnnee] = useState(new Date().getFullYear().toString())
   const [seq, setSeq] = useState(1)
+  const [acteSelectionne, setActeSelectionne] = useState('')
 
   useEffect(() => {
     const load = async () => {
@@ -37,10 +67,29 @@ export default function NewFactureClient() {
   const secu = total * 0.7
   const patient_part = total - secu
 
-  const addActe = () => setActes(a => [...a, { designation: '', quantite: 1, prix_unitaire: 0 }])
+  const handleCabinetChange = (val: string) => {
+    setCabinet(val)
+    setActes([TARIFS[val][0]])
+    setActeSelectionne('')
+  }
+
+  const ajouterActeDepuisTarif = () => {
+    if (!acteSelectionne) return
+    const tarif = TARIFS[cabinet].find(t => t.designation === acteSelectionne)
+    if (tarif) {
+      setActes(a => [...a, { ...tarif }])
+      setActeSelectionne('')
+    }
+  }
+
   const removeActe = (i: number) => setActes(a => a.filter((_, idx) => idx !== i))
-  const updateActe = (i: number, k: keyof Acte, v: any) =>
-    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, [k]: v } : acte))
+
+  const updateDesignation = (i: number, v: string) =>
+    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, designation: v } : acte))
+  const updateQuantite = (i: number, v: number) =>
+    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, quantite: v } : acte))
+  const updatePrix = (i: number, v: number) =>
+    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, prix_unitaire: v } : acte))
 
   const handleSubmit = async (dl = false) => {
     if (!patientId) { alert('Sélectionne un patient'); return }
@@ -48,9 +97,15 @@ export default function NewFactureClient() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const { data: facture, error } = await supabase.from('factures').insert({
-      patient_id: patientId, praticien_id: user!.id, numero,
-      date_facture: form.date_facture, actes, mode_paiement: form.mode_paiement,
-      mention: form.mention || null, total,
+      patient_id: patientId,
+      praticien_id: user!.id,
+      numero,
+      date_facture: dateFact,
+      actes,
+      mode_paiement: modePaiement,
+      mention: mention || null,
+      total,
+      cabinet,
     }).select().single()
     if (error) { alert('Erreur : ' + error.message); setLoading(false); return }
     if (dl && facture) {
@@ -72,6 +127,22 @@ export default function NewFactureClient() {
       <h1 className="text-2xl font-semibold text-slate-800 mb-6">Nouvelle facture</h1>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Cabinet</p>
+        <div className="flex gap-3">
+          {CABINETS.map(c => (
+            <button key={c.value} type="button" onClick={() => handleCabinetChange(c.value)}
+              className={`flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-colors text-left ${
+                cabinet === c.value
+                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+              }`}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Référence</p>
         <div className="grid grid-cols-3 gap-4 mb-3">
           <div>
@@ -86,7 +157,7 @@ export default function NewFactureClient() {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Date</label>
-            <input type="date" value={form.date_facture} onChange={e => setForm(f => ({ ...f, date_facture: e.target.value }))}
+            <input type="date" value={dateFact} onChange={e => setDateFact(e.target.value)}
               className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
           </div>
         </div>
@@ -109,7 +180,7 @@ export default function NewFactureClient() {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Mode de paiement</label>
-            <select value={form.mode_paiement} onChange={e => setForm(f => ({ ...f, mode_paiement: e.target.value }))}
+            <select value={modePaiement} onChange={e => setModePaiement(e.target.value)}
               className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               {['Chèque','Espèces','Carte bancaire','Virement','Tiers payant'].map(m => (
                 <option key={m} value={m}>{m}</option>
@@ -120,26 +191,37 @@ export default function NewFactureClient() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Actes</p>
-          <button type="button" onClick={addActe} className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium">
-            <Plus size={13}/> Ajouter un acte
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Actes</p>
+
+        <div className="flex gap-2 mb-4">
+          <select value={acteSelectionne} onChange={e => setActeSelectionne(e.target.value)}
+            className="flex-1 px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Sélectionner un acte du tarif...</option>
+            {TARIFS[cabinet].map(t => (
+              <option key={t.designation} value={t.designation}>{t.designation} — {t.prix_unitaire} €</option>
+            ))}
+          </select>
+          <button type="button" onClick={ajouterActeDepuisTarif}
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors">
+            <Plus size={14}/> Ajouter
           </button>
         </div>
+
         <div className="mb-2 grid grid-cols-12 gap-2 px-1">
           {['Désignation','Qté','Prix unit.','','Total'].map((h, i) => (
             <div key={i} className={`text-xs font-medium text-slate-400 ${i===0?'col-span-6':i===4?'col-span-1 text-right':i===3?'col-span-1':'col-span-2'}`}>{h}</div>
           ))}
         </div>
+
         <div className="space-y-2">
           {actes.map((a, i) => (
             <div key={i} className="grid grid-cols-12 gap-2 items-center">
               <input className="col-span-6 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={a.designation} onChange={e => updateActe(i, 'designation', e.target.value)} placeholder="Désignation"/>
+                value={a.designation} onChange={e => updateDesignation(i, e.target.value)} placeholder="Désignation"/>
               <input className="col-span-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number" min={1} value={a.quantite} onChange={e => updateActe(i, 'quantite', parseInt(e.target.value)||1)}/>
+                type="number" min={1} value={a.quantite} onChange={e => updateQuantite(i, parseInt(e.target.value)||1)}/>
               <input className="col-span-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number" step="0.01" min={0} value={a.prix_unitaire} onChange={e => updateActe(i, 'prix_unitaire', parseFloat(e.target.value)||0)}/>
+                type="number" step="0.01" min={0} value={a.prix_unitaire} onChange={e => updatePrix(i, parseFloat(e.target.value)||0)}/>
               <button type="button" onClick={() => removeActe(i)} className="col-span-1 flex justify-center text-slate-400 hover:text-red-500 transition-colors">
                 <Trash2 size={14}/>
               </button>
@@ -147,6 +229,7 @@ export default function NewFactureClient() {
             </div>
           ))}
         </div>
+
         <div className="mt-4 pt-4 border-t border-slate-100 space-y-1.5">
           <div className="flex justify-between text-sm text-slate-500"><span>Sous-total</span><span>{total.toFixed(2)} €</span></div>
           <div className="flex justify-between text-sm text-slate-500"><span>Part Sécu (70%)</span><span>{secu.toFixed(2)} €</span></div>
@@ -159,7 +242,7 @@ export default function NewFactureClient() {
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
         <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Mention complémentaire</label>
-        <textarea value={form.mention} onChange={e => setForm(f => ({ ...f, mention: e.target.value }))}
+        <textarea value={mention} onChange={e => setMention(e.target.value)}
           placeholder="ex. Reçu pour remboursement mutuelle..." rows={2}
           className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"/>
       </div>
