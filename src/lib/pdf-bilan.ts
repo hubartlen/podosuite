@@ -18,27 +18,27 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   // ── En-tête praticien ──────────────────────────────────────
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
-  doc.setTextColor(...GRIS)
+  doc.setTextColor(GRIS[0], GRIS[1], GRIS[2])
   doc.text('Arthur Le Neué · Pédicure Podologue DE', ml, 18)
   doc.text('4 rue saint Just — 93210 La Plaine Saint Denis', ml, 23)
   doc.text('06 89 40 51 05  ·  Arthur.leneue@gmail.com', ml, 28)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(7.5)
-  doc.setTextColor(...GRIS_CLAIR)
+  doc.setTextColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   const rx = W - mr
   doc.text(`N° RPPS : 10111902820`, rx, 23, { align: 'right' })
   doc.text(`N° AM : 938002623`, rx, 28, { align: 'right' })
 
   // Ligne séparatrice fine
-  doc.setDrawColor(...GRIS_CLAIR)
+  doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.setLineWidth(0.3)
   doc.line(ml, 34, W - mr, 34)
 
   // ── Titre document ──────────────────────────────────────────
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(22)
-  doc.setTextColor(...NOIR)
+  doc.setTextColor(NOIR[0], NOIR[1], NOIR[2])
   doc.text('Bilan podologique', ml, 50)
 
   // Date
@@ -47,7 +47,7 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   })
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
-  doc.setTextColor(...GRIS)
+  doc.setTextColor(GRIS[0], GRIS[1], GRIS[2])
   doc.text(dateBilan, ml, 57)
 
   // ── Identité patient ────────────────────────────────────────
@@ -59,17 +59,17 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
     ? Math.floor((Date.now() - new Date(patient.date_naissance).getTime()) / (365.25 * 24 * 3600 * 1000))
     : null
 
-  doc.setFillColor(...FOND)
+  doc.setFillColor(FOND[0], FOND[1], FOND[2])
   doc.roundedRect(ml, 64, cw, 20, 3, 3, 'F')
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(11)
-  doc.setTextColor(...NOIR)
+  doc.setTextColor(NOIR[0], NOIR[1], NOIR[2])
   doc.text(`${civilite} ${patient.nom} ${patient.prenom}`, ml + 6, 73)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
-  doc.setTextColor(...GRIS)
+  doc.setTextColor(GRIS[0], GRIS[1], GRIS[2])
   const infosPatient = [
     ddn && `Né(e) le ${ddn}`,
     age && `${age} ans`,
@@ -84,13 +84,13 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   const sectionTitle = (titre: string) => {
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
-    doc.setTextColor(...BLEU)
+    doc.setTextColor(BLEU[0], BLEU[1], BLEU[2])
     doc.text(titre.toUpperCase(), ml, y)
     y += 2
-    doc.setDrawColor(...BLEU)
+    doc.setDrawColor(BLEU[0], BLEU[1], BLEU[2])
     doc.setLineWidth(0.5)
     doc.line(ml, y, ml + 40, y)
-    doc.setDrawColor(...GRIS_CLAIR)
+    doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
     doc.setLineWidth(0.3)
     doc.line(ml + 40, y, W - mr, y)
     y += 5
@@ -99,18 +99,18 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   const tableauRow = (label: string, valeur: string, normal: boolean, isLast = false) => {
     const rowH = 8
     if (!isLast) {
-      doc.setDrawColor(...GRIS_CLAIR)
+      doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
       doc.setLineWidth(0.2)
       doc.line(ml, y + rowH, W - mr, y + rowH)
     }
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(8.5)
-    doc.setTextColor(...GRIS)
+    doc.setTextColor(GRIS[0], GRIS[1], GRIS[2])
     doc.text(label, ml + 2, y + 5.5)
 
     doc.setFont('helvetica', normal ? 'normal' : 'bold')
     doc.setFontSize(8.5)
-    doc.setTextColor(normal ? ...[GRIS] : [...NOIR])
+    doc.setTextColor(...(normal ? GRIS : NOIR))
     doc.text(valeur, ml + cw / 2, y + 5.5)
 
     // Pastille verte/bleue
@@ -137,11 +137,11 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   // En-têtes colonnes tableau
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(7.5)
-  doc.setTextColor(...GRIS_CLAIR)
+  doc.setTextColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.text('Paramètre', ml + 2, y)
   doc.text('Résultat', ml + cw / 2, y)
   y += 3
-  doc.setDrawColor(...GRIS_CLAIR)
+  doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.setLineWidth(0.3)
   doc.line(ml, y, W - mr, y)
   y += 3
@@ -165,13 +165,13 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(7)
-  doc.setTextColor(...BLEU)
+  doc.setTextColor(BLEU[0], BLEU[1], BLEU[2])
   doc.text('CONCLUSION ET TRAITEMENT', ml, y)
   y += 2
-  doc.setDrawColor(...BLEU)
+  doc.setDrawColor(BLEU[0], BLEU[1], BLEU[2])
   doc.setLineWidth(0.5)
   doc.line(ml, y, ml + 55, y)
-  doc.setDrawColor(...GRIS_CLAIR)
+  doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.line(ml + 55, y, W - mr, y)
   y += 7
 
@@ -230,7 +230,7 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9.5)
-  doc.setTextColor(...NOIR)
+  doc.setTextColor(NOIR[0], NOIR[1], NOIR[2])
   const lines = doc.splitTextToSize(fullText, cw)
   doc.text(lines, ml, y)
   y += lines.length * 5.5
@@ -239,12 +239,12 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
     y += 6
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(7)
-    doc.setTextColor(...GRIS)
+    doc.setTextColor(GRIS[0], GRIS[1], GRIS[2])
     doc.text('OBSERVATIONS', ml, y)
     y += 5
     doc.setFont('helvetica', 'italic')
     doc.setFontSize(9)
-    doc.setTextColor(...NOIR)
+    doc.setTextColor(NOIR[0], NOIR[1], NOIR[2])
     const remarquesLines = doc.splitTextToSize(bilan.remarques, cw)
     doc.text(remarquesLines, ml, y)
     y += remarquesLines.length * 5.5
@@ -252,21 +252,21 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
 
   // ── Signature ───────────────────────────────────────────────
   const signY = 265
-  doc.setDrawColor(...GRIS_CLAIR)
+  doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.setLineWidth(0.3)
   doc.line(W - mr - 55, signY, W - mr, signY)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
-  doc.setTextColor(...GRIS)
+  doc.setTextColor(GRIS[0], GRIS[1], GRIS[2])
   doc.text('Arthur Le Neué', W - mr - 27, signY + 5, { align: 'center' })
 
   // ── Pied de page ────────────────────────────────────────────
-  doc.setDrawColor(...GRIS_CLAIR)
+  doc.setDrawColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.setLineWidth(0.3)
   doc.line(ml, 280, W - mr, 280)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(7)
-  doc.setTextColor(...GRIS_CLAIR)
+  doc.setTextColor(GRIS_CLAIR[0], GRIS_CLAIR[1], GRIS_CLAIR[2])
   doc.text('Pédicure Podologue conventionné · Dispensé de TVA — Art. 261-4-1° du CGI', W / 2, 285, { align: 'center' })
 
   return doc
