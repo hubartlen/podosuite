@@ -3,14 +3,15 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, FileText, Receipt, Edit, Phone, Mail, MapPin, CreditCard } from 'lucide-react'
 
-export default async function PatientPage({ params }: { params: { id: string } }) {
+export default async function PatientPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   const [{ data: patient }, { data: bilans }, { data: factures }] = await Promise.all([
-    supabase.from('patients').select('*').eq('id', params.id).eq('praticien_id', user?.id).single(),
-    supabase.from('bilans').select('*').eq('patient_id', params.id).order('date_bilan', { ascending: false }),
-    supabase.from('factures').select('*').eq('patient_id', params.id).order('date_facture', { ascending: false }),
+    supabase.from('patients').select('*').eq('id', id).eq('praticien_id', user?.id).single(),
+    supabase.from('bilans').select('*').eq('patient_id', id).order('date_bilan', { ascending: false }),
+    supabase.from('factures').select('*').eq('patient_id', id).order('date_facture', { ascending: false }),
   ])
 
   if (!patient) notFound()
@@ -47,15 +48,15 @@ export default async function PatientPage({ params }: { params: { id: string } }
           </div>
         </div>
         <div className="flex gap-2">
-          <Link href={`/dashboard/patients/${patient.id}/edit`}
+          <Link href={`/dashboard/patients/${id}/edit`}
             className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 transition-colors">
             <Edit size={14} /> Modifier
           </Link>
-          <Link href={`/dashboard/bilans/new?patient=${patient.id}`}
+          <Link href={`/dashboard/bilans/new?patient=${id}`}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors">
             <FileText size={14} /> Nouveau bilan
           </Link>
-          <Link href={`/dashboard/factures/new?patient=${patient.id}`}
+          <Link href={`/dashboard/factures/new?patient=${id}`}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors">
             <Receipt size={14} /> Nouvelle facture
           </Link>
