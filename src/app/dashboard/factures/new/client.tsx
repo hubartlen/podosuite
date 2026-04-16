@@ -64,8 +64,6 @@ export default function NewFactureClient() {
 
   const numero = `FAC-${annee}-${String(seq).padStart(4, '0')}`
   const total = actes.reduce((s, a) => s + a.quantite * a.prix_unitaire, 0)
-  const secu = total * 0.7
-  const patient_part = total - secu
 
   const handleCabinetChange = (val: string) => {
     setCabinet(val)
@@ -230,12 +228,9 @@ export default function NewFactureClient() {
           ))}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-slate-100 space-y-1.5">
-          <div className="flex justify-between text-sm text-slate-500"><span>Sous-total</span><span>{total.toFixed(2)} €</span></div>
-          <div className="flex justify-between text-sm text-slate-500"><span>Part Sécu (70%)</span><span>{secu.toFixed(2)} €</span></div>
-          <div className="flex justify-between text-sm text-slate-500"><span>Part patient</span><span>{patient_part.toFixed(2)} €</span></div>
-          <div className="flex justify-between text-base font-semibold text-slate-800 pt-1.5 border-t border-slate-200">
-            <span>Total TTC</span><span>{total.toFixed(2)} €</span>
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="flex justify-between text-base font-semibold text-slate-800">
+            <span>Total</span><span>{total.toFixed(2)} €</span>
           </div>
         </div>
       </div>
