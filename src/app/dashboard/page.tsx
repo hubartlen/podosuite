@@ -1,29 +1,46 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+'use client'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Users, FileText, Receipt, ArrowRight } from 'lucide-react'
 
-export default async function DashboardPage() {
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+export default function DashboardPage() {
+  const [stats, setStats] = useState({ patients: 0, bilans: 0, factures: 0 })
+  const [recentPatients, setRecentPatients] = useState<any[]>([])
+  const [recentBilans, setRecentBilans] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
-  const [
-    { count: nbPatients },
-    { count: nbBilans },
-    { count: nbFactures },
-    { data: recentPatients },
-    { data: recentBilans },
-  ] = await Promise.all([
-    supabase.from('patients').select('*', { count: 'exact', head: true }).eq('praticien_id', user?.id),
-    supabase.from('bilans').select('*', { count: 'exact', head: true }).eq('praticien_id', user?.id),
-    supabase.from('factures').select('*', { count: 'exact', head: true }).eq('praticien_id', user?.id),
-    supabase.from('patients').select('*').eq('praticien_id', user?.id).order('created_at', { ascending: false }).limit(5),
-    supabase.from('bilans').select('*, patient:patients(nom, prenom)').eq('praticien_id', user?.id).order('created_at', { ascending: false }).limit(4),
-  ])
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { router.push('/auth/login'); return }
+      const uid = session.user.id
 
-  const stats = [
-    { label: 'Patients', value: nbPatients ?? 0, icon: Users, href: '/dashboard/patients', color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Bilans', value: nbBilans ?? 0, icon: FileText, href: '/dashboard/bilans/new', color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Factures', value: nbFactures ?? 0, icon: Receipt, href: '/dashboard/factures/new', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+      const [p, b, f, rp, rb] = await Promise.all([
+        supabase.from('patients').select('*', { count: 'exact', head: true }).eq('praticien_id', uid),
+        supabase.from('bilans').select('*', { count: 'exact', head: true }).eq('praticien_id', uid),
+        supabase.from('factures').select('*', { count: 'exact', head: true }).eq('praticien_id', uid),
+        supabase.from('patients').select('*').eq('praticien_id', uid).order('created_at', { ascending: false }).limit(5),
+        supabase.from('bilans').select('*, patient:patients(nom, prenom)').eq('praticien_id', uid).order('created_at', { ascending: false }).limit(4),
+      ])
+
+      setStats({ patients: p.count ?? 0, bilans: b.count ?? 0, factures: f.count ?? 0 })
+      setRecentPatients(rp.data ?? [])
+      setRecentBilans(rb.data ?? [])
+      setLoading(false)
+    }
+    load()
+  }, [router])
+
+  if (loading) return <div className="p-8 text-sm text-slate-400">Chargement...</div>
+
+  const statCards = [
+    { label: 'Patients', value: stats.patients, icon: Users, href: '/dashboard/patients', color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Bilans', value: stats.bilans, icon: FileText, href: '/dashboard/bilans/new', color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Factures', value: stats.factures, icon: Receipt, href: '/dashboard/factures/new', color: 'text-emerald-600', bg: 'bg-emerald-50' },
   ]
 
   return (
@@ -36,9 +53,9 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
-        {stats.map(({ label, value, icon: Icon, href, color, bg }) => (
+        {statCards.map(({ label, value, icon: Icon, href, color, bg }) => (
           <Link key={label} href={href}
-            className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors group">
+            className="bg-white rounded-xl border border-slate-200 p-5 hover:border-slate-300 transition-colors">
             <div className={`w-10 h-10 ${bg} ${color} rounded-xl flex items-center justify-center mb-4`}>
               <Icon size={18} />
             </div>
@@ -76,13 +93,13 @@ export default async function DashboardPage() {
             <Link href="/dashboard/patients" className="text-xs text-blue-600 hover:text-blue-800">Voir tout</Link>
           </div>
           <div className="divide-y divide-slate-50">
-            {recentPatients?.length === 0 ? (
+            {recentPatients.length === 0 ? (
               <p className="px-5 py-8 text-sm text-slate-400 text-center">Aucun patient</p>
-            ) : recentPatients?.map(p => (
+            ) : recentPatients.map((p: any) => (
               <Link key={p.id} href={`/dashboard/patients/${p.id}`}
                 className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors">
                 <div className="w-8 h-8 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-medium shrink-0">
-                  {p.prenom[0]}{p.nom[0]}
+                  {p.prenom?.[0]}{p.nom?.[0]}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-800">{p.nom} {p.prenom}</p>
@@ -100,13 +117,11 @@ export default async function DashboardPage() {
             <p className="font-medium text-slate-800 text-sm">Bilans récents</p>
           </div>
           <div className="divide-y divide-slate-50">
-            {recentBilans?.length === 0 ? (
+            {recentBilans.length === 0 ? (
               <p className="px-5 py-8 text-sm text-slate-400 text-center">Aucun bilan</p>
-            ) : recentBilans?.map((b: any) => (
+            ) : recentBilans.map((b: any) => (
               <div key={b.id} className="px-5 py-3">
-                <p className="text-sm font-medium text-slate-800">
-                  {b.patient?.nom} {b.patient?.prenom}
-                </p>
+                <p className="text-sm font-medium text-slate-800">{b.patient?.nom} {b.patient?.prenom}</p>
                 <p className="text-xs text-slate-400">
                   {new Date(b.date_bilan).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>

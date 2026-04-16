@@ -1,22 +1,37 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { notFound } from 'next/navigation'
+'use client'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import BilanDetail from './bilan-detail'
 
-export default async function BilanPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+export default function BilanPage() {
+  const params = useParams()
+  const id = params.id as string
+  const [bilan, setBilan] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
-  const { data: bilan } = await supabase
-    .from('bilans')
-    .select('*, patient:patients(*)')
-    .eq('id', id)
-    .eq('praticien_id', user?.id)
-    .single()
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { router.push('/auth/login'); return }
+      const { data } = await supabase
+        .from('bilans')
+        .select('*, patient:patients(*)')
+        .eq('id', id)
+        .eq('praticien_id', session.user.id)
+        .single()
+      if (!data) { router.push('/dashboard/patients'); return }
+      setBilan(data)
+      setLoading(false)
+    }
+    load()
+  }, [id, router])
 
-  if (!bilan) notFound()
+  if (loading) return <div className="p-8 text-sm text-slate-400">Chargement...</div>
 
   return (
     <div className="p-8 max-w-4xl">
