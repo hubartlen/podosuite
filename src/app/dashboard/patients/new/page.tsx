@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -17,16 +17,25 @@ export default function NewPatientPage() {
   const [mutuelle, setMutuelle] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [userId, setUserId] = useState<string | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) setUserId(session.user.id)
+      else router.push('/auth/login')
+    })
+  }, [router])
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault()
     if (!nom.trim() || !prenom.trim()) { setError('Nom et prénom requis'); return }
+    if (!userId) { setError('Session expirée, reconnectez-vous'); return }
     setLoading(true)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
     const { error: err } = await supabase.from('patients').insert({
-      praticien_id: user!.id,
+      praticien_id: userId,
       nom: nom.toUpperCase().trim(),
       prenom: prenom.trim(),
       date_naissance: dateNaissance || null,
@@ -40,7 +49,7 @@ export default function NewPatientPage() {
     if (err) { setError(err.message); setLoading(false); return }
     router.push('/dashboard/patients')
     router.refresh()
-  }, [nom, prenom, dateNaissance, sexe, telephone, email, adresse, numSecu, mutuelle, router])
+  }, [nom, prenom, dateNaissance, sexe, telephone, email, adresse, numSecu, mutuelle, userId, router])
 
   return (
     <div className="p-8 max-w-2xl">
@@ -51,7 +60,6 @@ export default function NewPatientPage() {
       <h1 className="text-2xl font-semibold text-slate-800 mb-6">Nouveau patient</h1>
       <form onSubmit={handleSubmit}>
         {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-200 mb-4">{error}</div>}
-
         <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Identité</p>
           <div className="grid grid-cols-2 gap-4">
@@ -95,7 +103,6 @@ export default function NewPatientPage() {
             </div>
           </div>
         </div>
-
         <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Couverture sociale</p>
           <div className="grid grid-cols-2 gap-4">
@@ -111,9 +118,8 @@ export default function NewPatientPage() {
             </div>
           </div>
         </div>
-
         <div className="flex gap-3">
-          <button type="submit" disabled={loading}
+          <button type="submit" disabled={loading || !userId}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
             <Save size={15}/>{loading ? 'Enregistrement...' : 'Enregistrer le patient'}
           </button>

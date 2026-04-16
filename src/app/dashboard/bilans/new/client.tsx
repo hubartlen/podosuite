@@ -63,7 +63,7 @@ export default function NewBilanClient() {
   useEffect(() => {
     const load = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }))
       const { data } = await supabase.from('patients').select('*').eq('praticien_id', user!.id).order('nom')
       if (data) setPatients(data)
     }
@@ -76,7 +76,7 @@ export default function NewBilanClient() {
     if (!patientId) { alert('Sélectionne un patient'); return }
     setLoading(true)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }))
     const { data: bilan, error } = await supabase.from('bilans').insert({
       patient_id: patientId,
       praticien_id: user!.id,

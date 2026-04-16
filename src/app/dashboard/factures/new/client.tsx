@@ -53,7 +53,7 @@ export default function NewFactureClient() {
   useEffect(() => {
     const load = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }))
       const { data } = await supabase.from('patients').select('*').eq('praticien_id', user!.id).order('nom')
       if (data) setPatients(data)
       const { count } = await supabase.from('factures').select('*', { count: 'exact', head: true }).eq('praticien_id', user!.id)
@@ -93,7 +93,7 @@ export default function NewFactureClient() {
     if (!patientId) { alert('Sélectionne un patient'); return }
     setLoading(true)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }))
     const { data: facture, error } = await supabase.from('factures').insert({
       patient_id: patientId,
       praticien_id: user!.id,
