@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, ChevronRight, Search } from 'lucide-react'
+import { Plus, ChevronRight, Search, Upload } from 'lucide-react'
 
 const COLORS = ['bg-blue-100 text-blue-700','bg-purple-100 text-purple-700','bg-emerald-100 text-emerald-700','bg-amber-100 text-amber-700']
 
@@ -33,10 +33,16 @@ export default function PatientsPage() {
           <h1 className="text-2xl font-semibold text-slate-800">Patients</h1>
           <p className="text-slate-500 text-sm mt-0.5">{patients.length} patient(s)</p>
         </div>
-        <Link href="/dashboard/patients/new"
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
-          <Plus size={15} /> Nouveau patient
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/dashboard/patients/import"
+            className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+            <Upload size={15} /> Import Doctolib
+          </Link>
+          <Link href="/dashboard/patients/new"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
+            <Plus size={15} /> Nouveau patient
+          </Link>
+        </div>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {patients.length === 0 ? (
