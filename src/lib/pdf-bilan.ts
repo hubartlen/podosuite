@@ -1,19 +1,9 @@
 import jsPDF from 'jspdf'
 import { Bilan, Patient } from '@/types'
 
-async function loadSignature(): Promise<string | null> {
-  try {
-    const res = await fetch('/signature.png')
-    const blob = await res.blob()
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.readAsDataURL(blob)
-    })
-  } catch { return null }
-}
+import { SIGNATURE_B64 } from './signature'
 
-export async function genererPDFBilan(bilan: Bilan, patient: Patient): Promise<jsPDF> {
+export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = 210
   const ml = 20
@@ -214,10 +204,7 @@ export async function genererPDFBilan(bilan: Bilan, patient: Patient): Promise<j
   }
 
   // ── Signature ───────────────────────────────────────────────
-  const sigData2 = await loadSignature()
-  if (sigData2) {
-    try { doc.addImage(sigData2, 'PNG', W - mr - 48, 248, 48, 22) } catch(e) {}
-  }
+  try { doc.addImage(SIGNATURE_B64, 'PNG', W - mr - 48, 248, 48, 22) } catch(e) {}
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
   doc.setTextColor(...G)
@@ -226,13 +213,7 @@ export async function genererPDFBilan(bilan: Bilan, patient: Patient): Promise<j
   // ── Footer ──────────────────────────────────────────────────
   // Signature
   try {
-    const sigRes = await fetch('/signature.png')
-    const sigBlob = await sigRes.blob()
-    const sigBase64 = await new Promise<string>((resolve) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve((reader.result as string).split(',')[1])
-      reader.readAsDataURL(sigBlob)
-    })
+    const sigBase64 = SIGNATURE_B64.split(',')[1]
     doc.addImage(sigBase64, 'PNG', W - mr - 45, 248, 40, 25)
   } catch {}
 

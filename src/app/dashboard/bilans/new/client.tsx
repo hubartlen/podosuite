@@ -91,7 +91,7 @@ export default function NewBilanClient() {
     if (dl && bilan) {
       const patient = patients.find(p => p.id === patientId)!
       const { genererPDFBilan } = await import('@/lib/pdf-bilan')
-      const doc = await genererPDFBilan(bilan, patient)
+      const doc = genererPDFBilan(bilan, patient)
       doc.save(`Bilan_${patient.nom}_${patient.prenom}_${form.date_bilan}.pdf`)
     }
     setSaved(true)
@@ -106,7 +106,7 @@ export default function NewBilanClient() {
     setSending(true)
     const patient = patients.find(p => p.id === patientId)!
     const { genererPDFBilan } = await import('@/lib/pdf-bilan')
-    const doc = await genererPDFBilan(lastBilan, patient)
+    const doc = genererPDFBilan(lastBilan, patient)
     const pdfBase64 = doc.output('datauristring').split(',')[1]
     const res = await fetch('/api/send-bilan', {
       method: 'POST',

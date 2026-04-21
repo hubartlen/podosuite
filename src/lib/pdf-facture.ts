@@ -6,7 +6,7 @@ const CABINETS: Record<string, { ville: string; adresse: string }> = {
   'livry-gargan': { ville: 'LIVRY GARGAN', adresse: 'Livry-Gargan' },
 }
 
-export async function genererPDFFacture(facture: Facture, patient: Patient): Promise<jsPDF> {
+export function genererPDFFacture(facture: Facture, patient: Patient): jsPDF {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = 210
   const ml = 20
