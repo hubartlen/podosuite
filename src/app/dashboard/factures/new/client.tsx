@@ -29,11 +29,6 @@ const TARIFS: Record<string, Acte[]> = {
   ],
 }
 
-const CABINETS = [
-  { value: 'saint-denis', label: 'Saint-Denis — 4 rue saint Just' },
-  { value: 'livry-gargan', label: 'Livry-Gargan' },
-]
-
 export default function NewFactureClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -48,15 +43,15 @@ export default function NewFactureClient() {
   const [actes, setActes] = useState<Acte[]>([TARIFS['saint-denis'][0]])
   const [annee, setAnnee] = useState(new Date().getFullYear().toString())
   const [seq, setSeq] = useState(1)
-  const [acteSelectionne, setActeSelectionne] = useState('')
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }))
-      const { data } = await supabase.from('patients').select('*').eq('praticien_id', user!.id).order('nom')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const { data } = await supabase.from('patients').select('*').eq('praticien_id', session.user.id).order('nom')
       if (data) setPatients(data)
-      const { count } = await supabase.from('factures').select('*', { count: 'exact', head: true }).eq('praticien_id', user!.id)
+      const { count } = await supabase.from('factures').select('*', { count: 'exact', head: true }).eq('praticien_id', session.user.id)
       setSeq((count ?? 0) + 1)
     }
     load()
@@ -68,42 +63,28 @@ export default function NewFactureClient() {
   const handleCabinetChange = (val: string) => {
     setCabinet(val)
     setActes([TARIFS[val][0]])
-    setActeSelectionne('')
   }
 
-  const ajouterActeDepuisTarif = () => {
-    if (!acteSelectionne) return
-    const tarif = TARIFS[cabinet].find(t => t.designation === acteSelectionne)
-    if (tarif) {
-      setActes(a => [...a, { ...tarif }])
-      setActeSelectionne('')
-    }
+  const ajouterActe = (designation: string) => {
+    if (!designation) return
+    const tarif = TARIFS[cabinet].find(t => t.designation === designation)
+    if (tarif) setActes(a => [...a, { ...tarif }])
   }
 
   const removeActe = (i: number) => setActes(a => a.filter((_, idx) => idx !== i))
-
-  const updateDesignation = (i: number, v: string) =>
-    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, designation: v } : acte))
-  const updateQuantite = (i: number, v: number) =>
-    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, quantite: v } : acte))
-  const updatePrix = (i: number, v: number) =>
-    setActes(a => a.map((acte, idx) => idx === i ? { ...acte, prix_unitaire: v } : acte))
+  const updateQte = (i: number, v: number) => setActes(a => a.map((acte, idx) => idx === i ? { ...acte, quantite: v } : acte))
+  const updatePrix = (i: number, v: number) => setActes(a => a.map((acte, idx) => idx === i ? { ...acte, prix_unitaire: v } : acte))
 
   const handleSubmit = async (dl = false) => {
     if (!patientId) { alert('Sélectionne un patient'); return }
     setLoading(true)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }))
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
     const { data: facture, error } = await supabase.from('factures').insert({
-      patient_id: patientId,
-      praticien_id: user!.id,
-      numero,
-      date_facture: dateFact,
-      actes,
-      mode_paiement: modePaiement,
-      mention: mention || null,
-      total,
-      cabinet,
+      patient_id: patientId, praticien_id: session.user.id, numero,
+      date_facture: dateFact, actes, mode_paiement: modePaiement,
+      mention: mention || null, total, cabinet,
     }).select().single()
     if (error) { alert('Erreur : ' + error.message); setLoading(false); return }
     if (dl && facture) {
@@ -118,149 +99,142 @@ export default function NewFactureClient() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
-      <Link href="/dashboard/patients" className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-800 text-sm mb-6 transition-colors">
-        <ArrowLeft size={15}/> Retour
-      </Link>
-      <h1 className="text-2xl font-semibold text-slate-800 mb-6">Nouvelle facture</h1>
-
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Cabinet</p>
-        <div className="flex gap-3">
-          {CABINETS.map(c => (
-            <button key={c.value} type="button" onClick={() => handleCabinetChange(c.value)}
-              className={`flex-1 px-4 py-3 rounded-xl border text-sm font-medium transition-colors text-left ${
-                cabinet === c.value
-                  ? 'bg-blue-50 border-blue-300 text-blue-700'
-                  : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-              }`}>
-              {c.label}
-            </button>
-          ))}
-        </div>
+    <div className="max-w-2xl mx-auto">
+      <div className="px-4 pt-4 pb-2">
+        <Link href="/dashboard/patients" className="inline-flex items-center gap-1 text-slate-400 text-sm mb-4">
+          <ArrowLeft size={14} /> Retour
+        </Link>
+        <h1 className="text-xl font-bold text-slate-900 mb-5">Nouvelle facture</h1>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Référence</p>
-        <div className="grid grid-cols-3 gap-4 mb-3">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Année</label>
-            <input type="text" value={annee} onChange={e => setAnnee(e.target.value)} maxLength={4}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">N° séquentiel</label>
-            <input type="number" value={seq} onChange={e => setSeq(parseInt(e.target.value))} min={1}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Date</label>
-            <input type="date" value={dateFact} onChange={e => setDateFact(e.target.value)}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-          </div>
-        </div>
-        <div className="bg-slate-50 rounded-lg px-4 py-2.5">
-          <span className="text-xs text-slate-500">Numéro généré : </span>
-          <span className="text-sm font-semibold text-blue-600">{numero}</span>
-        </div>
-      </div>
+      <div className="px-4 space-y-4 pb-8">
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Patient</p>
-        <div className="grid grid-cols-2 gap-4">
+        {/* Cabinet */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-4">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Cabinet</p>
+          <div className="grid grid-cols-2 gap-2">
+            {[['saint-denis', 'Saint-Denis'], ['livry-gargan', 'Livry-Gargan']].map(([val, label]) => (
+              <button key={val} onClick={() => handleCabinetChange(val)}
+                className={`py-3 px-4 rounded-xl text-sm font-medium border-2 transition-colors ${
+                  cabinet === val ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-100 bg-slate-50 text-slate-600'
+                }`}>{label}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Patient & date */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Patient & date</p>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Patient <span className="text-red-500">*</span></label>
+            <label className="block text-sm text-slate-500 mb-1.5">Patient *</label>
             <select value={patientId} onChange={e => setPatientId(e.target.value)}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">Sélectionner...</option>
+              className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Sélectionner un patient...</option>
               {patients.map(p => <option key={p.id} value={p.id}>{p.nom} {p.prenom}</option>)}
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Mode de paiement</label>
-            <select value={modePaiement} onChange={e => setModePaiement(e.target.value)}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {['Chèque','Espèces','Carte bancaire','Virement','Tiers payant'].map(m => (
-                <option key={m} value={m}>{m}</option>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-slate-500 mb-1.5">Date</label>
+              <input type="date" value={dateFact} onChange={e => setDateFact(e.target.value)}
+                className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            </div>
+            <div>
+              <label className="block text-sm text-slate-500 mb-1.5">Paiement</label>
+              <select value={modePaiement} onChange={e => setModePaiement(e.target.value)}
+                className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {['Chèque','Espèces','Carte bancaire','Virement','Tiers payant'].map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="bg-slate-50 rounded-xl px-3 py-2.5">
+            <span className="text-xs text-slate-400">N° facture : </span>
+            <span className="text-sm font-semibold text-blue-600">{numero}</span>
+          </div>
+        </div>
+
+        {/* Actes */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-4">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Actes</p>
+
+          {/* Ajouter depuis tarif */}
+          <div className="mb-4">
+            <select onChange={e => { ajouterActe(e.target.value); e.target.value = '' }}
+              className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">+ Ajouter un acte du tarif...</option>
+              {TARIFS[cabinet].map(t => (
+                <option key={t.designation} value={t.designation}>{t.designation} — {t.prix_unitaire} €</option>
               ))}
             </select>
           </div>
-        </div>
-      </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Actes</p>
-
-        <div className="flex gap-2 mb-4">
-          <select value={acteSelectionne} onChange={e => setActeSelectionne(e.target.value)}
-            className="flex-1 px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">Sélectionner un acte du tarif...</option>
-            {TARIFS[cabinet].map(t => (
-              <option key={t.designation} value={t.designation}>{t.designation} — {t.prix_unitaire} €</option>
+          {/* Liste des actes - vertical */}
+          <div className="space-y-3">
+            {actes.map((a, i) => (
+              <div key={i} className="bg-slate-50 rounded-xl p-3">
+                <div className="flex items-start justify-between mb-2">
+                  <p className="text-sm font-medium text-slate-800 flex-1 pr-2">{a.designation}</p>
+                  <button onClick={() => removeActe(i)} className="text-slate-400 hover:text-red-500 transition-colors shrink-0">
+                    <Trash2 size={16}/>
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-slate-400 mb-1 block">Quantité</label>
+                    <input type="number" min={1} value={a.quantite} onChange={e => updateQte(i, parseInt(e.target.value)||1)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"/>
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs text-slate-400 mb-1 block">Prix (€)</label>
+                    <input type="number" step="0.01" min={0} value={a.prix_unitaire} onChange={e => updatePrix(i, parseFloat(e.target.value)||0)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"/>
+                  </div>
+                  <div className="flex-1 text-right">
+                    <label className="text-xs text-slate-400 mb-1 block">Total</label>
+                    <p className="text-sm font-bold text-slate-900 py-2">{(a.quantite * a.prix_unitaire).toFixed(2)} €</p>
+                  </div>
+                </div>
+              </div>
             ))}
-          </select>
-          <button type="button" onClick={ajouterActeDepuisTarif}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-colors">
-            <Plus size={14}/> Ajouter
+          </div>
+
+          {/* Total */}
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <div className="flex justify-between items-center">
+              <span className="text-base font-bold text-slate-900">Total</span>
+              <span className="text-xl font-bold text-blue-600">{total.toFixed(2)} €</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Mention */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-4">
+          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Mention complémentaire</label>
+          <textarea value={mention} onChange={e => setMention(e.target.value)}
+            placeholder="ex. Reçu pour remboursement mutuelle..." rows={2}
+            className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"/>
+        </div>
+
+        {saved && (
+          <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 rounded-xl border border-emerald-200">
+            Facture enregistrée ✓
+          </div>
+        )}
+
+        {/* Boutons */}
+        <div className="space-y-2">
+          <button onClick={() => handleSubmit(true)} disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white py-4 rounded-2xl text-sm font-semibold transition-colors disabled:opacity-50">
+            <Download size={18}/>{loading ? 'Enregistrement...' : 'Enregistrer + Télécharger PDF'}
+          </button>
+          <button onClick={() => handleSubmit(false)} disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-700 py-4 rounded-2xl text-sm font-medium transition-colors disabled:opacity-50">
+            <Save size={16}/>Enregistrer sans PDF
           </button>
         </div>
 
-        <div className="mb-2 grid grid-cols-12 gap-2 px-1">
-          {['Désignation','Qté','Prix unit.','','Total'].map((h, i) => (
-            <div key={i} className={`text-xs font-medium text-slate-400 ${i===0?'col-span-6':i===4?'col-span-1 text-right':i===3?'col-span-1':'col-span-2'}`}>{h}</div>
-          ))}
-        </div>
-
-        <div className="space-y-2">
-          {actes.map((a, i) => (
-            <div key={i} className="grid grid-cols-12 gap-2 items-center">
-              <input className="col-span-6 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={a.designation} onChange={e => updateDesignation(i, e.target.value)} placeholder="Désignation"/>
-              <input className="col-span-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number" min={1} value={a.quantite} onChange={e => updateQuantite(i, parseInt(e.target.value)||1)}/>
-              <input className="col-span-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
-                type="number" step="0.01" min={0} value={a.prix_unitaire} onChange={e => updatePrix(i, parseFloat(e.target.value)||0)}/>
-              <button type="button" onClick={() => removeActe(i)} className="col-span-1 flex justify-center text-slate-400 hover:text-red-500 transition-colors">
-                <Trash2 size={14}/>
-              </button>
-              <div className="col-span-1 text-sm font-medium text-slate-700 text-right">{(a.quantite*a.prix_unitaire).toFixed(2)} €</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 pt-4 border-t border-slate-100">
-          <div className="flex justify-between text-base font-semibold text-slate-800">
-            <span>Total</span><span>{total.toFixed(2)} €</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-6">
-        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Mention complémentaire</label>
-        <textarea value={mention} onChange={e => setMention(e.target.value)}
-          placeholder="ex. Reçu pour remboursement mutuelle..." rows={2}
-          className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"/>
-      </div>
-
-      {saved && (
-        <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 rounded-xl border border-emerald-200 mb-4">
-          Facture enregistrée. Redirection...
-        </div>
-      )}
-
-      <div className="flex gap-3">
-        <button onClick={() => handleSubmit(false)} disabled={loading}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
-          <Save size={15}/>{loading ? 'Enregistrement...' : 'Enregistrer'}
-        </button>
-        <button onClick={() => handleSubmit(true)} disabled={loading}
-          className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
-          <Download size={15}/>Enregistrer + PDF
-        </button>
-        <Link href="/dashboard/patients"
-          className="px-5 py-2.5 rounded-xl text-sm border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
-          Annuler
-        </Link>
       </div>
     </div>
   )
