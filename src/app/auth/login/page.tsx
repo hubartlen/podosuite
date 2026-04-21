@@ -54,6 +54,10 @@ export default function LoginPage() {
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
+          <p style={{textAlign:'center',marginTop:'20px',fontSize:'13px',color:'#9b8f7e'}}>
+            Pas encore de compte ?{' '}
+            <a href="/auth/register" style={{color:'#c8b89a',textDecoration:'none'}}>Créer un compte</a>
+          </p>
       </div>
     </div>
   )
