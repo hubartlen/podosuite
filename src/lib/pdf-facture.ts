@@ -1,3 +1,4 @@
+import { SIGNATURE_BASE64 } from './signature'
 import jsPDF from 'jspdf'
 import { Facture, Patient } from '@/types'
 

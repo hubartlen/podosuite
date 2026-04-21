@@ -1,3 +1,4 @@
+import { SIGNATURE_BASE64 } from './signature'
 import jsPDF from 'jspdf'
 import { Bilan, Patient } from '@/types'
 
@@ -202,13 +203,15 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   }
 
   // ── Signature ───────────────────────────────────────────────
-  doc.setDrawColor(...GL)
-  doc.setLineWidth(0.3)
-  doc.line(W - mr - 50, 260, W - mr, 260)
+  try {
+    const sigW = 45
+    const sigH = 25
+    doc.addImage(SIGNATURE_BASE64, 'PNG', W - mr - sigW, 248, sigW, sigH)
+  } catch(e) {}
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
   doc.setTextColor(...G)
-  doc.text('Arthur Le Neué', W - mr - 25, 265, { align: 'center' })
+  doc.text('Arthur Le Neué', W - mr - 25, 278, { align: 'center' })
 
   // ── Footer ──────────────────────────────────────────────────
   doc.setDrawColor(...GL)

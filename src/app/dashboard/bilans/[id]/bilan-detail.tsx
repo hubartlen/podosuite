@@ -1,5 +1,6 @@
 'use client'
-import { Download, User, Calendar, FileText } from 'lucide-react'
+import { useState } from 'react'
+import { Download, User, Calendar, FileText, Mail } from 'lucide-react'
 import { Bilan, Patient } from '@/types'
 
 const LABELS: Record<string, Record<string, string>> = {
@@ -29,7 +30,26 @@ const Row = ({ label, value, isNormal }: { label: string; value: string; isNorma
 )
 
 export default function BilanDetail({ bilan, patient }: { bilan: Bilan & { patient: Patient }; patient: Patient }) {
+  const [emailTo, setEmailTo] = useState(patient.email || '')
+  const [sending, setSending] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
   const fmtDate = (d: string) => new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+
+  const sendEmail = async () => {
+    if (!emailTo) return
+    setSending(true)
+    const { genererPDFBilan } = await import('@/lib/pdf-bilan')
+    const doc = genererPDFBilan(bilan, patient)
+    const pdfBase64 = doc.output('datauristring').split(',')[1]
+    const res = await fetch('/api/send-bilan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: emailTo, bilan, patient, pdfBase64 })
+    })
+    if (res.ok) setEmailSent(true)
+    else alert('Erreur envoi email')
+    setSending(false)
+  }
 
   const handleDownload = async () => {
     const { genererPDFBilan } = await import('@/lib/pdf-bilan')
@@ -136,7 +156,21 @@ export default function BilanDetail({ bilan, patient }: { bilan: Bilan & { patie
           </div>
         </div>
 
-        {bilan.remarques && (
+        {/* Envoi email */}
+      <div className="bg-white rounded-xl border border-slate-100 p-4">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><Mail size={11}/> Envoyer par email</p>
+        <div className="flex gap-2">
+          <input type="email" value={emailTo} onChange={e => setEmailTo(e.target.value)}
+            placeholder="email@patient.com"
+            className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+          <button onClick={sendEmail} disabled={sending || !emailTo || emailSent}
+            className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 whitespace-nowrap">
+            {emailSent ? '✓ Envoyé' : sending ? '...' : 'Envoyer'}
+          </button>
+        </div>
+      </div>
+
+      {bilan.remarques && (
           <div className="px-6 pb-6">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Observations</p>
             <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-4">{bilan.remarques}</p>
