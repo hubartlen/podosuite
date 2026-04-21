@@ -88,3 +88,4 @@ Règles :
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
+// updated 2026-04-21
