@@ -1,4 +1,3 @@
-import { SIGNATURE_BASE64 } from './signature'
 import jsPDF from 'jspdf'
 import { Facture, Patient } from '@/types'
 
@@ -7,7 +6,7 @@ const CABINETS: Record<string, { ville: string; adresse: string }> = {
   'livry-gargan': { ville: 'LIVRY GARGAN', adresse: 'Livry-Gargan' },
 }
 
-export function genererPDFFacture(facture: Facture, patient: Patient): jsPDF {
+export async function genererPDFFacture(facture: Facture, patient: Patient): Promise<jsPDF> {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = 210
   const ml = 20

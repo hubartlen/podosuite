@@ -1,8 +1,19 @@
-import { SIGNATURE_BASE64 } from './signature'
 import jsPDF from 'jspdf'
 import { Bilan, Patient } from '@/types'
 
-export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
+async function loadSignature(): Promise<string | null> {
+  try {
+    const res = await fetch('/signature.png')
+    const blob = await res.blob()
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.readAsDataURL(blob)
+    })
+  } catch { return null }
+}
+
+export async function genererPDFBilan(bilan: Bilan, patient: Patient): Promise<jsPDF> {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = 210
   const ml = 20
@@ -203,17 +214,28 @@ export function genererPDFBilan(bilan: Bilan, patient: Patient): jsPDF {
   }
 
   // ── Signature ───────────────────────────────────────────────
-  try {
-    const sigW = 45
-    const sigH = 25
-    doc.addImage(SIGNATURE_BASE64, 'PNG', W - mr - sigW, 248, sigW, sigH)
-  } catch(e) {}
+  const sigData2 = await loadSignature()
+  if (sigData2) {
+    try { doc.addImage(sigData2, 'PNG', W - mr - 48, 248, 48, 22) } catch(e) {}
+  }
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8.5)
   doc.setTextColor(...G)
-  doc.text('Arthur Le Neué', W - mr - 25, 278, { align: 'center' })
+  doc.text('Arthur Le Neué', W - mr - 24, 274, { align: 'center' })
 
   // ── Footer ──────────────────────────────────────────────────
+  // Signature
+  try {
+    const sigRes = await fetch('/signature.png')
+    const sigBlob = await sigRes.blob()
+    const sigBase64 = await new Promise<string>((resolve) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve((reader.result as string).split(',')[1])
+      reader.readAsDataURL(sigBlob)
+    })
+    doc.addImage(sigBase64, 'PNG', W - mr - 45, 248, 40, 25)
+  } catch {}
+
   doc.setDrawColor(...GL)
   doc.setLineWidth(0.2)
   doc.line(ml, 278, W - mr, 278)
