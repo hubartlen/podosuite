@@ -37,6 +37,10 @@ export default function NewFactureClient() {
   const [cabinet, setCabinet] = useState('saint-denis')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [emailTo, setEmailTo] = useState('')
+  const [sending, setSending] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
+  const [lastFacture, setLastFacture] = useState<any>(null)
   const [dateFact, setDateFact] = useState(new Date().toISOString().split('T')[0])
   const [modePaiement, setModePaiement] = useState('Chèque')
   const [mention, setMention] = useState('')
@@ -94,8 +98,26 @@ export default function NewFactureClient() {
       doc.save(`Facture_${numero}_${patient.nom}_${patient.prenom}.pdf`)
     }
     setSaved(true)
+    setLastFacture(facture)
+    const patient = patients.find(p => p.id === patientId)
+    if (patient?.email) setEmailTo(patient.email)
     setLoading(false)
-    setTimeout(() => router.push(`/dashboard/patients/${patientId}`), 800)
+  }
+
+  const sendEmail = async () => {
+    if (!emailTo || !lastFacture) return
+    setSending(true)
+    const patient = patients.find(p => p.id === patientId)!
+    const { genererPDFFacture } = await import('@/lib/pdf-facture')
+    const doc = genererPDFFacture(lastFacture, patient)
+    const pdfBase64 = doc.output('datauristring').split(',')[1]
+    const res = await fetch('/api/send-facture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: emailTo, facture: lastFacture, patient, pdfBase64 })
+    })
+    if (res.ok) { setEmailSent(true) } else { alert('Erreur envoi email') }
+    setSending(false)
   }
 
   return (
@@ -218,8 +240,22 @@ export default function NewFactureClient() {
         </div>
 
         {saved && (
-          <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 rounded-xl border border-emerald-200">
-            Facture enregistrée ✓
+          <div className="space-y-3">
+            <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 rounded-2xl border border-emerald-200 flex items-center gap-2">
+              <span>✓</span> Facture enregistrée
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-100 p-4">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Envoyer par email</p>
+              <div className="flex gap-2">
+                <input type="email" value={emailTo} onChange={e => setEmailTo(e.target.value)}
+                  placeholder="email@patient.com"
+                  className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                <button onClick={sendEmail} disabled={sending || !emailTo || emailSent}
+                  className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 whitespace-nowrap">
+                  {emailSent ? '✓ Envoyé' : sending ? '...' : 'Envoyer'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
