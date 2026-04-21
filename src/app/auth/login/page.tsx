@@ -32,7 +32,7 @@ export default function LoginPage() {
           <div className="w-14 h-14 bg-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <span className="text-white font-bold text-2xl">P</span>
           </div>
-          <h1 className="text-2xl font-semibold text-slate-800">PodoSuite</h1>
+          <h1 className="text-2xl font-semibold text-slate-800">PODian</h1>
           <p className="text-slate-500 text-sm mt-1">Cabinet Arthur Le Neué</p>
         </div>
 

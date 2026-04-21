@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'PodoSuite <onboarding@resend.dev>',
+        from: 'PODian <onboarding@resend.dev>',
         to: [to],
         subject: `Facture ${facture.numero} — Cabinet Arthur Le Neué`,
         html: `

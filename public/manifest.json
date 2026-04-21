@@ -1,6 +1,6 @@
 {
-  "name": "PodoSuite",
-  "short_name": "PodoSuite",
+  "name": "PODian",
+  "short_name": "PODian",
   "description": "Gestion de cabinet podologique",
   "start_url": "/dashboard",
   "display": "standalone",

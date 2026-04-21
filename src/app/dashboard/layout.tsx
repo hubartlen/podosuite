@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-xs">P</span>
           </div>
-          <span className="font-semibold text-slate-800 text-sm">PodoSuite</span>
+          <span className="font-semibold text-slate-800 text-sm">PODian</span>
         </div>
         <button onClick={handleLogout} className="text-slate-400 hover:text-slate-600">
           <LogOut size={18} />
@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span className="text-white font-bold text-sm">P</span>
               </div>
               <div>
-                <p className="font-semibold text-slate-800 text-sm leading-tight">PodoSuite</p>
+                <p className="font-semibold text-slate-800 text-sm leading-tight">PODian</p>
                 <p className="text-xs text-slate-500">Le Neué A.</p>
               </div>
             </div>

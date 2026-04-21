@@ -5,13 +5,13 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'PodoSuite',
+  title: 'PODian',
   description: 'Gestion de cabinet podologique',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'PodoSuite',
+    title: 'PODian',
   },
   formatDetection: { telephone: false },
 }
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="PodoSuite" />
+        <meta name="apple-mobile-web-app-title" content="PODian" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
