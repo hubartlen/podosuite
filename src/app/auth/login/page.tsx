@@ -16,60 +16,42 @@ export default function LoginPage() {
     setError('')
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError('Email ou mot de passe incorrect')
-      setLoading(false)
-    } else {
-      router.push('/dashboard')
-      router.refresh()
-    }
+    if (error) { setError('Email ou mot de passe incorrect'); setLoading(false) }
+    else { router.push('/dashboard'); router.refresh() }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-slate-200 w-full max-w-md p-8 shadow-sm">
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">P</span>
-          </div>
-          <h1 className="text-2xl font-semibold text-slate-800">PODian</h1>
-          <p className="text-slate-500 text-sm mt-1">Cabinet Arthur Le Neué</p>
+    <div style={{minHeight:'100vh',background:'#1a1410',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px'}}>
+      <div style={{width:'100%',maxWidth:'380px'}}>
+        <div style={{textAlign:'center',marginBottom:'40px'}}>
+          <div style={{width:'56px',height:'56px',background:'#c8b89a',borderRadius:'18px',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',fontFamily:'Playfair Display, serif',fontSize:'24px',color:'#1a1410',fontWeight:'500'}}>P</div>
+          <h1 style={{fontFamily:'Playfair Display, serif',fontSize:'28px',color:'#f5f2ee',fontWeight:'400',letterSpacing:'-0.01em',marginBottom:'6px'}}>PODian</h1>
+          <p style={{fontSize:'13px',color:'#9b8f7e',letterSpacing:'0.04em'}}>Cabinet Arthur Le Neué</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin}>
           {error && (
-            <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-200">
+            <div style={{background:'rgba(226,75,74,0.1)',border:'1px solid rgba(226,75,74,0.3)',borderRadius:'12px',padding:'12px 16px',marginBottom:'16px',fontSize:'13px',color:'#f09595',textAlign:'center'}}>
               {error}
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="votre@email.com"
-              required
+          <div style={{marginBottom:'12px'}}>
+            <label style={{display:'block',fontSize:'11px',color:'#9b8f7e',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'8px'}}>Email</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="votre@email.com" required
+              style={{width:'100%',padding:'14px 16px',background:'#2a2018',border:'1px solid #3a3028',borderRadius:'14px',fontSize:'14px',color:'#f5f2ee',outline:'none',fontFamily:'Inter, sans-serif'}}
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Mot de passe</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="••••••••"
-              required
+          <div style={{marginBottom:'24px'}}>
+            <label style={{display:'block',fontSize:'11px',color:'#9b8f7e',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'8px'}}>Mot de passe</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+              placeholder="••••••••" required
+              style={{width:'100%',padding:'14px 16px',background:'#2a2018',border:'1px solid #3a3028',borderRadius:'14px',fontSize:'14px',color:'#f5f2ee',outline:'none',fontFamily:'Inter, sans-serif'}}
             />
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-colors disabled:opacity-50 mt-2"
-          >
-            {loading ? 'Connexion en cours...' : 'Se connecter'}
+          <button type="submit" disabled={loading}
+            style={{width:'100%',padding:'15px',background:'#c8b89a',border:'none',borderRadius:'14px',fontSize:'14px',fontWeight:'500',color:'#1a1410',cursor:loading?'not-allowed':'pointer',fontFamily:'Inter, sans-serif',letterSpacing:'0.02em',opacity:loading?0.7:1}}>
+            {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
       </div>
