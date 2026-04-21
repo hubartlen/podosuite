@@ -55,8 +55,22 @@ export default function NewFactureClient() {
       if (!session) return
       const { data } = await supabase.from('patients').select('*').eq('praticien_id', session.user.id).order('nom')
       if (data) setPatients(data)
-      const { count } = await supabase.from('factures').select('*', { count: 'exact', head: true }).eq('praticien_id', session.user.id)
-      setSeq((count ?? 0) + 1)
+      // Récupérer le dernier numéro de facture pour éviter les doublons
+      const { data: lastFactures } = await supabase
+        .from('factures')
+        .select('numero')
+        .eq('praticien_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+      
+      if (lastFactures && lastFactures.length > 0) {
+        const lastNum = lastFactures[0].numero
+        const parts = lastNum.split('-')
+        const lastSeq = parseInt(parts[parts.length - 1]) || 0
+        setSeq(lastSeq + 1)
+      } else {
+        setSeq(1)
+      }
     }
     load()
   }, [])
