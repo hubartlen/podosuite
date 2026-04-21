@@ -39,7 +39,7 @@ export default function BilanDetail({ bilan, patient }: { bilan: Bilan & { patie
     if (!emailTo) return
     setSending(true)
     const { genererPDFBilan } = await import('@/lib/pdf-bilan')
-    const doc = genererPDFBilan(bilan, patient)
+    const doc = await genererPDFBilan(bilan, patient)
     const pdfBase64 = doc.output('datauristring').split(',')[1]
     const res = await fetch('/api/send-bilan', {
       method: 'POST',
@@ -53,7 +53,7 @@ export default function BilanDetail({ bilan, patient }: { bilan: Bilan & { patie
 
   const handleDownload = async () => {
     const { genererPDFBilan } = await import('@/lib/pdf-bilan')
-    const doc = genererPDFBilan(bilan, patient)
+    const doc = await genererPDFBilan(bilan, patient)
     doc.save(`Bilan_${patient.nom}_${patient.prenom}_${bilan.date_bilan}.pdf`)
   }
 

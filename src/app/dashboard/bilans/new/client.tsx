@@ -39,6 +39,10 @@ export default function NewBilanClient() {
   const [patientId, setPatientId] = useState(searchParams.get('patient') || '')
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [emailTo, setEmailTo] = useState('')
+  const [sending, setSending] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
+  const [lastBilan, setLastBilan] = useState<any>(null)
 
   const [form, setForm] = useState({
     date_bilan: new Date().toISOString().split('T')[0],
@@ -87,12 +91,30 @@ export default function NewBilanClient() {
     if (dl && bilan) {
       const patient = patients.find(p => p.id === patientId)!
       const { genererPDFBilan } = await import('@/lib/pdf-bilan')
-      const doc = genererPDFBilan(bilan, patient)
+      const doc = await genererPDFBilan(bilan, patient)
       doc.save(`Bilan_${patient.nom}_${patient.prenom}_${form.date_bilan}.pdf`)
     }
     setSaved(true)
+    setLastBilan(bilan)
+    const p = patients.find(x => x.id === patientId)
+    if (p?.email) setEmailTo(p.email)
     setLoading(false)
-    setTimeout(() => router.push(`/dashboard/patients/${patientId}`), 800)
+  }
+
+  const sendEmail = async () => {
+    if (!emailTo || !lastBilan) return
+    setSending(true)
+    const patient = patients.find(p => p.id === patientId)!
+    const { genererPDFBilan } = await import('@/lib/pdf-bilan')
+    const doc = await genererPDFBilan(lastBilan, patient)
+    const pdfBase64 = doc.output('datauristring').split(',')[1]
+    const res = await fetch('/api/send-bilan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: emailTo, bilan: lastBilan, patient, pdfBase64 })
+    })
+    if (res.ok) { setEmailSent(true) } else { alert('Erreur envoi email') }
+    setSending(false)
   }
 
   return (
@@ -187,8 +209,22 @@ export default function NewBilanClient() {
       </div>
 
       {saved && (
-        <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 rounded-xl border border-emerald-200 mb-4">
-          Bilan enregistré. Redirection...
+        <div className="space-y-3 mb-4">
+          <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 rounded-xl border border-emerald-200">
+            ✓ Bilan enregistré
+          </div>
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Envoyer par email</p>
+            <div className="flex gap-2">
+              <input type="email" value={emailTo} onChange={e => setEmailTo(e.target.value)}
+                placeholder="email@patient.com"
+                className="flex-1 px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+              <button onClick={sendEmail} disabled={sending || !emailTo || emailSent}
+                className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 whitespace-nowrap">
+                {emailSent ? '✓ Envoyé' : sending ? '...' : 'Envoyer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

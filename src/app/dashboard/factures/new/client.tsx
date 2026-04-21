@@ -94,7 +94,7 @@ export default function NewFactureClient() {
     if (dl && facture) {
       const patient = patients.find(p => p.id === patientId)!
       const { genererPDFFacture } = await import('@/lib/pdf-facture')
-      const doc = genererPDFFacture(facture, patient)
+      const doc = await genererPDFFacture(facture, patient)
       doc.save(`Facture_${numero}_${patient.nom}_${patient.prenom}.pdf`)
     }
     setSaved(true)
@@ -109,7 +109,7 @@ export default function NewFactureClient() {
     setSending(true)
     const patient = patients.find(p => p.id === patientId)!
     const { genererPDFFacture } = await import('@/lib/pdf-facture')
-    const doc = genererPDFFacture(lastFacture, patient)
+    const doc = await genererPDFFacture(lastFacture, patient)
     const pdfBase64 = doc.output('datauristring').split(',')[1]
     const res = await fetch('/api/send-facture', {
       method: 'POST',
