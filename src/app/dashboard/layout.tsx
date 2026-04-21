@@ -8,6 +8,7 @@ const nav = [
   { href: '/dashboard/patients', label: 'Patients' },
   { href: '/dashboard/bilans/new', label: 'Nouveau bilan' },
   { href: '/dashboard/factures/new', label: 'Nouvelle facture' },
+  { href: '/dashboard/comptabilite', label: 'Comptabilité' },
   { href: '/dashboard/settings', label: 'Réglages' },
 ]
 
