@@ -1,28 +1,79 @@
 @import "tailwindcss";
-
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap');
 
-:root {
-  --ink: #1a1410;
-  --ink2: #4a3f35;
-  --ink3: #9b8f7e;
-  --beige: #f5f2ee;
-  --beige2: #ede8e1;
-  --beige3: #e2dbd0;
-  --gold: #c8b89a;
-  --gold2: #a8966e;
-  --white: #ffffff;
-  --border: #e2dbd0;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   font-weight: 400;
-  background: var(--beige);
-  color: var(--ink);
+  background: #f5f2ee;
+  color: #1a1410;
   -webkit-font-smoothing: antialiased;
 }
 
-.font-display { font-family: 'Playfair Display', serif; }
+/* Titres */
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  color: #1a1410;
+}
+
+/* Boutons principaux — remplacer le bleu par noir */
+button[class*="bg-blue-600"],
+a[class*="bg-blue-600"] {
+  background-color: #1a1410 !important;
+  color: #f5f2ee !important;
+}
+
+/* Boutons secondaires */
+button[class*="bg-slate-100"],
+a[class*="bg-slate-100"] {
+  background-color: #ede8e1 !important;
+  color: #4a3f35 !important;
+}
+
+/* Liens et accents bleus → or */
+.text-blue-600, a.text-blue-600 { color: #c8b89a !important; }
+.text-blue-700 { color: #a8966e !important; }
+.border-blue-500 { border-color: #c8b89a !important; }
+.ring-blue-500 { --tw-ring-color: #c8b89a !important; }
+
+/* Badges bilans */
+.bg-blue-50 { background-color: #f5f2ee !important; }
+.bg-emerald-50 { background-color: #f0ebe4 !important; }
+.text-blue-700 { color: #a8966e !important; }
+.text-emerald-700 { color: #4a3f35 !important; }
+
+/* Fond global */
+.bg-slate-50, .bg-slate-100 { background-color: #f5f2ee !important; }
+.bg-white { background-color: #ffffff; }
+
+/* Bordures */
+.border-slate-100, .border-slate-200 { border-color: #e2dbd0 !important; }
+
+/* Textes secondaires */
+.text-slate-400, .text-slate-500 { color: #9b8f7e !important; }
+.text-slate-600, .text-slate-700 { color: #4a3f35 !important; }
+.text-slate-900, .text-slate-800 { color: #1a1410 !important; }
+
+/* Toggles actifs dans le bilan */
+.bg-blue-600 { background-color: #1a1410 !important; }
+.text-white { color: #f5f2ee !important; }
+
+/* Focus rings */
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: #c8b89a !important;
+  box-shadow: 0 0 0 2px rgba(200,184,154,0.2) !important;
+}
+
+/* Arrondis un peu plus doux */
+.rounded-xl { border-radius: 12px !important; }
+.rounded-2xl { border-radius: 16px !important; }
+
+/* Total facture */
+.text-blue-600 { color: #1a1410 !important; }
+
+/* Hover rows */
+.hover\:bg-slate-50:hover { background-color: #faf8f5 !important; }
+.active\:bg-slate-50:active { background-color: #faf8f5 !important; }
