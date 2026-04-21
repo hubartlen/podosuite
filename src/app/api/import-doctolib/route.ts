@@ -7,7 +7,6 @@ export async function POST(request: Request) {
     let content: any[]
 
     if (image) {
-      // Capture d'écran iPhone
       content = [
         {
           type: 'image',
@@ -15,21 +14,22 @@ export async function POST(request: Request) {
         },
         {
           type: 'text',
-          text: `Analyse cette capture d'écran du planning Doctolib. Extrais UNIQUEMENT les patients d'Arthur Le Neué, c'est-à-dire les lignes avec "Collab" ou "Arthur Le Neué". Ignore les patients de "Marie Prévost" ou "Prévost Marie".
+          text: `Analyse cette capture d'écran d'un agenda Doctolib. Extrais TOUS les patients visibles dans cette capture — tous ceux qui ont un nom en MAJUSCULES suivi d'un prénom.
 
 Retourne UNIQUEMENT ce JSON, sans aucun texte avant ou après :
-{"patients":[{"civilite":"Mme","nom":"JERBI","prenom":"Seloua","motif":"diabète - soin de pédicurie","heure":"09:00"}]}
+{"patients":[{"civilite":"","nom":"DORCAL","prenom":"Noah","motif":"","heure":"10:30"}]}
 
 Règles :
-- civilite = "Mme" ou "M." selon le préfixe, sinon ""
-- nom = en MAJUSCULES
-- prenom = avec majuscule initiale
-- motif = le motif de consultation visible
-- heure = l'heure du rendez-vous`
+- Extrais TOUS les noms de patients visibles (format NOM Prénom)
+- civilite = "" (pas d'info disponible sur cette vue)
+- nom = la partie en MAJUSCULES
+- prenom = la partie avec majuscule initiale
+- motif = "" si non visible
+- heure = l'heure de début du rendez-vous
+- Ignore les absences et les blocs non-patient`
         }
       ]
     } else {
-      // PDF Doctolib
       content = [
         {
           type: 'document',
