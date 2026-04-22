@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import type { RendezVous } from '@/types'
 
 const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
@@ -189,9 +190,14 @@ export default function CalendrierPage() {
           <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', color: '#1a1410', fontWeight: '400', letterSpacing: '-0.01em' }}>Calendrier</h1>
           <p style={{ fontSize: '13px', color: '#9b8f7e', marginTop: '4px' }}>{rdvs.length} rendez-vous ce mois</p>
         </div>
-        <button onClick={() => openCreate()} style={{ padding: '10px 18px', background: '#1a1410', borderRadius: '10px', border: 'none', fontSize: '13px', color: '#f5f2ee', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: '500' }}>
-          + Nouveau RDV
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <Link href="/dashboard/calendrier/import" style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '10px 16px', background: '#fff', border: '1px solid #e2dbd0', borderRadius: '10px', fontSize: '13px', color: '#4a3f35', textDecoration: 'none', fontWeight: '500' }}>
+            ↑ Import Doctolib
+          </Link>
+          <button onClick={() => openCreate()} style={{ padding: '10px 18px', background: '#1a1410', borderRadius: '10px', border: 'none', fontSize: '13px', color: '#f5f2ee', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: '500' }}>
+            + Nouveau RDV
+          </button>
+        </div>
       </div>
 
       {/* Month navigator */}
