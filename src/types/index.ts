@@ -58,6 +58,18 @@ export interface Facture {
   patient?: Patient
 }
 
+export interface RendezVous {
+  id: string
+  praticien_id: string
+  patient_id: string | null
+  date_heure: string
+  duree: number
+  type: string
+  notes: string | null
+  created_at: string
+  patient?: { nom: string; prenom: string } | null
+}
+
 export interface Praticien {
   id: string
   email: string

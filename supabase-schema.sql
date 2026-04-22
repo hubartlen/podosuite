@@ -55,10 +55,22 @@ create table if not exists factures (
   created_at timestamptz default now()
 );
 
+create table if not exists rendez_vous (
+  id uuid default gen_random_uuid() primary key,
+  praticien_id uuid references auth.users(id) on delete cascade not null,
+  patient_id uuid references patients(id) on delete set null,
+  date_heure timestamptz not null,
+  duree integer not null default 30,
+  type text not null default 'consultation',
+  notes text,
+  created_at timestamptz default now()
+);
+
 -- Row Level Security
 alter table patients enable row level security;
 alter table bilans enable row level security;
 alter table factures enable row level security;
+alter table rendez_vous enable row level security;
 
 -- Policies : chaque praticien voit uniquement ses données
 create policy "patients_own" on patients
@@ -68,4 +80,7 @@ create policy "bilans_own" on bilans
   for all using (auth.uid() = praticien_id);
 
 create policy "factures_own" on factures
+  for all using (auth.uid() = praticien_id);
+
+create policy "rendez_vous_own" on rendez_vous
   for all using (auth.uid() = praticien_id);

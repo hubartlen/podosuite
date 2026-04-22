@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase'
 
 const nav = [
   { href: '/dashboard', label: 'Accueil', exact: true },
+  { href: '/dashboard/calendrier', label: 'Calendrier' },
   { href: '/dashboard/patients', label: 'Patients' },
   { href: '/dashboard/bilans/new', label: 'Nouveau bilan' },
   { href: '/dashboard/factures/new', label: 'Nouvelle facture' },
