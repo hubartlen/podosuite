@@ -130,7 +130,12 @@ export default function NewFactureClient() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to: emailTo, facture: lastFacture, patient, pdfBase64 })
     })
-    if (res.ok) { setEmailSent(true) } else { alert('Erreur envoi email') }
+    if (res.ok) {
+      setEmailSent(true)
+    } else {
+      const data = await res.json().catch(() => ({}))
+      alert('Erreur envoi : ' + ((data as any).error || 'Échec Resend'))
+    }
     setSending(false)
   }
 
