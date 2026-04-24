@@ -110,11 +110,16 @@ export default function ComptabilitePage() {
         const paiement = row[2]?.toString().trim().toUpperCase()
         const montant = parseFloat(row[3])
 
-        // Détecter une date
-        if (col0 && !isNaN(Date.parse(col0))) currentDate = new Date(col0).toISOString().slice(0, 10)
-        else if (col0 && col0.match(/^\d{5}$/)) {
-          const d = new Date((parseInt(col0) - 25569) * 86400 * 1000)
-          currentDate = d.toISOString().slice(0, 10)
+        // Détecter une date (format normal ou numéro sériel Excel)
+        if (col0) {
+          const num = parseFloat(col0)
+          if (!isNaN(num) && num > 40000 && num < 50000) {
+            // Numéro sériel Excel → date
+            const d = new Date(Math.round((num - 25569) * 86400 * 1000))
+            currentDate = d.toISOString().slice(0, 10)
+          } else if (!isNaN(Date.parse(col0))) {
+            currentDate = new Date(col0).toISOString().slice(0, 10)
+          }
         }
 
         if (patient && paiement && !isNaN(montant) && montant > 0 && currentDate && ['CHEQUE','ESPECE','POD','VIREMENT','CARTE'].includes(paiement)) {
