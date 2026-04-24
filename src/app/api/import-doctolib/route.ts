@@ -2,53 +2,36 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
-    const { pdf, image, mediaType } = await request.json()
+    const { pdf, image, mediaType, praticienNom } = await request.json()
 
     let content: any[]
 
-    if (image) {
-      content = [
-        {
-          type: 'image',
-          source: { type: 'base64', media_type: mediaType || 'image/png', data: image }
-        },
-        {
-          type: 'text',
-          text: `Analyse cette capture d'écran d'un agenda Doctolib. Extrais TOUS les patients visibles dans cette capture — tous ceux qui ont un nom en MAJUSCULES suivi d'un prénom.
+    const prompt = praticienNom
+      ? `Analyse ce planning Doctolib. Extrais UNIQUEMENT les patients du praticien "${praticienNom}". Si tu ne trouves pas ce praticien spécifiquement, extrais TOUS les patients visibles dans le planning.`
+      : `Analyse ce planning Doctolib. Extrais TOUS les patients visibles dans le planning.`
+
+    const fullPrompt = `${prompt}
 
 Retourne UNIQUEMENT ce JSON, sans aucun texte avant ou après :
-{"patients":[{"civilite":"","nom":"DORCAL","prenom":"Noah","motif":"","heure":"10:30"}]}
-
-Règles :
-- Extrais TOUS les noms de patients visibles (format NOM Prénom)
-- civilite = "" (pas d'info disponible sur cette vue)
-- nom = la partie en MAJUSCULES
-- prenom = la partie avec majuscule initiale
-- motif = "" si non visible
-- heure = l'heure de début du rendez-vous
-- Ignore les absences et les blocs non-patient`
-        }
-      ]
-    } else {
-      content = [
-        {
-          type: 'document',
-          source: { type: 'base64', media_type: 'application/pdf', data: pdf }
-        },
-        {
-          type: 'text',
-          text: `Analyse ce planning Doctolib. Extrais UNIQUEMENT les patients dont la ligne commence par "Collab" (patients d'Arthur Le Neué). Ignore toutes les lignes "Prévost Marie".
-
-Retourne UNIQUEMENT ce JSON, sans aucun texte avant ou après :
-{"patients":[{"civilite":"Mme","nom":"JERBI","prenom":"Seloua","motif":"diabète - soin de pédicurie","heure":"09:00"}]}
+{"patients":[{"civilite":"Mme","nom":"DUPONT","prenom":"Marie","motif":"Soins de pédicurie","heure":"10:15"}]}
 
 Règles :
 - civilite = "Mme" ou "M." selon le préfixe, sinon ""
 - nom = en MAJUSCULES
 - prenom = avec majuscule initiale
 - motif = le motif de consultation
-- heure = l'heure du rendez-vous`
-        }
+- heure = l'heure du rendez-vous
+- Ignore les absences et les blocs non-patient`
+
+    if (image) {
+      content = [
+        { type: 'image', source: { type: 'base64', media_type: mediaType || 'image/png', data: image } },
+        { type: 'text', text: fullPrompt }
+      ]
+    } else {
+      content = [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdf } },
+        { type: 'text', text: fullPrompt }
       ]
     }
 
@@ -58,10 +41,9 @@ Règles :
         'Content-Type': 'application/json',
         'x-api-key': process.env.ANTHROPIC_VALUE_KEY!,
         'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'pdfs-2024-09-25',
       },
       body: JSON.stringify({
-        model: image ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
         messages: [{ role: 'user', content }]
       })
@@ -82,6 +64,7 @@ Règles :
     } catch {
       const match = text.match(/\{[\s\S]*\}/)
       if (match) return NextResponse.json(JSON.parse(match[0]))
+      console.error('Parse error, text was:', text)
       return NextResponse.json({ patients: [] })
     }
   } catch (error) {
@@ -89,4 +72,3 @@ Règles :
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
 }
-// updated 2026-04-21

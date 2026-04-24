@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
-import { ArrowLeft, Upload, Check, UserPlus, Image, FileText, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Upload, Check, UserPlus, AlertTriangle } from 'lucide-react'
 
 interface PatientDetecte {
   nom: string
@@ -20,7 +20,6 @@ export default function ImportDoctolib() {
   const [loading, setLoading] = useState(false)
   const [importing, setImporting] = useState(false)
   const [nbImported, setNbImported] = useState(0)
-  const [preview, setPreview] = useState<string | null>(null)
 
   const handleFile = async (file: File) => {
     setLoading(true)
@@ -28,12 +27,20 @@ export default function ImportDoctolib() {
     const reader = new FileReader()
     reader.onload = async (e) => {
       const base64 = (e.target?.result as string).split(',')[1]
-      if (isImage) setPreview(e.target?.result as string)
 
       try {
+        // Récupérer le nom du praticien connecté
+        const supabase = createClient()
+        const { data: { session } } = await supabase.auth.getSession()
+        let praticienNom = ''
+        if (session) {
+          const { data: p } = await supabase.from('praticiens').select('nom, prenom').eq('id', session.user.id).single()
+          if (p) praticienNom = `${p.prenom} ${p.nom}`
+        }
+
         const body = isImage
-          ? { image: base64, mediaType: file.type }
-          : { pdf: base64 }
+          ? { image: base64, mediaType: file.type, praticienNom }
+          : { pdf: base64, praticienNom }
 
         const res = await fetch('/api/import-doctolib', {
           method: 'POST',
@@ -44,12 +51,8 @@ export default function ImportDoctolib() {
 
         if (data.patients?.length > 0) {
           // Vérification des doublons
-          const supabase = createClient()
-          const { data: { session } } = await supabase.auth.getSession()
           const { data: existants } = await supabase
-            .from('patients')
-            .select('nom, prenom')
-            .eq('praticien_id', session!.user.id)
+            .from('patients').select('nom, prenom').eq('praticien_id', session!.user.id)
 
           const patientsAvecDoublons = data.patients.map((p: any) => ({
             ...p,
@@ -59,16 +62,11 @@ export default function ImportDoctolib() {
                    e.prenom.toLowerCase() === p.prenom.toLowerCase()
             ) ?? false
           }))
-
-          // Auto-désélectionner les doublons
-          patientsAvecDoublons.forEach((p: PatientDetecte) => {
-            if (p.doublon) p.selected = false
-          })
-
+          patientsAvecDoublons.forEach((p: PatientDetecte) => { if (p.doublon) p.selected = false })
           setPatients(patientsAvecDoublons)
           setEtape('review')
         } else {
-          alert('Aucun patient détecté. Vérifie que la capture montre bien le planning.')
+          alert('Aucun patient détecté. Vérifie que le fichier est bien un planning Doctolib.')
         }
       } catch {
         alert("Erreur lors de l'analyse")
@@ -103,141 +101,104 @@ export default function ImportDoctolib() {
   const nbSelectionnes = patients.filter(p => p.selected && !p.doublon).length
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="px-4 pt-4 pb-2">
-        <Link href="/dashboard/patients"
-          className="inline-flex items-center gap-1 text-slate-400 text-sm mb-4">
-          <ArrowLeft size={14} /> Patients
-        </Link>
-        <h1 className="text-xl font-bold text-slate-900 mb-1">Import Doctolib</h1>
-        <p className="text-slate-400 text-sm mb-5">PDF ou capture d'écran — l'IA détecte tes patients automatiquement.</p>
-      </div>
+    <div style={{ padding: '32px 36px', maxWidth: '700px' }}>
+      <Link href="/dashboard/patients"
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#9b8f7e', fontSize: '13px', textDecoration: 'none', marginBottom: '24px' }}>
+        <ArrowLeft size={14} /> Patients
+      </Link>
+      <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', color: '#1a1410', fontWeight: '400', marginBottom: '6px' }}>Import Doctolib</h1>
+      <p style={{ fontSize: '13px', color: '#9b8f7e', marginBottom: '28px' }}>PDF ou capture d'écran — l'IA détecte les patients automatiquement.</p>
 
-      <div className="px-4 pb-8">
-        {etape === 'upload' && (
-          <div>
-            <div
-              className="border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors mb-4"
-              onClick={() => document.getElementById('file-input')?.click()}
-              onDragOver={e => e.preventDefault()}
-              onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}>
-              <input id="file-input" type="file" accept=".pdf,image/*" className="hidden"
-                onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
-              {loading ? (
-                <div>
-                  <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-slate-600 font-medium">Analyse en cours...</p>
-                  <p className="text-slate-400 text-sm mt-1">L'IA lit ton planning + vérification des doublons</p>
-                </div>
-              ) : (
-                <div>
-                  <Upload size={36} className="mx-auto text-slate-300 mb-3" />
-                  <p className="text-slate-700 font-semibold">Dépose ton fichier ici</p>
-                  <p className="text-slate-400 text-sm mt-1">ou clique pour sélectionner</p>
-                </div>
-              )}
+      {etape === 'upload' && (
+        <div
+          style={{ border: '2px dashed #e2dbd0', borderRadius: '16px', padding: '48px', textAlign: 'center', cursor: 'pointer', background: '#fff', transition: 'all 0.15s' }}
+          onClick={() => document.getElementById('file-input')?.click()}
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}>
+          <input id="file-input" type="file" accept=".pdf,image/*" style={{ display: 'none' }}
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
+          {loading ? (
+            <div>
+              <div style={{ width: '40px', height: '40px', border: '3px solid #e2dbd0', borderTopColor: '#c8b89a', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }}></div>
+              <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+              <p style={{ color: '#1a1410', fontWeight: '500', marginBottom: '4px' }}>Analyse en cours...</p>
+              <p style={{ color: '#9b8f7e', fontSize: '13px' }}>L'IA lit ton planning + vérification des doublons</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-blue-50 rounded-2xl p-4">
-                <Image size={20} className="text-blue-600 mb-2" />
-                <p className="text-sm font-semibold text-blue-800">Capture d'écran</p>
-                <p className="text-xs text-blue-600 mt-1">Depuis l'app Doctolib iPhone</p>
-              </div>
-              <div className="bg-slate-50 rounded-2xl p-4">
-                <FileText size={20} className="text-slate-500 mb-2" />
-                <p className="text-sm font-semibold text-slate-700">PDF</p>
-                <p className="text-xs text-slate-400 mt-1">Depuis Doctolib web</p>
-              </div>
+          ) : (
+            <div>
+              <Upload size={36} style={{ color: '#c8b89a', margin: '0 auto 16px' }} />
+              <p style={{ color: '#1a1410', fontWeight: '500', fontSize: '15px', marginBottom: '6px' }}>Dépose ton fichier Doctolib ici</p>
+              <p style={{ color: '#9b8f7e', fontSize: '13px' }}>PDF ou capture d'écran iPhone — ou clique pour sélectionner</p>
             </div>
+          )}
+        </div>
+      )}
+
+      {etape === 'review' && (
+        <div>
+          {nbDoublons > 0 && (
+            <div style={{ background: '#fdf8f0', border: '1px solid #e8d5a3', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <AlertTriangle size={16} style={{ color: '#c8b89a', flexShrink: 0, marginTop: '1px' }} />
+              <p style={{ fontSize: '13px', color: '#4a3f35' }}><strong>{nbDoublons} doublon(s) détecté(s)</strong> — déjà présents dans ta liste, désélectionnés automatiquement.</p>
+            </div>
+          )}
+
+          <div style={{ background: '#f5f2ee', border: '1px solid #e2dbd0', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: '13px', color: '#1a1410', fontWeight: '500' }}>{nbSelectionnes} nouveau(x) patient(s) à créer</p>
+            <button onClick={() => { const all = patients.filter(p => !p.doublon); const allSel = all.every(p => p.selected); setPatients(ps => ps.map(x => x.doublon ? x : { ...x, selected: !allSel })) }}
+              style={{ fontSize: '12px', color: '#c8b89a', background: 'none', border: 'none', cursor: 'pointer' }}>
+              Tout sélectionner
+            </button>
           </div>
-        )}
 
-        {etape === 'review' && (
-          <div>
-            {preview && (
-              <img src={preview} alt="Planning" className="w-full rounded-2xl mb-4 border border-slate-200" style={{maxHeight:160, objectFit:'cover', objectPosition:'top'}}/>
-            )}
-
-            {nbDoublons > 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-3 flex items-start gap-2">
-                <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-amber-700">
-                  <span className="font-semibold">{nbDoublons} doublon(s) détecté(s)</span> — déjà présents dans ta liste, désélectionnés automatiquement.
-                </p>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-3 mb-3">
-              <p className="text-sm text-blue-700 font-medium">{nbSelectionnes} nouveau(x) à créer</p>
-              <button onClick={() => {
-                const allNew = patients.filter(p => !p.doublon)
-                const allSelected = allNew.every(p => p.selected)
-                setPatients(ps => ps.map(x => x.doublon ? x : { ...x, selected: !allSelected }))
-              }} className="text-xs text-blue-600 font-medium">
-                Tout sélectionner
-              </button>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-100 divide-y divide-slate-50 mb-4">
-              {patients.map((p, i) => (
-                <div key={i}
-                  className={`flex items-center gap-3 px-4 py-3.5 ${p.doublon ? 'opacity-50' : 'cursor-pointer active:bg-slate-50'}`}
-                  onClick={() => !p.doublon && setPatients(pts => pts.map((x, j) => j === i ? { ...x, selected: !x.selected } : x))}>
-                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${
-                    p.doublon ? 'border-slate-200 bg-slate-100' :
-                    p.selected ? 'bg-blue-600 border-blue-600' : 'border-slate-300'
-                  }`}>
-                    {p.selected && !p.doublon && <Check size={13} color="white" strokeWidth={3} />}
-                    {p.doublon && <AlertTriangle size={11} className="text-amber-500" />}
+          <div style={{ background: '#fff', border: '1px solid #e2dbd0', borderRadius: '14px', overflow: 'hidden', marginBottom: '20px' }}>
+            {patients.map((p, i) => (
+              <div key={i}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: i < patients.length - 1 ? '1px solid #f5f2ee' : 'none', cursor: p.doublon ? 'default' : 'pointer', opacity: p.doublon ? 0.5 : 1 }}
+                onClick={() => !p.doublon && setPatients(pts => pts.map((x, j) => j === i ? { ...x, selected: !x.selected } : x))}>
+                <div style={{ width: '20px', height: '20px', border: `2px solid ${p.doublon ? '#e2dbd0' : p.selected ? '#1a1410' : '#c8b89a'}`, borderRadius: '6px', background: p.selected && !p.doublon ? '#1a1410' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {p.selected && !p.doublon && <Check size={12} color="white" strokeWidth={3} />}
+                  {p.doublon && <AlertTriangle size={10} color="#c8b89a" />}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <p style={{ fontSize: '13px', fontWeight: '500', color: '#1a1410' }}>{p.civilite} {p.nom} {p.prenom}</p>
+                    {p.doublon && <span style={{ fontSize: '10px', background: '#f5f2ee', color: '#9b8f7e', padding: '2px 8px', borderRadius: '20px' }}>Déjà enregistré</span>}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-slate-900 text-sm">{p.civilite} {p.nom} {p.prenom}</p>
-                      {p.doublon && (
-                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Déjà enregistré</span>
-                      )}
-                    </div>
-                    {(p.heure || p.motif) && (
-                      <p className="text-xs text-slate-400 mt-0.5 truncate">
-                        {p.heure && `${p.heure}${p.motif ? ' · ' : ''}`}{p.motif}
-                      </p>
-                    )}
-                  </div>
+                  {(p.heure || p.motif) && <p style={{ fontSize: '12px', color: '#9b8f7e', marginTop: '2px' }}>{p.heure && `${p.heure}${p.motif ? ' · ' : ''}`}{p.motif}</p>}
                 </div>
-              ))}
-            </div>
-
-            <div className="space-y-2">
-              <button onClick={handleImport} disabled={importing || nbSelectionnes === 0}
-                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl text-sm font-semibold disabled:opacity-50">
-                <UserPlus size={17} />
-                {importing ? 'Création...' : `Créer ${nbSelectionnes} fiche(s) patient`}
-              </button>
-              <button onClick={() => { setEtape('upload'); setPreview(null) }}
-                className="w-full py-3 rounded-2xl text-sm text-slate-500 bg-slate-100">
-                Recommencer
-              </button>
-            </div>
+              </div>
+            ))}
           </div>
-        )}
 
-        {etape === 'done' && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check size={32} className="text-emerald-600" />
-            </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">{nbImported} fiche(s) créée(s) ✓</h2>
-            {nbDoublons > 0 && (
-              <p className="text-amber-600 text-sm mb-2">{nbDoublons} doublon(s) ignoré(s)</p>
-            )}
-            <p className="text-slate-400 text-sm mb-6">Les patients ont été ajoutés à ta liste.</p>
-            <Link href="/dashboard/patients"
-              className="bg-blue-600 text-white px-6 py-3 rounded-2xl text-sm font-semibold">
-              Voir les patients
-            </Link>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={handleImport} disabled={importing || nbSelectionnes === 0}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '11px 20px', background: '#1a1410', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: '#f5f2ee', cursor: 'pointer', opacity: importing || nbSelectionnes === 0 ? 0.5 : 1 }}>
+              <UserPlus size={15} />
+              {importing ? 'Création...' : `Créer ${nbSelectionnes} fiche(s)`}
+            </button>
+            <button onClick={() => setEtape('upload')}
+              style={{ padding: '11px 20px', background: '#fff', border: '1px solid #e2dbd0', borderRadius: '10px', fontSize: '13px', color: '#4a3f35', cursor: 'pointer' }}>
+              Recommencer
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {etape === 'done' && (
+        <div style={{ textAlign: 'center', padding: '48px 0' }}>
+          <div style={{ width: '56px', height: '56px', background: '#f5f2ee', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <Check size={28} style={{ color: '#1a1410' }} />
+          </div>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '22px', color: '#1a1410', fontWeight: '400', marginBottom: '8px' }}>{nbImported} fiche(s) créée(s)</h2>
+          {nbDoublons > 0 && <p style={{ fontSize: '13px', color: '#9b8f7e', marginBottom: '4px' }}>{nbDoublons} doublon(s) ignoré(s)</p>}
+          <p style={{ fontSize: '13px', color: '#9b8f7e', marginBottom: '24px' }}>Les patients ont été ajoutés à ta liste.</p>
+          <Link href="/dashboard/patients"
+            style={{ padding: '11px 24px', background: '#1a1410', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: '#f5f2ee', textDecoration: 'none' }}>
+            Voir les patients
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
