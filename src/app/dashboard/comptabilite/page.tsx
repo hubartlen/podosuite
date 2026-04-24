@@ -16,6 +16,7 @@ export default function ComptabilitePage() {
   const [showImport, setShowImport] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editData, setEditData] = useState<any>({})
+  const [retrocession, setRetrocession] = useState(60)
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -23,8 +24,12 @@ export default function ComptabilitePage() {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { router.push('/auth/login'); return }
-    const { data } = await supabase.from('factures').select('*').eq('praticien_id', session.user.id).order('date_facture')
+    const [{ data }, { data: prat }] = await Promise.all([
+      supabase.from('factures').select('*').eq('praticien_id', session.user.id).order('date_facture'),
+      supabase.from('praticiens').select('retrocession').eq('id', session.user.id).single()
+    ])
     setFactures(data || [])
+    setRetrocession(prat?.retrocession || 60)
     setLoading(false)
   }
 
@@ -140,11 +145,16 @@ export default function ComptabilitePage() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
 
-      const { data: lastFact } = await supabase.from('factures').select('numero').eq('praticien_id', session.user.id).order('created_at', { ascending: false }).limit(1).single()
-      let seq = lastFact?.numero ? (parseInt(lastFact.numero.split('-').pop() || '0') + 1) : 1
+      // Récupérer tous les numéros existants pour éviter les doublons
+      const { data: allFacts } = await supabase.from('factures').select('numero').eq('praticien_id', session.user.id)
+      const existingNums = new Set((allFacts || []).map((f: any) => f.numero))
+      
+      let seq = Date.now() // Utiliser timestamp pour garantir l'unicité
 
       const rows = importPreview.map((ligne) => {
-        const numero = `FAC-${new Date(ligne.date).getFullYear()}-${String(seq++).padStart(4, '0')}`
+        let numero = `IMP-${new Date(ligne.date).getFullYear()}-${String(seq++).slice(-6)}`
+        while (existingNums.has(numero)) { numero = `IMP-${new Date(ligne.date).getFullYear()}-${String(seq++).slice(-6)}` }
+        existingNums.add(numero)
         return {
           praticien_id: session.user.id,
           numero,
@@ -280,15 +290,15 @@ export default function ComptabilitePage() {
       {/* KPIs */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'12px', marginBottom:'20px' }}>
         {[
-          { label:`Total ${MOIS[mois]}`, val:`${Math.round(totalMois)} €`, sub:`${facturesMois.filter(f=>f.statut!=='annulee').length} factures` },
-          { label:'Moy. par acte', val: facturesMois.filter(f=>f.statut!=='annulee').length ? `${Math.round(totalMois/facturesMois.filter(f=>f.statut!=='annulee').length)} €` : '—', sub:'ce mois' },
-          { label:'Total annuel', val:`${Math.round(totalAnnee)} €`, sub:`${annee}` },
+          { label:`Total brut ${MOIS[mois]}`, val:`${Math.round(totalMois)} €`, sub:`${facturesMois.filter(f=>f.statut!=='annulee').length} factures` },
+          { label:`Ma part (${retrocession}%)`, val:`${Math.round(totalMois * retrocession / 100)} €`, sub:'après rétrocession', gold:true },
+          { label:'Total annuel', val:`${Math.round(totalAnnee)} €`, sub:`Ma part : ${Math.round(totalAnnee * retrocession / 100)} €` },
           { label:'Annulées', val:`${facturesMois.filter(f=>f.statut==='annulee').length}`, sub:'ce mois' },
         ].map((k, i) => (
           <div key={i} style={{ background: i===0?'#1a1410':'#fff', border: i===0?'none':'1px solid #e2dbd0', borderRadius:'16px', padding:'20px 18px' }}>
             <div style={{ fontSize:'10px', color: i===0?'#9b8f7e':'#9b8f7e', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>{k.label}</div>
-            <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: i===0?'#f5f2ee':'#1a1410', fontWeight:'400' }}>{k.val}</div>
-            <div style={{ fontSize:'11px', color: i===0?'#c8b89a':'#9b8f7e', marginTop:'5px' }}>{k.sub}</div>
+            <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: i===0||i===1?'#1a1410':'#1a1410', fontWeight:'400' }}>{k.val}</div>
+            <div style={{ fontSize:'11px', color: i===0?'#c8b89a': i===1?'rgba(26,20,16,0.6)' :'#9b8f7e', marginTop:'5px' }}>{k.sub}</div>
           </div>
         ))}
       </div>

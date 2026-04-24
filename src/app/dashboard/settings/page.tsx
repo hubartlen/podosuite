@@ -12,7 +12,7 @@ function SettingsContent() {
   const searchParams = useSearchParams()
   const welcome = searchParams.get('welcome') === '1'
 
-  const [praticien, setPraticien] = useState({ nom: '', prenom: '', titre: 'Pédicure Podologue DE', email: '', telephone: '', rpps: '', am: '', adresse: '', code_postal: '', ville: '' })
+  const [praticien, setPraticien] = useState({ nom: '', prenom: '', titre: 'Pédicure Podologue DE', email: '', telephone: '', rpps: '', am: '', adresse: '', code_postal: '', ville: '', retrocession: 60 })
   const [cabinets, setCabinets] = useState<Cabinet[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -25,7 +25,7 @@ function SettingsContent() {
       if (!session) { router.push('/auth/login'); return }
 
       const { data: p } = await supabase.from('praticiens').select('*').eq('id', session.user.id).single()
-      if (p) setPraticien({ nom: p.nom || '', prenom: p.prenom || '', titre: p.titre || 'Pédicure Podologue DE', email: p.email || '', telephone: p.telephone || '', rpps: p.rpps || '', am: p.am || '', adresse: p.adresse || '', code_postal: p.code_postal || '', ville: p.ville || '' })
+      if (p) setPraticien({ nom: p.nom || '', prenom: p.prenom || '', titre: p.titre || 'Pédicure Podologue DE', email: p.email || '', telephone: p.telephone || '', rpps: p.rpps || '', am: p.am || '', adresse: p.adresse || '', code_postal: p.code_postal || '', ville: p.ville || '', retrocession: p.retrocession || 60 })
 
       const { data: cabs } = await supabase.from('cabinets').select('*, tarifs(*)').eq('praticien_id', session.user.id).order('created_at')
       if (cabs) setCabinets(cabs.map((c: any) => ({ ...c, tarifs: (c.tarifs || []).sort((a: Tarif, b: Tarif) => a.ordre - b.ordre) })))
@@ -117,6 +117,30 @@ function SettingsContent() {
               <input value={(praticien as any)[key]} onChange={e => setPraticien(p => ({ ...p, [key]: e.target.value }))} placeholder={ph} style={inputStyle} />
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Rétrocession */}
+      <div style={sectionStyle}>
+        <h2 style={sectionTitle}>Partage des honoraires</h2>
+        <div style={{ display:'flex', alignItems:'center', gap:'20px' }}>
+          <div style={{ flex:1 }}>
+            <label style={labelStyle}>Votre part (%)</label>
+            <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+              <input
+                type="range" min={0} max={100} step={5}
+                value={praticien.retrocession}
+                onChange={e => setPraticien(p => ({ ...p, retrocession: parseInt(e.target.value) }))}
+                style={{ flex:1, accentColor:'#1a1410' }}
+              />
+              <div style={{ background:'#1a1410', color:'#f5f2ee', borderRadius:'10px', padding:'8px 16px', fontSize:'18px', fontWeight:'500', minWidth:'70px', textAlign:'center', fontFamily:'Playfair Display, serif' }}>
+                {praticien.retrocession}%
+              </div>
+            </div>
+            <p style={{ fontSize:'12px', color:'#9b8f7e', marginTop:'8px' }}>
+              Sur 1000 € de CA, votre part nette sera de <strong style={{ color:'#1a1410' }}>{Math.round(1000 * praticien.retrocession / 100)} €</strong>
+            </p>
+          </div>
         </div>
       </div>
 
