@@ -16,7 +16,7 @@ export async function POST(request: Request) {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Arthur Le Neué <onboarding@resend.dev>',
+        from: process.env.RESEND_FROM ?? 'Arthur Le Neue <onboarding@resend.dev>',
         to: [to],
         subject: `Bilan podologique du ${dateBilan} — Cabinet Arthur Le Neué`,
         html: buildBilanHtml(patient, dateBilan),
