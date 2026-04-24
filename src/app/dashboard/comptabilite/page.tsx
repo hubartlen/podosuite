@@ -297,8 +297,8 @@ export default function ComptabilitePage() {
         ].map((k, i) => (
           <div key={i} style={{ background: i===0?'#1a1410':'#fff', border: i===0?'none':'1px solid #e2dbd0', borderRadius:'16px', padding:'20px 18px' }}>
             <div style={{ fontSize:'10px', color: i===0?'#9b8f7e':'#9b8f7e', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>{k.label}</div>
-            <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: i===0||i===1?'#1a1410':'#1a1410', fontWeight:'400' }}>{k.val}</div>
-            <div style={{ fontSize:'11px', color: i===0?'#c8b89a': i===1?'rgba(26,20,16,0.6)' :'#9b8f7e', marginTop:'5px' }}>{k.sub}</div>
+            <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color:'#1a1410', fontWeight:'400' }}>{k.val}</div>
+            <div style={{ fontSize:'11px', color: i===1?'rgba(26,20,16,0.6)':'#9b8f7e', marginTop:'5px' }}>{k.sub}</div>
           </div>
         ))}
       </div>
