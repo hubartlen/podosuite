@@ -132,30 +132,48 @@ export default function ComptabilitePage() {
     reader.readAsBinaryString(file)
   }
 
-  // Importer les lignes
+  // Importer les lignes en batch
   const confirmerImport = async () => {
     setImporting(true)
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
 
-    const { data: lastFact } = await supabase.from('factures').select('numero').eq('praticien_id', session.user.id).order('created_at', { ascending: false }).limit(1).single()
-    let seq = lastFact?.numero ? (parseInt(lastFact.numero.split('-').pop() || '0') + 1) : 1
+      const { data: lastFact } = await supabase.from('factures').select('numero').eq('praticien_id', session.user.id).order('created_at', { ascending: false }).limit(1).single()
+      let seq = lastFact?.numero ? (parseInt(lastFact.numero.split('-').pop() || '0') + 1) : 1
 
-    for (const ligne of importPreview) {
-      const numero = `FAC-${new Date(ligne.date).getFullYear()}-${String(seq).padStart(4, '0')}`
-      await supabase.from('factures').insert({
-        praticien_id: session.user.id, numero, date_facture: ligne.date,
-        patient_nom: ligne.patient, mode_paiement: ligne.mode_paiement,
-        total: ligne.montant, cabinet: ligne.cabinet,
-        actes: [{ designation: 'Soin de pédicurie', quantite: 1, prix_unitaire: ligne.montant }],
-        statut: 'payee', source: 'import_excel'
+      const rows = importPreview.map((ligne) => {
+        const numero = `FAC-${new Date(ligne.date).getFullYear()}-${String(seq++).padStart(4, '0')}`
+        return {
+          praticien_id: session.user.id,
+          numero,
+          date_facture: ligne.date,
+          patient_nom: ligne.patient,
+          mode_paiement: ligne.mode_paiement,
+          total: ligne.montant,
+          cabinet: ligne.cabinet,
+          actes: [{ designation: 'Soin de pédicurie', quantite: 1, prix_unitaire: ligne.montant }],
+          statut: 'payee',
+          source: 'import_excel'
+        }
       })
-      seq++
+
+      const { error } = await supabase.from('factures').insert(rows)
+      if (error) {
+        console.error('Import error:', error)
+        alert('Erreur import : ' + error.message)
+        setImporting(false)
+        return
+      }
+
+      await loadFactures()
+      setShowImport(false)
+      setImportPreview([])
+    } catch(e) {
+      console.error(e)
+      alert('Erreur inattendue')
     }
-    await loadFactures()
-    setShowImport(false)
-    setImportPreview([])
     setImporting(false)
   }
 
