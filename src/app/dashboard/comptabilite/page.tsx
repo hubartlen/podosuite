@@ -289,18 +289,26 @@ export default function ComptabilitePage() {
 
       {/* KPIs */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'12px', marginBottom:'20px' }}>
-        {[
-          { label:`Total brut ${MOIS[mois]}`, val:`${Math.round(totalMois)} €`, sub:`${facturesMois.filter(f=>f.statut!=='annulee').length} factures` },
-          { label:`Ma part (${retrocession}%)`, val:`${Math.round(totalMois * retrocession / 100)} €`, sub:'après rétrocession', gold:true },
-          { label:'Total annuel', val:`${Math.round(totalAnnee)} €`, sub:`Ma part : ${Math.round(totalAnnee * retrocession / 100)} €` },
-          { label:'Annulées', val:`${facturesMois.filter(f=>f.statut==='annulee').length}`, sub:'ce mois' },
-        ].map((k, i) => (
-          <div key={i} style={{ background: i===0?'#1a1410':'#fff', border: i===0?'none':'1px solid #e2dbd0', borderRadius:'16px', padding:'20px 18px' }}>
-            <div style={{ fontSize:'10px', color: i===0?'#9b8f7e':'#9b8f7e', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>{k.label}</div>
-            <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color:'#1a1410', fontWeight:'400' }}>{k.val}</div>
-            <div style={{ fontSize:'11px', color: i===1?'rgba(26,20,16,0.6)':'#9b8f7e', marginTop:'5px' }}>{k.sub}</div>
-          </div>
-        ))}
+        <div style={{ background:'#fff', border:'1px solid #e2dbd0', borderRadius:'16px', padding:'20px 18px' }}>
+          <div style={{ fontSize:'10px', color:'#9b8f7e', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Total brut {MOIS[mois]}</div>
+          <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color:'#1a1410', fontWeight:'400' }}>{Math.round(totalMois)} €</div>
+          <div style={{ fontSize:'11px', color:'#9b8f7e', marginTop:'5px' }}>{facturesMois.filter(f=>f.statut!=='annulee').length} factures</div>
+        </div>
+        <div style={{ background:'#c8b89a', borderRadius:'16px', padding:'20px 18px' }}>
+          <div style={{ fontSize:'10px', color:'rgba(26,20,16,0.55)', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Ma part ({retrocession}%)</div>
+          <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color:'#1a1410', fontWeight:'400' }}>{Math.round(totalMois * retrocession / 100)} €</div>
+          <div style={{ fontSize:'11px', color:'rgba(26,20,16,0.55)', marginTop:'5px' }}>après rétrocession</div>
+        </div>
+        <div style={{ background:'#fff', border:'1px solid #e2dbd0', borderRadius:'16px', padding:'20px 18px' }}>
+          <div style={{ fontSize:'10px', color:'#9b8f7e', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Total annuel</div>
+          <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color:'#1a1410', fontWeight:'400' }}>{Math.round(totalAnnee)} €</div>
+          <div style={{ fontSize:'11px', color:'#9b8f7e', marginTop:'5px' }}>Ma part : {Math.round(totalAnnee * retrocession / 100)} €</div>
+        </div>
+        <div style={{ background:'#fff', border:'1px solid #e2dbd0', borderRadius:'16px', padding:'20px 18px' }}>
+          <div style={{ fontSize:'10px', color:'#9b8f7e', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Annulées</div>
+          <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color:'#1a1410', fontWeight:'400' }}>{facturesMois.filter(f=>f.statut==='annulee').length}</div>
+          <div style={{ fontSize:'11px', color:'#9b8f7e', marginTop:'5px' }}>ce mois</div>
+        </div>
       </div>
 
       {/* Graphique annuel */}
