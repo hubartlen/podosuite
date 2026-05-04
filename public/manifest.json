@@ -4,8 +4,8 @@
   "description": "Gestion de cabinet podologique",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#2563eb",
+  "background_color": "#f5f2ee",
+  "theme_color": "#1a1410",
   "orientation": "portrait",
   "icons": [
     {
