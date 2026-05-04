@@ -5,15 +5,27 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ nom: '', prenom: '', email: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ nom: '', prenom: '', email: '', password: '', confirm: '', rpps: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [rppsValid, setRppsValid] = useState<boolean | null>(null)
+  const [checkingRpps, setCheckingRpps] = useState(false)
   const router = useRouter()
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
+  const checkRpps = async (rpps: string) => {
+    if (rpps.length < 8) { setRppsValid(null); return }
+    setCheckingRpps(true)
+    const supabase = createClient()
+    const { data } = await supabase.from('rpps_podologues').select('rpps').eq('rpps', rpps).single()
+    setRppsValid(!!data)
+    setCheckingRpps(false)
+  }
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!rppsValid) { setError('Numéro RPPS invalide ou non reconnu comme Pédicure-Podologue'); return }
     if (form.password !== form.confirm) { setError('Les mots de passe ne correspondent pas'); return }
     if (form.password.length < 6) { setError('Mot de passe trop court (6 caractères minimum)'); return }
     setLoading(true); setError('')
@@ -25,7 +37,8 @@ export default function RegisterPage() {
     if (signUpError) { setError(signUpError.message); setLoading(false); return }
     if (data.user) {
       await supabase.from('praticiens').upsert({
-        id: data.user.id, nom: form.nom, prenom: form.prenom, email: form.email
+        id: data.user.id, nom: form.nom, prenom: form.prenom,
+        email: form.email, rpps: form.rpps
       })
     }
     router.push('/dashboard/settings?welcome=1')
@@ -44,13 +57,35 @@ export default function RegisterPage() {
     <div style={{ minHeight: '100vh', background: '#1a1410', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ width: '52px', height: '52px', background: '#c8b89a', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontFamily: 'Playfair Display, serif', fontSize: '22px', color: '#1a1410' }}>P</div>
+          <div style={{ width: '52px', height: '52px', background: '#f5f2ee', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', position: 'relative' }}>
+            <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '22px', color: '#1a1410' }}>P</span>
+            <div style={{ position: 'absolute', top: -4, right: -4, width: 10, height: 10, borderRadius: '50%', background: '#c8b89a' }}/>
+          </div>
           <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '26px', color: '#f5f2ee', fontWeight: '400', marginBottom: '6px' }}>Créer un compte</h1>
-          <p style={{ fontSize: '13px', color: '#9b8f7e' }}>PODian — Gestion de cabinet podologique</p>
+          <p style={{ fontSize: '13px', color: '#9b8f7e' }}>Réservé aux Pédicures-Podologues</p>
         </div>
 
         <form onSubmit={handleRegister}>
           {error && <div style={{ background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: '10px', padding: '11px 14px', marginBottom: '16px', fontSize: '13px', color: '#f09595', textAlign: 'center' }}>{error}</div>}
+
+          {/* RPPS en premier */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={labelStyle}>Numéro RPPS *</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                value={form.rpps}
+                onChange={e => { set('rpps', e.target.value); checkRpps(e.target.value) }}
+                placeholder="10111902820"
+                required
+                style={{ ...inputStyle, paddingRight: 40, borderColor: rppsValid === true ? '#c8b89a' : rppsValid === false ? '#c0392b' : '#3a3028' }}
+              />
+              <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16 }}>
+                {checkingRpps ? '⏳' : rppsValid === true ? '✓' : rppsValid === false ? '✗' : ''}
+              </div>
+            </div>
+            {rppsValid === true && <p style={{ fontSize: 11, color: '#c8b89a', marginTop: 6 }}>✓ Pédicure-Podologue vérifié</p>}
+            {rppsValid === false && <p style={{ fontSize: 11, color: '#f09595', marginTop: 6 }}>✗ RPPS non reconnu comme Pédicure-Podologue</p>}
+          </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             <div>
@@ -78,7 +113,7 @@ export default function RegisterPage() {
             <input type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} placeholder="••••••••" required style={inputStyle} />
           </div>
 
-          <button type="submit" disabled={loading} style={{ width: '100%', padding: '14px', background: '#c8b89a', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '500', color: '#1a1410', cursor: 'pointer', fontFamily: 'Inter, sans-serif', opacity: loading ? 0.7 : 1 }}>
+          <button type="submit" disabled={loading || !rppsValid} style={{ width: '100%', padding: '14px', background: rppsValid ? '#c8b89a' : '#3a3028', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '500', color: rppsValid ? '#1a1410' : '#9b8f7e', cursor: rppsValid ? 'pointer' : 'not-allowed', fontFamily: 'Inter, sans-serif', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Création du compte...' : 'Créer mon compte'}
           </button>
 
