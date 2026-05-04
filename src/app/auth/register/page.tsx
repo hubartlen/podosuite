@@ -35,12 +35,7 @@ export default function RegisterPage() {
       options: { data: { nom: form.nom, prenom: form.prenom, rpps: form.rpps } }
     })
     if (signUpError) { setError(signUpError.message); setLoading(false); return }
-    if (data.user) {
-      await supabase.from('praticiens').upsert({
-        id: data.user.id, nom: form.nom, prenom: form.prenom,
-        email: form.email, rpps: form.rpps
-      })
-    }
+
     router.push('/dashboard/settings?welcome=1')
   }
 
