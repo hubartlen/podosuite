@@ -32,7 +32,7 @@ export default function RegisterPage() {
     const supabase = createClient()
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: form.email, password: form.password,
-      options: { data: { nom: form.nom, prenom: form.prenom } }
+      options: { data: { nom: form.nom, prenom: form.prenom, rpps: form.rpps } }
     })
     if (signUpError) { setError(signUpError.message); setLoading(false); return }
     if (data.user) {
