@@ -2,38 +2,63 @@ import jsPDF from 'jspdf'
 import { Facture, Patient } from '@/types'
 import { SIGNATURE_B64 } from './signature'
 
-const CABINETS: Record<string, { ville: string; adresse: string }> = {
-  'saint-denis': { ville: 'SAINT DENIS', adresse: '4 rue saint Just 93210 La Plaine Saint Denis' },
-  'livry-gargan': { ville: 'LIVRY GARGAN', adresse: 'Livry-Gargan' },
+interface Praticien {
+  nom: string
+  prenom: string
+  titre?: string
+  telephone?: string
+  email?: string
+  rpps?: string
+  am?: string
+  adresse?: string
+  code_postal?: string
+  ville?: string
 }
 
-export function genererPDFFacture(facture: Facture, patient: Patient): jsPDF {
+export function genererPDFFacture(facture: Facture, patient: Patient, praticien?: Praticien): jsPDF {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = 210
   const ml = 20
   const mr = 20
 
-  const cabinet = CABINETS[(facture as any).cabinet || 'saint-denis']
+  // Infos praticien — dynamiques si disponibles, sinon fallback
+  const prat = {
+    nom: praticien ? `${praticien.prenom} ${praticien.nom}` : 'Arthur Le Neué',
+    titre: praticien?.titre || 'Pédicure Podologue DE',
+    adresseComplete: praticien?.adresse
+      ? `${praticien.adresse} ${praticien.code_postal || ''} ${praticien.ville || ''}`.trim()
+      : '4 rue saint Just 93210 La Plaine Saint Denis',
+    telephone: praticien?.telephone || '0689405105',
+    email: praticien?.email || 'Arthur.leneue@gmail.com',
+    rpps: praticien?.rpps || '10111902820',
+    am: praticien?.am || '938002623',
+  }
+
+  // Cabinet ville pour l'en-tête
+  const cabinetVilles: Record<string, string> = {
+    'saint-denis': 'SAINT DENIS',
+    'livry-gargan': 'LIVRY GARGAN',
+  }
+  const cabinetVille = cabinetVilles[(facture as any).cabinet || 'saint-denis'] || 'SAINT DENIS'
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   doc.setTextColor(30, 30, 30)
   let y = 20
-  doc.text('Monsieur Arthur Le Neué', ml, y); y += 5
-  doc.text('Pédicure Podologue DE', ml, y); y += 5
-  doc.text(cabinet.adresse, ml, y); y += 5
-  doc.text('0689405105', ml, y); y += 5
-  doc.text('Arthur.leneue@gmail.com', ml, y); y += 5
-  doc.text('N° RPPS : 10111902820', ml, y); y += 5
-  doc.text('N° AM: 938002623', ml, y)
+  doc.text(`Monsieur ${prat.nom}`, ml, y); y += 5
+  doc.text(prat.titre, ml, y); y += 5
+  doc.text(prat.adresseComplete, ml, y); y += 5
+  doc.text(prat.telephone, ml, y); y += 5
+  doc.text(prat.email, ml, y); y += 5
+  doc.text(`N° RPPS : ${prat.rpps}`, ml, y); y += 5
+  doc.text(`N° AM: ${prat.am}`, ml, y)
 
   y = 80
   const dateFmt = new Date(facture.date_facture).toLocaleDateString('fr-FR', {
     day: '2-digit', month: '2-digit', year: 'numeric'
   })
   doc.setFontSize(12)
-  doc.setFont('helvetica', 'normal')
-  doc.text(`${cabinet.ville}, le ${dateFmt}`, W / 2, y, { align: 'center' })
+  doc.text(`${cabinetVille}, le ${dateFmt}`, W / 2, y, { align: 'center' })
 
   y = 105
   doc.setFontSize(20)
@@ -79,7 +104,7 @@ export function genererPDFFacture(facture: Facture, patient: Patient): jsPDF {
     doc.text(modeSimple ? 'Réglé ce jour' : facture.mode_paiement, ml, y)
   }
 
-  // Signature centrée à droite
+  // Signature
   try {
     const sigData = SIGNATURE_B64.includes(',') ? SIGNATURE_B64.split(',')[1] : SIGNATURE_B64
     doc.addImage(sigData, 'PNG', W - mr - 50, 210, 40, 18)
@@ -88,7 +113,7 @@ export function genererPDFFacture(facture: Facture, patient: Patient): jsPDF {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(11)
   doc.setTextColor(30, 30, 30)
-  doc.text('Arthur Le Neué', W - mr - 30, 232, { align: 'center' })
+  doc.text(prat.nom, W - mr - 30, 232, { align: 'center' })
 
   doc.setDrawColor(200, 200, 200)
   doc.setLineWidth(0.2)
