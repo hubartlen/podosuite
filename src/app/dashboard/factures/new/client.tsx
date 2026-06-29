@@ -71,8 +71,7 @@ export default function NewFactureClient() {
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
-      const [{ data }, { data: pratData }] = await Promise.all([
-      supabase.from('patients').select('*').eq('praticien_id', session.user.id).order('nom')
+      const { data } = await supabase.from('patients').select('*').eq('praticien_id', session.user.id).order('nom')
       if (data) setPatients(data)
       const { data: prat } = await supabase.from('praticiens').select('*').eq('id', session.user.id).single()
       if (prat) setPraticienData(prat)
