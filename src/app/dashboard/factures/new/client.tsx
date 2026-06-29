@@ -63,6 +63,7 @@ export default function NewFactureClient() {
   const [mention, setMention] = useState('')
   const [actes, setActes] = useState<Acte[]>([TARIFS['saint-denis'][0]])
   const [seq, setSeq] = useState(1)
+  const [praticienData, setPraticienData] = useState<any>(null)
   const annee = new Date().getFullYear().toString()
 
   useEffect(() => {
@@ -70,8 +71,11 @@ export default function NewFactureClient() {
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) return
-      const { data } = await supabase.from('patients').select('*').eq('praticien_id', session.user.id).order('nom')
+      const [{ data }, { data: pratData }] = await Promise.all([
+      supabase.from('patients').select('*').eq('praticien_id', session.user.id).order('nom')
       if (data) setPatients(data)
+      const { data: prat } = await supabase.from('praticiens').select('*').eq('id', session.user.id).single()
+      if (prat) setPraticienData(prat)
       const { data: last } = await supabase.from('factures').select('numero')
         .eq('praticien_id', session.user.id).order('created_at', { ascending: false }).limit(1)
       if (last?.length) {
@@ -110,7 +114,7 @@ export default function NewFactureClient() {
     if (dl && facture) {
       const patient = patients.find(p => p.id === patientId)!
       const { genererPDFFacture } = await import('@/lib/pdf-facture')
-      const doc = genererPDFFacture(facture, patient)
+      const doc = genererPDFFacture(facture, patient, praticienData)
       doc.save(`Facture_${numero}_${patient.nom}_${patient.prenom}.pdf`)
     }
     setSaved(true); setLastFacture(facture)
@@ -124,7 +128,7 @@ export default function NewFactureClient() {
     setSending(true)
     const patient = patients.find(p => p.id === patientId)!
     const { genererPDFFacture } = await import('@/lib/pdf-facture')
-    const doc = genererPDFFacture(lastFacture, patient)
+    const doc = genererPDFFacture(lastFacture, patient, praticienData)
     const pdfBase64 = doc.output('datauristring').split(',')[1]
     const res = await fetch('/api/send-facture', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
