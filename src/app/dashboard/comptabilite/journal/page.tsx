@@ -182,7 +182,7 @@ export default function JournalRecettes() {
   return (
     <div className="jr">
       <style>{`
-        .jr{--ink:#1a1410;--sable:#c8b89a;--lin:#f5f2ee;--grege:#e2dbd0;--taupe:#9b8f7e;--brun:#4a3f35;--ambre:#b45309;
+        .jr{--ink:var(--dark);--sable:var(--accent);--lin:var(--bg);--grege:var(--line);--taupe:var(--fg-3);--brun:var(--fg-2);--ambre:#b45309;
           padding:36px 40px 48px;max-width:1320px;margin:0 auto;font-family:Inter,sans-serif;color:var(--ink)}
         .jr *:focus-visible{outline:2px solid var(--sable);outline-offset:2px}
         .jr-tete{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}

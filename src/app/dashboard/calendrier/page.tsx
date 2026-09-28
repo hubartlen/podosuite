@@ -9,7 +9,7 @@ const JOURS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 
 const TYPES = [
-  { value: 'consultation', label: 'Consultation', color: '#c8b89a' },
+  { value: 'consultation', label: 'Consultation', color: 'var(--accent)' },
   { value: 'suivi', label: 'Suivi', color: '#639922' },
   { value: 'bilan', label: 'Bilan podologique', color: '#BA7517' },
   { value: 'semelles', label: 'Semelles', color: '#4a7fa5' },
@@ -17,7 +17,7 @@ const TYPES = [
 ]
 
 function getTypeColor(type: string) {
-  return TYPES.find(t => t.value === type)?.color ?? '#9b8f7e'
+  return TYPES.find(t => t.value === type)?.color ?? 'var(--fg-3)'
 }
 
 function formatHeure(dateStr: string) {

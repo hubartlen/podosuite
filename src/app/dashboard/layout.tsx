@@ -29,6 +29,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    try { const t = localStorage.getItem('podian-theme'); if (t) document.documentElement.dataset.theme = t } catch {}
+    ;(async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const { data } = await supabase.from('praticiens').select('theme').eq('id', session.user.id).single()
+      if (data?.theme) {
+        document.documentElement.dataset.theme = data.theme
+        try { localStorage.setItem('podian-theme', data.theme) } catch {}
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
     window.addEventListener('resize', check)

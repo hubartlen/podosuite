@@ -45,7 +45,7 @@ function Champ({ label, value, onChange, placeholder, multi, type = 'text' }: an
   )
 }
 
-const puce: React.CSSProperties = { width: 22, height: 22, borderRadius: '50%', background: '#1a1410', color: '#fff', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center' }
+const puce: React.CSSProperties = { width: 22, height: 22, borderRadius: '50%', background: 'var(--dark)', color: '#fff', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center' }
 
 export default function SaisieBilan() {
   const { id } = useParams() as { id: string }
@@ -113,7 +113,7 @@ export default function SaisieBilan() {
     return n
   })
 
-  if (!charge || !d) return <div style={{ padding: 40, color: '#6b6255', fontFamily: 'Inter, sans-serif' }}>Chargement du bilan…</div>
+  if (!charge || !d) return <div style={{ padding: 40, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Chargement du bilan…</div>
 
   const index = Math.max(0, ETAPES.findIndex(e => e.cle === etape))
   const numeros = d.motif.douleurs.map((p: any, i: number) => ({ ...p, n: i + 1 }))
@@ -270,7 +270,7 @@ export default function SaisieBilan() {
       case 'examen': return (
         <>
           <div className="bs-carte" style={{ gap: 0 }}>
-            <div className="bs-ligne" style={{ fontSize: 12.5, color: '#6b6255', paddingTop: 0 }}>
+            <div className="bs-ligne" style={{ fontSize: 12.5, color: 'var(--fg-3)', paddingTop: 0 }}>
               <div></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>Pied gauche<button type="button" className="bs-lien" onClick={() => toutNormal('G')}>Tout normal</button></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>Pied droit<button type="button" className="bs-lien" onClick={() => toutNormal('D')}>Tout normal</button></div>
@@ -303,8 +303,8 @@ export default function SaisieBilan() {
                 {d.photos.map((p: string) => (
                   <div key={p} style={{ position: 'relative' }}>
                     {photosUrls[p]
-                      ? <img src={photosUrls[p]} alt="" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 10, border: '1px solid #e2dbd0', display: 'block' }} />
-                      : <div style={{ width: 120, height: 120, borderRadius: 10, background: '#f5f2ee' }} />}
+                      ? <img src={photosUrls[p]} alt="" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 10, border: '1px solid var(--line)', display: 'block' }} />
+                      : <div style={{ width: 120, height: 120, borderRadius: 10, background: 'var(--bg)' }} />}
                     <button type="button" className="bs-x" style={{ position: 'absolute', top: 4, right: 4, background: '#fff' }} aria-label="Retirer la photo" onClick={() => retirerPhoto(p)}>✕</button>
                   </div>
                 ))}
@@ -337,7 +337,7 @@ export default function SaisieBilan() {
             </div>
           </div>
           <div className="bs-carte" style={{ gap: 0 }}>
-            <div className="bs-ligne" style={{ gridTemplateColumns: 'minmax(0, 1fr) 80px 80px 130px', fontSize: 12.5, color: '#6b6255', paddingTop: 0 }}>
+            <div className="bs-ligne" style={{ gridTemplateColumns: 'minmax(0, 1fr) 80px 80px 130px', fontSize: 12.5, color: 'var(--fg-3)', paddingTop: 0 }}>
               <div>Élément</div><div style={{ textAlign: 'center' }}>Gauche</div><div style={{ textAlign: 'center' }}>Droit</div><div>Précision</div>
             </div>
             {d.semelles.elements.map((el: any, i: number) => (
@@ -373,7 +373,7 @@ export default function SaisieBilan() {
   return (
     <div className="bs">
       <style>{`
-        .bs{--ink:#1a1410;--sable:#c8b89a;--lin:#f5f2ee;--grege:#e2dbd0;--taupe:#6b6255;--brun:#4a3f35;display:grid;grid-template-columns:230px minmax(0,1fr) 360px;min-height:100vh;font-family:Inter,sans-serif;color:var(--ink);font-size:14px}
+        .bs{--ink:var(--dark);--sable:var(--accent);--lin:var(--bg);--grege:var(--line);--taupe:var(--fg-3);--brun:var(--fg-2);display:grid;grid-template-columns:230px minmax(0,1fr) 360px;min-height:100vh;font-family:Inter,sans-serif;color:var(--ink);font-size:14px}
         .bs *:focus-visible{outline:2px solid var(--sable);outline-offset:2px}
         .bs-etapes{position:sticky;top:0;align-self:start;height:100vh;box-sizing:border-box;padding:28px 16px 24px 24px;border-right:1px solid var(--grege);display:flex;flex-direction:column;gap:4px}
         .bs-patient{font-family:'Playfair Display',Georgia,serif;font-size:19px;line-height:1.2;margin-bottom:14px}
@@ -397,7 +397,7 @@ export default function SaisieBilan() {
         .bs-pill{font:inherit;font-size:13px;padding:7px 12px;border-radius:9px;border:1px solid var(--grege);background:#fff;color:var(--brun);cursor:pointer}
         .bs-pill:hover{border-color:var(--sable)}
         .bs-on,.bs-on:hover{background:var(--ink);border-color:var(--ink);color:var(--lin)}
-        .bs-ligne{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid #f0ebe4;align-items:start}
+        .bs-ligne{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--surface-3);align-items:start}
         .bs-ligne:first-child{border-top:none}
         .bs-lib{padding-top:7px;font-weight:500}
         .bs-lien{border:none;background:none;font:inherit;font-size:12.5px;color:var(--brun);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
@@ -409,7 +409,7 @@ export default function SaisieBilan() {
         .bs-bouton:hover{border-color:var(--sable)}
         .bs-bouton:disabled{opacity:.4;cursor:default}
         .bs-principal{font:inherit;font-size:13px;font-weight:600;padding:11px 18px;border-radius:10px;border:none;background:var(--ink);color:var(--lin);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-        .bs-apercu{position:sticky;top:0;align-self:start;height:100vh;box-sizing:border-box;border-left:1px solid var(--grege);background:#ece6dc;padding:24px 18px;display:flex;flex-direction:column;gap:10px}
+        .bs-apercu{position:sticky;top:0;align-self:start;height:100vh;box-sizing:border-box;border-left:1px solid var(--grege);background:var(--line-2);padding:24px 18px;display:flex;flex-direction:column;gap:10px}
         .bs-feuille{overflow:auto;flex:1}
         .bs-feuille > .podian-doc{zoom:.4;box-shadow:0 2px 10px rgba(26,20,16,.18)}
         .bs-petit{font-size:12.5px;color:var(--taupe)}

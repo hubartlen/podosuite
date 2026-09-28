@@ -29,12 +29,12 @@ export default function DocumentPage() {
     })()
   }, [id, router])
 
-  if (!v) return <div style={{ padding: 40, color: '#6b6255', fontFamily: 'Inter, sans-serif' }}>Préparation du document…</div>
+  if (!v) return <div style={{ padding: 40, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Préparation du document…</div>
 
-  const bouton: React.CSSProperties = { font: 'inherit', fontSize: 13, padding: '10px 16px', borderRadius: 10, border: '1px solid #e2dbd0', background: '#fff', color: '#4a3f35', textDecoration: 'none', cursor: 'pointer' }
+  const bouton: React.CSSProperties = { font: 'inherit', fontSize: 13, padding: '10px 16px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--fg-2)', textDecoration: 'none', cursor: 'pointer' }
 
   return (
-    <div style={{ background: '#ece6dc', minHeight: '100vh', padding: '28px 20px 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ background: 'var(--line-2)', minHeight: '100vh', padding: '28px 20px 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, fontFamily: 'Inter, sans-serif' }}>
       <style>{`@media print {
         @page { size: A4; margin: 0 }
         html, body { background: #fff !important }
@@ -44,7 +44,7 @@ export default function DocumentPage() {
       }`}</style>
       <div style={{ width: 794, display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
         <a href={`/dashboard/bilans/${id}/saisie`} style={bouton}>← Modifier le bilan</a>
-        <button onClick={() => window.print()} style={{ ...bouton, background: '#1a1410', color: '#f5f2ee', border: 'none', fontWeight: 600 }}>Imprimer ou enregistrer en PDF</button>
+        <button onClick={() => window.print()} style={{ ...bouton, background: 'var(--dark)', color: 'var(--on-dark)', border: 'none', fontWeight: 600 }}>Imprimer ou enregistrer en PDF</button>
       </div>
       <div style={{ boxShadow: '0 2px 14px rgba(26,20,16,.18)' }}>
         <DocumentBilan d={v.d} patient={v.b.patient} praticien={v.prat} cabinet={v.b.cabinet} date={v.b.date_bilan} photos={v.photos} />

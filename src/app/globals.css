@@ -247,3 +247,24 @@ input:focus, select:focus, textarea:focus {
 
 /* Centrer aussi les pages dont le contenu est dans un bloc intermédiaire */
 main [style*="max-width"][style*="padding"] { margin-left: auto; margin-right: auto; }
+
+/* ===== Thèmes PODian (choisis dans Réglages, Apparence) ===== */
+:root { --on-dark: #f5f2ee; }
+[data-theme="petrole"] {
+  --bg:#f3f1ec; --surface:#ffffff; --surface-2:#faf8f4; --surface-3:#ece8e1;
+  --accent:#ea6b45; --accent-soft:#fbe3d8; --accent-hover:#d4552f; --accent-fg:#ffffff;
+  --fg:#1f2422; --fg-2:#3d4744; --fg-3:#66706d; --fg-4:#a9b3b0;
+  --line:#e0ddd6; --line-2:#ebe8e2; --dark:#0f3d3a; --dark-2:#155450; --on-dark:#ffffff;
+}
+[data-theme="foret"] {
+  --bg:#f2f3ee; --surface:#ffffff; --surface-2:#f8f9f5; --surface-3:#e8ebe3;
+  --accent:#f39237; --accent-soft:#fde9d4; --accent-hover:#dc7a1f; --accent-fg:#ffffff;
+  --fg:#1c231d; --fg-2:#3e4a40; --fg-3:#667168; --fg-4:#aab3ab;
+  --line:#dfe3db; --line-2:#e9ece5; --dark:#1f4d34; --dark-2:#2a6344; --on-dark:#ffffff;
+}
+[data-theme="nuit"] {
+  --bg:#f4f4f7; --surface:#ffffff; --surface-2:#f9f9fc; --surface-3:#e9eaf2;
+  --accent:#f08a24; --accent-soft:#fdebd6; --accent-hover:#d9730f; --accent-fg:#ffffff;
+  --fg:#1b1d2e; --fg-2:#3b3f5c; --fg-3:#676b8a; --fg-4:#a7aac2;
+  --line:#e1e2ea; --line-2:#ebecf2; --dark:#1c1f3f; --dark-2:#2a2e57; --on-dark:#ffffff;
+}

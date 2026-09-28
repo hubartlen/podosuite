@@ -7,6 +7,13 @@ import { Suspense } from 'react'
 interface Cabinet { id?: string; nom: string; adresse: string; retrocession: number | null; tarifs: Tarif[] }
 interface Tarif { id?: string; designation: string; prix: number; ordre: number; couleur_doctolib: string | null }
 
+const THEMES = [
+  { cle: 'sable', nom: 'Sable', nav: 'var(--dark)', accent: 'var(--accent)', bg: 'var(--bg)' },
+  { cle: 'petrole', nom: 'Pétrole et corail', nav: '#0f3d3a', accent: '#ea6b45', bg: '#f3f1ec' },
+  { cle: 'foret', nom: 'Forêt et orange', nav: '#1f4d34', accent: '#f39237', bg: '#f2f3ee' },
+  { cle: 'nuit', nom: 'Nuit et mandarine', nav: '#1c1f3f', accent: '#f08a24', bg: '#f4f4f7' },
+]
+
 function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -17,6 +24,18 @@ function SettingsContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [reference, setReference] = useState('')
+  const instantane = JSON.stringify({ praticien, cabinets })
+  const modifie = reference !== '' && instantane !== reference
+  useEffect(() => { if (!loading && reference === '') setReference(instantane) }, [loading])
+  useEffect(() => {
+    if (!modifie) return
+    const avertir = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
+    window.addEventListener('beforeunload', avertir)
+    return () => window.removeEventListener('beforeunload', avertir)
+  }, [modifie])
+  const [theme, setTheme] = useState('')
+  useEffect(() => { try { setTheme(localStorage.getItem('podian-theme') || 'sable') } catch { setTheme('sable') } }, [])
 
   useEffect(() => {
     const load = async () => {
@@ -85,8 +104,18 @@ function SettingsContent() {
     setSaving(false)
 
     if (erreurs.length > 0) { alert("Erreur à l'enregistrement :\n" + erreurs.join('\n')); return }
+    setReference(JSON.stringify({ praticien, cabinets: cabinetsAJour }))
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
+  }
+
+  const choisirTheme = async (cle: string) => {
+    setTheme(cle)
+    document.documentElement.dataset.theme = cle
+    try { localStorage.setItem('podian-theme', cle) } catch {}
+    const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) await supabase.from('praticiens').update({ theme: cle }).eq('id', session.user.id)
   }
 
   const addCabinet = () => setCabinets(c => [...c, { nom: '', adresse: '', retrocession: 100, tarifs: [] }])
@@ -99,29 +128,53 @@ function SettingsContent() {
   const removeTarif = (ci: number, ti: number) => setCabinets(c => c.map((cab, i) => i === ci ? { ...cab, tarifs: cab.tarifs.filter((_, idx) => idx !== ti) } : cab))
   const updateTarif = (ci: number, ti: number, k: string, v: any) => setCabinets(c => c.map((cab, i) => i === ci ? { ...cab, tarifs: cab.tarifs.map((t, j) => j === ti ? { ...t, [k]: v } : t) } : cab))
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid #e2dbd0', borderRadius: '10px', fontSize: '14px', color: '#1a1410', outline: 'none', fontFamily: 'Inter, sans-serif' }
-  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '11px', color: '#9b8f7e', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '6px' }
-  const sectionStyle: React.CSSProperties = { background: '#fff', border: '1px solid #e2dbd0', borderRadius: '14px', padding: '24px', marginBottom: '20px' }
-  const sectionTitle: React.CSSProperties = { fontFamily: 'Playfair Display, serif', fontSize: '16px', color: '#1a1410', fontWeight: '400', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid #f0ebe4' }
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '14px', color: 'var(--fg)', outline: 'none', fontFamily: 'Inter, sans-serif' }
+  const labelStyle: React.CSSProperties = { display: 'block', fontSize: '11px', color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '6px' }
+  const sectionStyle: React.CSSProperties = { background: '#fff', border: '1px solid var(--line)', borderRadius: '14px', padding: '24px', marginBottom: '20px' }
+  const sectionTitle: React.CSSProperties = { fontFamily: 'Playfair Display, serif', fontSize: '16px', color: 'var(--fg)', fontWeight: '400', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--surface-3)' }
 
-  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}><div style={{ width: '28px', height: '28px', border: '2px solid #e2dbd0', borderTopColor: '#c8b89a', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
+  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}><div style={{ width: '28px', height: '28px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
 
   return (
     <div style={{ padding: '32px 36px', maxWidth: '800px' }}>
       {welcome && (
-        <div style={{ background: '#f0ebe4', border: '1px solid #c8b89a', borderRadius: '12px', padding: '16px 20px', marginBottom: '24px', fontSize: '14px', color: '#4a3f35' }}>
+        <div style={{ background: 'var(--surface-3)', border: '1px solid var(--accent)', borderRadius: '12px', padding: '16px 20px', marginBottom: '24px', fontSize: '14px', color: 'var(--fg-2)' }}>
           Bienvenue sur PODian ! Complète ton profil pour personnaliser tes bilans et factures.
         </div>
       )}
 
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '28px' }}>
         <div>
-          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', color: '#1a1410', fontWeight: '400' }}>Réglages</h1>
-          <p style={{ fontSize: '13px', color: '#9b8f7e', marginTop: '4px' }}>Ton profil et tes cabinets</p>
+          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', color: 'var(--fg)', fontWeight: '400' }}>Réglages</h1>
+          <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginTop: '4px' }}>Ton profil et tes cabinets</p>
         </div>
-        <button onClick={handleSave} disabled={saving} style={{ padding: '11px 22px', background: '#1a1410', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: '#f5f2ee', cursor: 'pointer', fontFamily: 'Inter, sans-serif', opacity: saving ? 0.7 : 1 }}>
+        <button onClick={handleSave} disabled={saving} style={{ padding: '11px 22px', background: 'var(--dark)', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', fontFamily: 'Inter, sans-serif', opacity: saving ? 0.7 : 1 }}>
           {saved ? '✓ Enregistré' : saving ? 'Enregistrement...' : 'Enregistrer'}
         </button>
+      </div>
+
+      {/* Apparence */}
+      <div style={sectionStyle}>
+        <h2 style={sectionTitle}>Apparence</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(165px, 1fr))', gap: 12 }}>
+          {THEMES.map(t => (
+            <button key={t.cle} type="button" onClick={() => choisirTheme(t.cle)} aria-pressed={theme === t.cle}
+              style={{ textAlign: 'left', padding: 10, borderRadius: 14, border: theme === t.cle ? '2px solid ' + t.accent : '1px solid var(--line)', background: '#ffffff', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 8, fontFamily: 'inherit' }}>
+              <div style={{ display: 'flex', height: 70, borderRadius: 9, overflow: 'hidden', border: '1px solid rgba(0,0,0,.06)' }}>
+                <div style={{ width: 24, background: t.nav }} />
+                <div style={{ flex: 1, background: t.bg, padding: 9, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ height: 22, borderRadius: 6, background: t.nav }} />
+                  <div style={{ display: 'flex', gap: 5 }}>
+                    <div style={{ height: 14, width: 38, borderRadius: 5, background: t.accent }} />
+                    <div style={{ height: 14, flex: 1, borderRadius: 5, background: '#ffffff' }} />
+                  </div>
+                </div>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)' }}>{t.nom}{theme === t.cle ? ' ✓' : ''}</span>
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 12 }}>Le thème s'applique tout de suite et sur tous tes appareils. Tes bilans et factures imprimés gardent leur présentation.</p>
       </div>
 
       {/* Identité */}
@@ -161,14 +214,14 @@ function SettingsContent() {
                 type="range" min={0} max={100} step={5}
                 value={praticien.retrocession}
                 onChange={e => setPraticien(p => ({ ...p, retrocession: parseInt(e.target.value) }))}
-                style={{ flex:1, accentColor:'#1a1410' }}
+                style={{ flex:1, accentColor:'var(--dark)' }}
               />
-              <div style={{ background:'#1a1410', color:'#f5f2ee', borderRadius:'10px', padding:'8px 16px', fontSize:'18px', fontWeight:'500', minWidth:'70px', textAlign:'center', fontFamily:'Playfair Display, serif' }}>
+              <div style={{ background:'var(--dark)', color: 'var(--on-dark)', borderRadius:'10px', padding:'8px 16px', fontSize:'18px', fontWeight:'500', minWidth:'70px', textAlign:'center', fontFamily:'Playfair Display, serif' }}>
                 {praticien.retrocession}%
               </div>
             </div>
-            <p style={{ fontSize:'12px', color:'#9b8f7e', marginTop:'8px' }}>
-              Sur 1000 € de CA, votre part nette sera de <strong style={{ color:'#1a1410' }}>{Math.round(1000 * praticien.retrocession / 100)} €</strong>. Chaque cabinet peut avoir sa propre part, réglable ci-dessous.
+            <p style={{ fontSize:'12px', color:'var(--fg-3)', marginTop:'8px' }}>
+              Sur 1000 € de CA, votre part nette sera de <strong style={{ color: 'var(--fg)' }}>{Math.round(1000 * praticien.retrocession / 100)} €</strong>. Chaque cabinet peut avoir sa propre part, réglable ci-dessous.
             </p>
           </div>
         </div>
@@ -176,17 +229,17 @@ function SettingsContent() {
 
       {/* Cabinets */}
       <div style={sectionStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid #f0ebe4' }}>
-          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', color: '#1a1410', fontWeight: '400' }}>Cabinets & tarifs</h2>
-          <button onClick={addCabinet} style={{ padding: '7px 14px', background: '#f5f2ee', border: '1px solid #e2dbd0', borderRadius: '8px', fontSize: '12px', color: '#4a3f35', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>+ Ajouter un cabinet</button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--surface-3)' }}>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '16px', color: 'var(--fg)', fontWeight: '400' }}>Cabinets & tarifs</h2>
+          <button onClick={addCabinet} style={{ padding: '7px 14px', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '8px', fontSize: '12px', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>+ Ajouter un cabinet</button>
         </div>
 
         {cabinets.length === 0 && (
-          <p style={{ color: '#9b8f7e', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>Aucun cabinet — clique sur "Ajouter un cabinet" pour commencer</p>
+          <p style={{ color: 'var(--fg-3)', fontSize: '13px', textAlign: 'center', padding: '20px 0' }}>Aucun cabinet — clique sur "Ajouter un cabinet" pour commencer</p>
         )}
 
         {cabinets.map((cab, ci) => (
-          <div key={ci} style={{ background: '#faf8f5', border: '1px solid #e2dbd0', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
+          <div key={ci} style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
               <div style={{ flex: 1 }}>
                 <label style={labelStyle}>Nom du cabinet</label>
@@ -206,28 +259,34 @@ function SettingsContent() {
                   style={{ ...inputStyle, textAlign: 'right' }}
                 />
               </div>
-              <button onClick={() => removeCabinet(ci)} style={{ alignSelf: 'flex-end', padding: '10px 12px', background: 'none', border: '1px solid #e2dbd0', borderRadius: '8px', color: '#9b8f7e', cursor: 'pointer', fontSize: '16px' }}>×</button>
+              <button onClick={() => removeCabinet(ci)} style={{ alignSelf: 'flex-end', padding: '10px 12px', background: 'none', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--fg-3)', cursor: 'pointer', fontSize: '16px' }}>×</button>
             </div>
 
-            <div style={{ borderTop: '1px solid #e2dbd0', paddingTop: '16px' }}>
+            <div style={{ borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '12px', color: '#9b8f7e', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tarifs</span>
-                <button onClick={() => addTarif(ci)} style={{ fontSize: '12px', color: '#c8b89a', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>+ Ajouter un acte</button>
+                <span style={{ fontSize: '12px', color: 'var(--fg-3)', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tarifs</span>
+                <button onClick={() => addTarif(ci)} style={{ fontSize: '12px', color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>+ Ajouter un acte</button>
               </div>
-              <p style={{ fontSize: '12px', color: '#9b8f7e', marginBottom: '12px' }}>La couleur Doctolib sert à reconnaître l'acte dans tes captures d'agenda (ex. : vert clair, violet).</p>
+              <p style={{ fontSize: '12px', color: 'var(--fg-3)', marginBottom: '12px' }}>La couleur Doctolib sert à reconnaître l'acte dans tes captures d'agenda (ex. : vert clair, violet).</p>
               {cab.tarifs.map((t, ti) => (
                 <div key={ti} style={{ display: 'flex', gap: '10px', marginBottom: '8px', alignItems: 'center' }}>
                   <input value={t.designation} onChange={e => updateTarif(ci, ti, 'designation', e.target.value)} placeholder="Soin de pédicurie" style={{ ...inputStyle, flex: 3 }} />
                   <input value={t.couleur_doctolib || ''} onChange={e => updateTarif(ci, ti, 'couleur_doctolib', e.target.value)} placeholder="Couleur Doctolib" style={{ ...inputStyle, flex: 2 }} />
                   <input type="number" value={t.prix} onChange={e => updateTarif(ci, ti, 'prix', parseFloat(e.target.value) || 0)} placeholder="45" style={{ ...inputStyle, flex: 1, textAlign: 'right' }} />
-                  <span style={{ fontSize: '13px', color: '#9b8f7e', flexShrink: 0 }}>€</span>
-                  <button onClick={() => removeTarif(ci, ti)} style={{ background: 'none', border: 'none', color: '#9b8f7e', cursor: 'pointer', fontSize: '16px', flexShrink: 0 }}>×</button>
+                  <span style={{ fontSize: '13px', color: 'var(--fg-3)', flexShrink: 0 }}>€</span>
+                  <button onClick={() => removeTarif(ci, ti)} style={{ background: 'none', border: 'none', color: 'var(--fg-3)', cursor: 'pointer', fontSize: '16px', flexShrink: 0 }}>×</button>
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
+      {modifie && (
+        <div style={{ position: 'sticky', bottom: 20, marginTop: 20, background: 'var(--dark)', color: 'var(--on-dark)', borderRadius: 14, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, boxShadow: '0 6px 24px rgba(0,0,0,.25)', zIndex: 20 }}>
+          <span style={{ fontSize: 14 }}>Modifications non enregistrées</span>
+          <button onClick={handleSave} disabled={saving} style={{ padding: '10px 18px', background: 'var(--accent)', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, color: 'var(--dark)', cursor: 'pointer' }}>{saving ? 'Enregistrement…' : 'Enregistrer'}</button>
+        </div>
+      )}
     </div>
   )
 }
