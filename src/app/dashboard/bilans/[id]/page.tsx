@@ -25,6 +25,7 @@ export default function BilanPage() {
         .eq('praticien_id', session.user.id)
         .single()
       if (!data) { router.push('/dashboard/patients'); return }
+      if (data.format === 2) { router.replace(`/dashboard/bilans/${id}/saisie`); return }
       setBilan(data)
       setLoading(false)
     }

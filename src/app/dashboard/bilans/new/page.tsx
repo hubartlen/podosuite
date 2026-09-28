@@ -1,10 +1,6 @@
-import { Suspense } from 'react'
-import NewBilanClient from './client'
+import { redirect } from 'next/navigation'
 
-export default function NewBilanPage() {
-  return (
-    <Suspense fallback={<div className="p-8 text-sm" style={{color:'#94a3b8'}}>Chargement...</div>}>
-      <NewBilanClient />
-    </Suspense>
-  )
+export default async function AncienNouveauBilan({ searchParams }: { searchParams: Promise<{ patient?: string }> }) {
+  const { patient } = await searchParams
+  redirect(patient ? `/dashboard/bilans/nouveau?patient=${patient}` : '/dashboard/bilans/nouveau')
 }
