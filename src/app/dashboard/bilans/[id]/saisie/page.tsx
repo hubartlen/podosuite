@@ -63,6 +63,8 @@ export default function SaisieBilan() {
   const [userId, setUserId] = useState('')
   const pret = useRef(false)
   const [redaction, setRedaction] = useState('')
+  const [qr, setQr] = useState('')
+  const [qrDepuis, setQrDepuis] = useState('')
 
   const chargerPhotos = async (chemins: string[]) => {
     if (!chemins.length) return
@@ -103,6 +105,21 @@ export default function SaisieBilan() {
     }, 700)
     return () => clearTimeout(t)
   }, [d, date, cabinetId, charge])
+
+  useEffect(() => {
+    if (!qrDepuis) return
+    const t = setInterval(async () => {
+      const { data } = await createClient().from('photos').select('chemin, created_at').eq('bilan_id', id).gt('created_at', qrDepuis).order('created_at')
+      if (data && data.length) {
+        setQrDepuis(data[data.length - 1].created_at)
+        const chemins = data.map((x: any) => x.chemin)
+        setD((prev: any) => ({ ...prev, photos: [...prev.photos, ...chemins.filter((c: string) => !prev.photos.includes(c))] }))
+        chargerPhotos(chemins)
+        setEtat(chemins.length + ' photo(s) reçue(s) du téléphone')
+      }
+    }, 3000)
+    return () => clearInterval(t)
+  }, [qrDepuis])
 
   const maj = (chemin: string, valeur: any) => setD((prev: any) => {
     const n = structuredClone(prev)
@@ -149,6 +166,7 @@ export default function SaisieBilan() {
         const { error } = await supabase.storage.from('bilans-photos').upload(chemin, blob, { contentType: 'image/jpeg' })
         if (error) { setEtat('Erreur photo : ' + error.message); continue }
         nouveaux.push(chemin)
+        await supabase.from('photos').insert({ praticien_id: userId, patient_id: patient?.id, bilan_id: id, chemin })
       } catch { setEtat('Photo illisible') }
     }
     if (nouveaux.length) { maj('photos', [...d.photos, ...nouveaux]); chargerPhotos(nouveaux) }
@@ -156,6 +174,7 @@ export default function SaisieBilan() {
   const retirerPhoto = async (chemin: string) => {
     if (!confirm('Retirer cette photo du bilan ?')) return
     await createClient().storage.from('bilans-photos').remove([chemin])
+    await createClient().from('photos').delete().eq('chemin', chemin)
     maj('photos', d.photos.filter((p: string) => p !== chemin))
   }
 
@@ -308,6 +327,12 @@ export default function SaisieBilan() {
                     <button type="button" className="bs-x" style={{ position: 'absolute', top: 4, right: 4, background: '#fff' }} aria-label="Retirer la photo" onClick={() => retirerPhoto(p)}>✕</button>
                   </div>
                 ))}
+                <button type="button" className="bs-depot" onClick={async () => {
+                  const url = window.location.origin + '/capture?patient=' + patient?.id + '&bilan=' + id
+                  const QR = (await import('qrcode')).default
+                  setQr(await QR.toDataURL(url, { margin: 1, width: 480 }))
+                  setQrDepuis(new Date(Date.now() - 60000).toISOString())
+                }}>Avec le téléphone</button>
                 <label className="bs-depot">+ Ajouter
                   <input type="file" accept="image/*" multiple hidden onChange={e => { const f = Array.from(e.target.files || []); e.target.value = ''; ajouterPhotos(f) }} />
                 </label>
@@ -444,6 +469,17 @@ export default function SaisieBilan() {
             : <a className="bs-principal" href={`/dashboard/bilans/${id}/document`} target="_blank" rel="noopener">Ouvrir le document</a>}
         </div>
       </main>
+
+      {qr && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setQr('')}>
+          <div role="dialog" aria-label="Photo avec le téléphone" style={{ background: '#fff', borderRadius: 18, padding: 28, width: 340, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }} onClick={e => e.stopPropagation()}>
+            <strong style={{ fontSize: 17 }}>Scanne avec ton téléphone</strong>
+            <img src={qr} alt="QR code vers l'appareil photo" style={{ width: 240, height: 240, margin: '0 auto' }} />
+            <p className="bs-petit" style={{ margin: 0 }}>Prends la photo sur le téléphone : elle arrive ici toute seule, dans l'étape Examen.</p>
+            <button type="button" className="bs-bouton" style={{ alignSelf: 'center' }} onClick={() => setQr('')}>Fermer</button>
+          </div>
+        </div>
+      )}
 
       <aside className="bs-apercu">
         <div className="bs-petit">Le document, en direct</div>

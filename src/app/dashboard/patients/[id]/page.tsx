@@ -67,6 +67,7 @@ export default function PatientPage() {
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'8px',marginBottom:'20px'}}>
         {[
           { href:`/dashboard/bilans/new?patient=${id}`, label:'Bilan', bg:'var(--dark)', color: 'var(--on-dark)', icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8b89a" strokeWidth="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg> },
+          { href:'/dashboard/patients/' + id + '/photos', label:'Photos', bg:'var(--bg)', color:'var(--fg)', icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg> },
           { href:`/dashboard/factures/new?patient=${id}`, label:'Facture', bg:'var(--accent)', color: 'var(--fg)', icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1410" strokeWidth="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8"/></svg> },
           { href:`/dashboard/patients/${id}/edit`, label:'Modifier', bg:'var(--bg)', color:'var(--fg-2)', icon:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4a3f35" strokeWidth="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> },
         ].map(a => (
