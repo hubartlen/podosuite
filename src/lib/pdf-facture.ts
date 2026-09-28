@@ -15,8 +15,9 @@ interface Praticien {
   ville?: string
 }
 
-export function genererPDFFacture(facture: Facture, patient: Patient, praticien?: Praticien): jsPDF {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' })
+export function genererPDFFacture(facture: Facture, patient: Patient, praticien?: Praticien, docExistant?: jsPDF): jsPDF {
+  const doc = docExistant ? docExistant : new jsPDF({ unit: 'mm', format: 'a4' })
+  if (docExistant) doc.addPage()
   const W = 210
   const ml = 20
   const mr = 20
@@ -39,7 +40,8 @@ export function genererPDFFacture(facture: Facture, patient: Patient, praticien?
     'saint-denis': 'SAINT DENIS',
     'livry-gargan': 'LIVRY GARGAN',
   }
-  const cabinetVille = cabinetVilles[(facture as any).cabinet || 'saint-denis'] || 'SAINT DENIS'
+  const cleCab = String((facture as any).cabinet || 'saint-denis').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-')
+  const cabinetVille = cabinetVilles[cleCab] || String((facture as any).cabinet || 'SAINT DENIS').toUpperCase()
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
@@ -66,7 +68,7 @@ export function genererPDFFacture(facture: Facture, patient: Patient, praticien?
   doc.text('FACTURE', W / 2, y, { align: 'center' })
 
   y = 125
-  const civilite = patient.sexe === 'M' ? 'M.' : 'Mme'
+  const civilite = patient.sexe === 'M' ? 'M.' : patient.sexe === 'F' ? 'Mme' : ''
   const ddnFmt = patient.date_naissance
     ? new Date(patient.date_naissance).toLocaleDateString('fr-FR')
     : null
@@ -74,7 +76,7 @@ export function genererPDFFacture(facture: Facture, patient: Patient, praticien?
 
   doc.setFontSize(13)
   doc.setFont('helvetica', 'bold')
-  const patientLine = `${civilite} ${patient.nom} ${patient.prenom}${neLe ? ' ' : ''}`
+  const patientLine = `${[civilite, patient.nom, patient.prenom].filter(Boolean).join(' ')}${neLe ? ' ' : ''}`
   const nameWidth = doc.getTextWidth(patientLine + neLe)
   doc.text(patientLine, ml, y)
   if (neLe) {

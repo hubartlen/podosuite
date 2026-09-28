@@ -7,14 +7,14 @@ type Cabinet = { id: string; nom: string; retrocession: number | null; tarifs: T
 type Acte = { designation: string; quantite: number; prix_unitaire: number }
 type Facture = {
   id: string; numero: string; date_facture: string; patient_nom: string | null; mode_paiement: string | null
-  total: number; cabinet: string | null; statut: string | null; source: string | null; actes: Acte[] | null
+  total: number; cabinet: string | null; statut: string | null; source: string | null; actes: Acte[] | null; patient_id?: string | null
 }
 
 const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
 const JOURS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi']
 const JOURS_COURTS = ['Di','Lu','Ma','Me','Je','Ve','Sa']
 const PAIEMENTS = ['Carte bancaire','Espèces','Chèque','Virement','Tiers payant']
-const COLONNES = 'id, numero, date_facture, patient_nom, mode_paiement, total, cabinet, statut, source, actes'
+const COLONNES = 'id, numero, date_facture, patient_nom, mode_paiement, total, cabinet, statut, source, actes, patient_id'
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 const euros = (n: number) => n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
@@ -30,6 +30,8 @@ export default function JournalRecettes() {
   const [userId, setUserId] = useState('')
   const [loading, setLoading] = useState(true)
   const [etat, setEtat] = useState('')
+  const [patientsListe, setPatientsListe] = useState<any[]>([])
+  const [praticienComplet, setPraticienComplet] = useState<any>(null)
 
   const d = new Date(`${jour}T12:00:00`)
   const annee = d.getFullYear()
@@ -49,6 +51,11 @@ export default function JournalRecettes() {
       ])
       setCabinets((cabs || []).map((c: any) => ({ ...c, tarifs: (c.tarifs || []).sort((a: Tarif, b: Tarif) => a.ordre - b.ordre) })))
       setPartDefaut(prat?.retrocession ?? 100)
+      const [{ data: pts }, { data: prc }] = await Promise.all([
+        supabase.from('patients').select('*').eq('praticien_id', session.user.id).range(0, 4999),
+        supabase.from('praticiens').select('*').eq('id', session.user.id).single(),
+      ])
+      setPatientsListe(pts || []); setPraticienComplet(prc)
     })()
   }, [])
 
@@ -177,6 +184,34 @@ export default function JournalRecettes() {
     setFactures(fs => fs.filter(x => x.id !== f.id))
   }
 
+  const facturer = async (liste: Facture[]) => {
+    const aFaire = liste.filter(f => f.statut !== 'annulee')
+    if (!aFaire.length) return
+    setEtat('Préparation des factures…')
+    const supabase = createClient()
+    const { prochainNumero, trouverPatient, patientDepuisNom } = await import('@/lib/factures')
+    const { genererPDFFacture } = await import('@/lib/pdf-facture')
+    let doc: any = null
+    let premier: any = null
+    for (const f of aFaire) {
+      let ligne: any = f
+      const patient = (ligne.patient_id && patientsListe.find(p => p.id === ligne.patient_id)) || trouverPatient(patientsListe, ligne.patient_nom || '') || patientDepuisNom(ligne.patient_nom || '')
+      if (!String(ligne.numero).startsWith('FAC-')) {
+        const numero = await prochainNumero(supabase, userId, ligne.date_facture.slice(0, 4))
+        const champs: any = { numero }
+        if (patient && patient.id) champs.patient_id = patient.id
+        const { error } = await supabase.from('factures').update(champs).eq('id', ligne.id)
+        if (error) { setEtat('Erreur : ' + error.message); return }
+        ligne = { ...ligne, ...champs }
+        modifierLocal(ligne.id, champs)
+      }
+      if (!premier) premier = { ligne, patient }
+      doc = genererPDFFacture(ligne, patient, praticienComplet, doc || undefined)
+    }
+    doc.save(aFaire.length === 1 ? 'Facture_' + premier.ligne.numero + '_' + (premier.patient.nom || '') + '.pdf' : 'Factures_' + jour + '.pdf')
+    setEtat(aFaire.length + ' facture' + (aFaire.length > 1 ? 's prêtes' : ' prête'))
+  }
+
   const changerMois = (delta: number) => setJour(iso(new Date(annee, mois + delta, 1)))
 
   return (
@@ -223,7 +258,7 @@ export default function JournalRecettes() {
         .jr-principal{border:none;background:var(--ink);color:var(--lin);border-radius:12px;padding:11px 18px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer}
         .jr-principal:hover{background:var(--brun)}
 
-        .jr-ligne{display:grid;grid-template-columns:minmax(150px,1.5fr) 130px minmax(160px,1.4fr) 140px 104px 60px;gap:6px;align-items:center;padding:5px 6px;border-radius:10px}
+        .jr-ligne{display:grid;grid-template-columns:minmax(150px,1.5fr) 130px minmax(160px,1.4fr) 140px 104px 92px;gap:6px;align-items:center;padding:5px 6px;border-radius:10px}
         .jr-ligne + .jr-ligne{margin-top:2px}
         .jr-ligne:not(.jr-titres):hover{background:var(--lin)}
         .jr-titres{font-size:12px;color:var(--taupe);padding-bottom:8px;border-bottom:1px solid var(--lin);border-radius:0;margin-bottom:6px}
@@ -325,7 +360,7 @@ export default function JournalRecettes() {
               <h2 className="jr-date">{titreJour}</h2>
               <div className="jr-etat" aria-live="polite">{etat}</div>
             </div>
-            <button className="jr-principal" onClick={ajouter} disabled={!userId}>+ Ajouter une recette</button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}><button className="jr-lien" onClick={() => facturer(lignesJour)} disabled={!lignesJour.length}>Factures du jour (PDF)</button><button className="jr-principal" onClick={ajouter} disabled={!userId}>+ Ajouter une recette</button></div>
           </div>
 
           {loading ? (
@@ -376,6 +411,7 @@ export default function JournalRecettes() {
                       <span>€</span>
                     </div>
                     <div className="jr-actions">
+                      <button className="jr-icone" title={String(f.numero).startsWith('FAC-') ? 'Facture ' + f.numero : 'Éditer la facture'} aria-label="Facture" onClick={() => facturer([f])}>📄</button>
                       <button className="jr-icone" title={annulee ? 'Rétablir' : 'Annuler'} aria-label={annulee ? 'Rétablir' : 'Annuler'}
                         onClick={() => enregistrer(f.id, { statut: annulee ? 'payee' : 'annulee' })}>{annulee ? '↺' : '⊘'}</button>
                       <button className="jr-icone" title="Supprimer" aria-label="Supprimer" onClick={() => supprimer(f)}>✕</button>

@@ -76,11 +76,8 @@ export default function NewFactureClient() {
       const { data: prat } = await supabase.from('praticiens').select('*').eq('id', session.user.id).single()
       if (prat) setPraticienData(prat)
       const { data: last } = await supabase.from('factures').select('numero')
-        .eq('praticien_id', session.user.id).order('created_at', { ascending: false }).limit(1)
-      if (last?.length) {
-        const parts = last[0].numero.split('-')
-        setSeq((parseInt(parts[parts.length - 1]) || 0) + 1)
-      }
+        .eq('praticien_id', session.user.id).like('numero', 'FAC-' + annee + '-%').order('numero', { ascending: false }).limit(1)
+      if (last?.length) setSeq((parseInt(String(last[0].numero).split('-')[2]) || 0) + 1)
     }
     load()
   }, [])
@@ -104,11 +101,21 @@ export default function NewFactureClient() {
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return
-    const { data: facture, error } = await supabase.from('factures').insert({
-      patient_id: patientId, praticien_id: session.user.id, numero,
-      date_facture: dateFact, actes, mode_paiement: modePaiement,
-      mention: mention || null, total, cabinet,
-    }).select().single()
+    const nomCabinet = cabinet === 'livry-gargan' ? 'Livry-Gargan' : 'Saint-Denis'
+    const patientChoisi = patients.find(p => p.id === patientId)
+    const { data: memeJour } = await supabase.from('factures').select('id, numero, patient_id, patient_nom, statut')
+      .eq('praticien_id', session.user.id).eq('date_facture', dateFact).or('statut.is.null,statut.neq.annulee')
+    const { trouverPatient } = await import('@/lib/factures')
+    const existante: any = (memeJour || []).find((f: any) => f.patient_id === patientId || (!f.patient_id && patientChoisi && trouverPatient([patientChoisi], f.patient_nom || '')))
+    const champs = { patient_id: patientId, date_facture: dateFact, actes, mode_paiement: modePaiement, mention: mention || null, total, cabinet: nomCabinet }
+    let facture: any = null
+    let error: any = null
+    if (existante && !String(existante.numero).startsWith('FAC-')) {
+      ;({ data: facture, error } = await supabase.from('factures').update({ ...champs, numero }).eq('id', existante.id).select().single())
+    } else {
+      if (existante && !confirm('Une facture existe déjà pour ce patient ce jour-là (' + existante.numero + '). En créer une seconde ?')) { setLoading(false); return }
+      ;({ data: facture, error } = await supabase.from('factures').insert({ ...champs, praticien_id: session.user.id, numero, statut: 'payee' }).select().single())
+    }
     if (error) { alert('Erreur : ' + error.message); setLoading(false); return }
     if (dl && facture) {
       const patient = patients.find(p => p.id === patientId)!
@@ -116,7 +123,7 @@ export default function NewFactureClient() {
       const doc = genererPDFFacture(facture, patient, praticienData)
       doc.save(`Facture_${numero}_${patient.nom}_${patient.prenom}.pdf`)
     }
-    setSaved(true); setLastFacture(facture)
+    setSaved(true); setLastFacture(facture); setSeq(s => s + 1)
     const patient = patients.find(p => p.id === patientId)
     if (patient?.email) setEmailTo(patient.email)
     setLoading(false)

@@ -127,8 +127,8 @@ export default function ImportDoctolibRecettes({ onImported }: { onImported: () 
     const supabase = createClient()
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) { setImporting(false); return }
-    const { data: existantes } = await supabase.from('factures').select('numero').eq('praticien_id', session.user.id).like('numero', 'DOC-%')
-    const deja = new Set((existantes || []).map((f: any) => f.numero))
+    const { data: existantes } = await supabase.from('factures').select('numero, cle_import').eq('praticien_id', session.user.id).or('numero.like.DOC-%,cle_import.like.DOC-%')
+    const deja = new Set((existantes || []).flatMap((f: any) => [f.numero, f.cle_import]).filter(Boolean))
     const rows: any[] = []
     let doublons = 0
     for (const l of lignes) {
@@ -138,6 +138,7 @@ export default function ImportDoctolibRecettes({ onImported }: { onImported: () 
       rows.push({
         praticien_id: session.user.id,
         numero,
+        cle_import: numero,
         date_facture: l.date,
         patient_nom: `${l.nom} ${l.prenom}`.trim(),
         mode_paiement: l.mode_paiement,
