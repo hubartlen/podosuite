@@ -328,7 +328,6 @@ export default function SaisieBilan() {
                   </div>
                 ))}
                 <button type="button" className="bs-depot" onClick={async () => {
-                  const url = window.location.origin + '/capture?patient=' + patient?.id + '&bilan=' + id
                   const url = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin) + '/capture?patient=' + patient?.id + '&bilan=' + id
                   const QR = (await import('qrcode')).default
                   setQr(await QR.toDataURL(url, { margin: 1, width: 480 }))
