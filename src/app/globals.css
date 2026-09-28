@@ -244,3 +244,6 @@ input:focus, select:focus, textarea:focus {
   color: var(--fg);
 }
 .kpi .sub { font-size: 12px; color: var(--fg-3); }
+
+/* Centrer aussi les pages dont le contenu est dans un bloc intermédiaire */
+main [style*="max-width"][style*="padding"] { margin-left: auto; margin-right: auto; }

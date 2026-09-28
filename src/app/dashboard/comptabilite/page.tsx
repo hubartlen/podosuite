@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import * as XLSX from 'xlsx'
+import ImportDoctolibRecettes from './import-doctolib-recettes'
 
 const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
 
@@ -249,6 +250,8 @@ export default function ComptabilitePage() {
           <select value={annee} onChange={e => setAnnee(Number(e.target.value))} style={{ padding:'9px 14px', background:'#fff', border:'1px solid #e2dbd0', borderRadius:'10px', fontSize:'13px', color:'#1a1410', outline:'none' }}>
             {[2024, 2025, 2026, 2027].map(a => <option key={a} value={a}>{a}</option>)}
           </select>
+          <a href="/dashboard/comptabilite/journal" style={{ padding: '9px 16px', background: '#1a1410', borderRadius: '10px', fontSize: '13px', color: '#f5f2ee', textDecoration: 'none' }}>Journal des recettes</a>
+          <ImportDoctolibRecettes onImported={loadFactures} />
           <button onClick={() => fileRef.current?.click()} style={{ padding:'9px 16px', background:'#f5f2ee', border:'1px solid #e2dbd0', borderRadius:'10px', fontSize:'13px', color:'#4a3f35', cursor:'pointer' }}>
             📥 Import Excel
           </button>
