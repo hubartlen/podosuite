@@ -61,6 +61,7 @@ export default function Charges() {
   const [lecture, setLecture] = useState(false)
   const [etat, setEtat] = useState('')
   const [pret, setPret] = useState(false)
+  const [previsions, setPrevisions] = useState<any[]>([])
 
   const [annee, moisNum] = mois.split('-').map(Number)
   const debut = `${mois}-01`
@@ -88,7 +89,8 @@ export default function Charges() {
       supabase.from('factures').select('total, statut, cabinet').eq('praticien_id', id).gte('date_facture', debut).lte('date_facture', fin).range(0, 4999),
     ])
     setRecurrentes(rec || []); setRecettes(f || [])
-    if (mois <= iso(new Date()).slice(0, 7) && rec && rec.length) {
+    let prevues: any[] = []
+    if (rec && rec.length) {
       const { data: deja } = await supabase.from('charges').select('recurrente_id').eq('praticien_id', id)
         .gte('date_charge', debut).lte('date_charge', fin).not('recurrente_id', 'is', null)
       const faits = new Set((deja || []).map((x: any) => x.recurrente_id))
@@ -99,10 +101,12 @@ export default function Charges() {
           montant: r.montant, mode_paiement: r.mode_paiement, recurrente_id: r.id, source: 'recurrente',
           date_charge: `${mois}-${String(Math.min(r.jour_du_mois || 1, dernierJour)).padStart(2, '0')}`,
         }))
-      if (aCreer.length) await supabase.from('charges').insert(aCreer)
+      if (mois > iso(new Date()).slice(0, 7)) prevues = aCreer.map((c: any, i: number) => ({ ...c, id: 'prevue-' + i }))
+      else if (aCreer.length) await supabase.from('charges').insert(aCreer)
     }
     const { data: ch } = await supabase.from('charges').select(COLONNES).eq('praticien_id', id).gte('date_charge', debut).lte('date_charge', fin).order('date_charge')
     setCharges(ch || [])
+    setPrevisions(prevues)
     setPret(true)
   }
   useEffect(() => { if (uid) chargerMois(uid) }, [uid, mois])
@@ -221,6 +225,7 @@ export default function Charges() {
     const { data, error } = await createClient().from('charges_recurrentes').insert(row).select('*').single()
     if (error) { alert('Erreur : ' + error.message); return }
     setRecurrentes(rs => [...rs, data])
+    chargerMois(uid)
     setEtat('Charge récurrente ajoutée, elle sera créée automatiquement chaque mois.')
   }
   const majRec = (id: string, champs: any) => setRecurrentes(rs => rs.map(r => (r.id === id ? { ...r, ...champs } : r)))
@@ -228,6 +233,7 @@ export default function Charges() {
     majRec(id, champs)
     const { error } = await createClient().from('charges_recurrentes').update(champs).eq('id', id)
     setEtat(error ? 'Erreur : ' + error.message : 'Enregistré')
+    if (!error && mois > iso(new Date()).slice(0, 7)) chargerMois(uid)
   }
   const supprimerRec = async (r: any) => {
     if (!confirm(`Supprimer la charge récurrente « ${r.libelle} » ? Les charges déjà créées restent dans tes comptes.`)) return
@@ -240,10 +246,11 @@ export default function Charges() {
   const recettesActives = recettes.filter(f => f.statut !== 'annulee')
   const totalRecettes = recettesActives.reduce((s, f) => s + Number(f.total || 0), 0)
   const maPart = recettesActives.reduce((s, f) => s + Number(f.total || 0) * partDe(f) / 100, 0)
-  const totalCharges = charges.reduce((s, c) => s + Number(c.montant || 0), 0)
+  const toutes = [...charges, ...previsions]
+  const totalCharges = toutes.reduce((s, c) => s + Number(c.montant || 0), 0)
   const resultat = maPart - totalCharges
   const parCat: Record<string, number> = {}
-  charges.forEach(c => { parCat[c.categorie] = (parCat[c.categorie] || 0) + Number(c.montant || 0) })
+  toutes.forEach(c => { parCat[c.categorie] = (parCat[c.categorie] || 0) + Number(c.montant || 0) })
   const listeCat = Object.entries(parCat).sort((a, b) => b[1] - a[1])
   const livry = cabinets.find(c => /livry/i.test(c.nom))
   const aLoyer = recurrentes.some(r => r.categorie === 'loyer')
@@ -337,7 +344,7 @@ export default function Charges() {
       <section className="ch-kpis">
         <div className="ch-carte ch-kpi"><span className="ch-petit">Recettes du mois</span><b>{eur(totalRecettes)}</b></div>
         <div className="ch-carte ch-kpi"><span className="ch-petit">Ma part</span><b>{eur(maPart)}</b><span className="ch-petit">après rétrocession</span></div>
-        <div className="ch-carte ch-kpi"><span className="ch-petit">Charges du mois</span><b>{eur(totalCharges)}</b><span className="ch-petit">{charges.length} dépense{charges.length > 1 ? 's' : ''}</span></div>
+        <div className="ch-carte ch-kpi"><span className="ch-petit">Charges du mois</span><b>{eur(totalCharges)}</b><span className="ch-petit">{toutes.length} dépense{toutes.length > 1 ? 's' : ''}</span></div>
         <div className="ch-carte ch-kpi ch-resultat"><span className="ch-petit">Résultat du mois</span><b style={{ color: resultat >= 0 ? '#8fe0a8' : '#ffb4a2' }}>{eur(resultat)}</b><span className="ch-petit">ma part moins les charges</span></div>
       </section>
 
@@ -407,6 +414,21 @@ export default function Charges() {
                   </div>
                 ))}
               </>
+            )}
+            {pret && previsions.length > 0 && (
+              <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--line)' }}>
+                <div className="ch-petit" style={{ marginBottom: 6 }}>Prévues ce mois : tes charges récurrentes, ajoutées automatiquement quand le mois commencera</div>
+                {previsions.map(c => (
+                  <div key={c.id} className="ch-ligne" style={{ opacity: 0.75 }}>
+                    <span className="ch-champ">{new Date(c.date_charge + 'T12:00:00').toLocaleDateString('fr-FR')}</span>
+                    <span className="ch-champ">{c.libelle || c.fournisseur}</span>
+                    <span className="ch-champ">{libCat(c.categorie)}</span>
+                    <span className="ch-champ">{cabinets.find(x => x.id === c.cabinet_id)?.nom || 'Commune'}</span>
+                    <span className="ch-champ ch-montant">{eur(Number(c.montant) || 0)}</span>
+                    <span className="ch-badge" style={{ justifySelf: 'end', margin: 0 }}>prévue</span>
+                  </div>
+                ))}
+              </div>
             )}
           </section>
           <aside className="ch-carte">
