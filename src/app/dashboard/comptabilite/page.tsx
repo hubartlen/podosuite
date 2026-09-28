@@ -250,6 +250,7 @@ export default function ComptabilitePage() {
           <select value={annee} onChange={e => setAnnee(Number(e.target.value))} style={{ padding:'9px 14px', background:'#fff', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color: 'var(--fg)', outline:'none' }}>
             {[2024, 2025, 2026, 2027].map(a => <option key={a} value={a}>{a}</option>)}
           </select>
+          <a href="/dashboard/comptabilite/charges" style={{ padding: '9px 16px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', color: 'var(--fg-2)', textDecoration: 'none' }}>Charges</a>
           <a href="/dashboard/comptabilite/journal" style={{ padding: '9px 16px', background: 'var(--dark)', borderRadius: '10px', fontSize: '13px', color: 'var(--on-dark)', textDecoration: 'none' }}>Journal des recettes</a>
           <ImportDoctolibRecettes onImported={loadFactures} />
           <button onClick={() => fileRef.current?.click()} style={{ padding:'9px 16px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>

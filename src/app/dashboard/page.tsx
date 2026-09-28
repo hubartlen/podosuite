@@ -1,242 +1,322 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase'
 
-export default function DashboardPage() {
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [isMobile, setIsMobile] = useState(false)
+const MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
+const MOIS_COURTS = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc']
+const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+const eur = (n: number) => Math.round(n).toLocaleString('fr-FR') + ' €'
+
+function couleurActe(nom: string) {
+  const n = nom.toLowerCase()
+  if (n.includes('pod')) return { fond: '#efe4f4', texte: '#6a3f7c', barre: '#8a5a9e' }
+  if (n.includes('ortho')) return { fond: '#fbe3d8', texte: '#9a3b16', barre: '#d0663c' }
+  if (n.includes('bilan') || n.includes('semelle')) return { fond: '#dde8f6', texte: '#1d4a80', barre: '#2f64a8' }
+  if (n.includes('soin')) return { fond: '#e3f1e7', texte: '#23633a', barre: '#3f8f5a' }
+  return { fond: 'var(--surface-3)', texte: 'var(--fg-2)', barre: 'var(--accent)' }
+}
+
+const CSS = `
+.tb{padding:30px 36px 48px;max-width:1360px;margin:0 auto;font-family:Inter,sans-serif;color:var(--fg);display:flex;flex-direction:column;gap:18px;box-sizing:border-box}
+.tb *:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tb-tete{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.tb-titre{font-family:var(--font-display);font-weight:400;font-size:36px;margin:2px 0 0;line-height:1.1}
+.tb-petit{font-size:12.5px;color:var(--fg-3)}
+.tb-fort{color:var(--fg)}
+.tb-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tb-seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:3px}
+.tb-seg button{font:inherit;font-size:13px;border:none;background:none;padding:7px 12px;border-radius:8px;color:var(--fg-2);cursor:pointer}
+.tb-seg button[aria-pressed=true]{background:var(--dark);color:var(--on-dark)}
+.tb-principal{font-size:13.5px;font-weight:600;padding:11px 16px;border-radius:11px;background:var(--accent);color:var(--accent-fg);text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.tb-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.tb-hero{grid-column:span 2;background:var(--dark);color:var(--on-dark);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;gap:10px}
+.tb-ligne{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.tb-hero-label{font-size:13px;opacity:.75}
+.tb-badge{font-size:12px;font-weight:600;background:var(--accent);color:var(--accent-fg);border-radius:20px;padding:4px 10px;white-space:nowrap}
+.tb-hero-chiffre{font-family:var(--font-display);font-size:50px;line-height:1.05;font-variant-numeric:tabular-nums}
+.tb-jauge{height:8px;background:rgba(255,255,255,.15);border-radius:8px;overflow:hidden}
+.tb-jauge i{display:block;height:100%;background:var(--accent);border-radius:8px}
+.tb-hero-bas{font-size:12.5px;opacity:.8}
+.tb-carte{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0;box-sizing:border-box}
+.tb-kpi{gap:6px;text-align:left;font:inherit;color:inherit}
+.tb-kpi b{font-family:var(--font-display);font-weight:400;font-size:32px;font-variant-numeric:tabular-nums}
+.tb-objectif{background:var(--accent-soft);border-color:transparent;cursor:pointer}
+.tb-milieu{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px}
+.tb-bas{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:14px}
+.tb-h2{font-family:var(--font-display);font-weight:400;font-size:21px;margin:0}
+.tb-graph{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;align-items:end;height:200px;margin-top:6px}
+.tb-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.tb-barre{width:100%;border-radius:6px}
+.tb-val{font-size:11px;color:var(--fg-2)}
+.tb-val-on{color:var(--fg);font-weight:700}
+.tb-mois{font-size:11.5px;color:var(--fg-3)}
+.tb-mois-on{color:var(--fg);font-weight:700}
+.tb-cab{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.tb-point-nom{display:flex;align-items:center;gap:8px}
+.tb-point{width:10px;height:10px;border-radius:3px}
+.tb-piste{height:10px;background:var(--line-2);border-radius:10px;overflow:hidden}
+.tb-piste i{display:block;height:100%;border-radius:10px}
+.tb-pied{margin-top:auto;padding-top:12px;border-top:1px solid var(--line-2);font-size:13px}
+.tb-vert{font-size:13px;font-weight:700;color:#23633a}
+.tb-rdv{display:grid;grid-template-columns:minmax(0,1fr) auto 70px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line-2);font-size:13.5px}
+.tb-rdv b{text-align:right;font-variant-numeric:tabular-nums}
+.tb-rdv-nom{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-chip{font-size:12px;font-weight:600;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.tb-lien{margin-top:auto;font-size:13px;font-weight:600;color:var(--dark);text-decoration:underline;text-underline-offset:3px}
+.tb-tache{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line-2);color:var(--fg);text-decoration:none;font-size:13.5px}
+.tb-compte{font-size:12px;font-weight:700;border-radius:20px;padding:3px 9px;background:var(--surface-3);color:var(--fg-3)}
+.tb-compte[data-alerte=true]{background:#fdecd3;color:#8a4f00}
+.tb-sous{font-size:12.5px;color:var(--fg-2);text-decoration:none;padding:2px 0 4px 12px}
+.tb-sous:hover{color:var(--fg);text-decoration:underline}
+@media (max-width:1150px){.tb-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.tb-milieu,.tb-bas{grid-template-columns:1fr}}
+@media (max-width:640px){.tb{padding:18px 14px 90px}.tb-hero{grid-column:1/-1}.tb-hero-chiffre{font-size:40px}.tb-graph{gap:4px}.tb-val{display:none}.tb-titre{font-size:30px}}
+`
+
+export default function TableauDeBord() {
   const router = useRouter()
+  const [charge, setCharge] = useState(false)
+  const [uid, setUid] = useState('')
+  const [factures, setFactures] = useState<any[]>([])
+  const [cabinets, setCabinets] = useState<any[]>([])
+  const [prat, setPrat] = useState<any>(null)
+  const [bilans, setBilans] = useState<any[]>([])
+  const [periode, setPeriode] = useState<'semaine' | 'mois' | 'annee'>('mois')
+  const [filtre, setFiltre] = useState('tous')
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-
-  useEffect(() => {
-    const load = async () => {
+    (async () => {
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { router.push('/auth/login'); return }
-      const uid = session.user.id
-      const now = new Date()
-      const som = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10)
-      const last7 = Array.from({length:7},(_,i) => { const d=new Date(now); d.setDate(d.getDate()-(6-i)); return d })
-      const [
-        { count: totalPat },
-        { count: newPat },
-        { data: factMois },
-        { data: factSem },
-        { data: bilansMois },
-        { data: recents },
-        { data: prat },
-      ] = await Promise.all([
-        supabase.from('patients').select('*',{count:'exact',head:true}).eq('praticien_id',uid),
-        supabase.from('patients').select('*',{count:'exact',head:true}).eq('praticien_id',uid).gte('created_at',som),
-        supabase.from('factures').select('total,statut').eq('praticien_id',uid).gte('date_facture',som),
-        supabase.from('factures').select('total,date_facture').eq('praticien_id',uid).gte('date_facture',last7[0].toISOString().slice(0,10)),
-        supabase.from('bilans').select('id').eq('praticien_id',uid).gte('date_bilan',som),
-        supabase.from('patients').select('id,nom,prenom').eq('praticien_id',uid).order('created_at',{ascending:false}).limit(5),
-        supabase.from('praticiens').select('prenom,retrocession').eq('id',uid).single(),
+      const id = session.user.id
+      setUid(id)
+      const debut = `${new Date().getFullYear() - 1}-01-01`
+      const [f, c, p, b] = await Promise.all([
+        supabase.from('factures').select('id, numero, date_facture, total, statut, cabinet, actes, patient_nom').eq('praticien_id', id).gte('date_facture', debut).order('date_facture').range(0, 4999),
+        supabase.from('cabinets').select('id, nom, retrocession').eq('praticien_id', id).order('created_at'),
+        supabase.from('praticiens').select('prenom, retrocession, objectif_mensuel').eq('id', id).single(),
+        supabase.from('bilans').select('id, date_bilan, donnees, patient:patients(nom, prenom)').eq('praticien_id', id).eq('format', 2),
       ])
-      const bars = last7.map(d => ({
-        label: ['D','L','M','M','J','V','S'][d.getDay()],
-        total: Math.round((factSem||[]).filter((f:any)=>f.date_facture===d.toISOString().slice(0,10)).reduce((s:number,f:any)=>s+(f.total||0),0))
-      }))
-      const totalMois = Math.round((factMois||[]).filter((f:any)=>f.statut!=='annulee').reduce((s:number,f:any)=>s+(f.total||0),0))
-      const retro = prat?.retrocession || 60
-      setData({ prenom: prat?.prenom||'Arthur', totalPat, newPat, totalMois, nbFact:(factMois||[]).length, nbBilans:(bilansMois||[]).length, bars, retro, recents:recents||[] })
-      setLoading(false)
-    }
-    load()
+      setFactures(f.data || []); setCabinets(c.data || []); setPrat(p.data); setBilans(b.data || [])
+      setCharge(true)
+    })()
   }, [router])
 
-  if (loading) return (
-    <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}>
-      <div style={{width:'28px',height:'28px',border:'2px solid var(--line)',borderTopColor:'var(--accent)',borderRadius:'50%',animation:'spin .8s linear infinite'}}/>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-    </div>
-  )
+  if (!charge) return <div style={{ padding: 40, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Chargement de ton activité…</div>
 
-  const today = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
-  const maxBar = Math.max(...data.bars.map((b:any)=>b.total), 1)
-  const totalSem = data.bars.reduce((s:number,b:any)=>s+b.total, 0)
+  const maintenant = new Date()
+  const auj = iso(maintenant)
+  const y = maintenant.getFullYear(), m = maintenant.getMonth(), jourMois = maintenant.getDate()
+  const partDefaut = prat?.retrocession ?? 100
+  const partDe = (f: any) => cabinets.find(c => c.nom === f.cabinet)?.retrocession ?? partDefaut
+  const actives = factures.filter(f => f.statut !== 'annulee' && (filtre === 'tous' || f.cabinet === filtre))
+  const somme = (l: any[]) => l.reduce((s, f) => s + Number(f.total || 0), 0)
+  const entre = (a: Date, b: Date) => actives.filter(f => f.date_facture >= iso(a) && f.date_facture <= iso(b))
+  const pat = (b: any) => (Array.isArray(b.patient) ? b.patient[0] : b.patient)
 
-  if (isMobile) {
-    return (
-      <div style={{padding:'20px 16px 20px', background:'var(--bg)', minHeight:'100%'}}>
-        {/* Header - tout en vertical, pas de chevauchement */}
-        <div style={{marginBottom:20}}>
-          <p style={{fontSize:11,fontWeight:500,letterSpacing:'.08em',textTransform:'uppercase',color:'var(--fg-3)',marginBottom:6}}>{today}</p>
-          <h1 style={{fontFamily:'var(--font-display)',fontWeight:400,fontSize:34,color:'var(--fg)',margin:'0 0 16px',letterSpacing:'-0.01em'}}>Bonjour, {data.prenom}</h1>
-          <div style={{display:'flex',gap:8}}>
-            <Link href="/dashboard/patients/import" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:6,height:40,borderRadius:10,background:'var(--surface)',border:'1px solid var(--line)',fontSize:13,fontWeight:500,color:'var(--fg)',textDecoration:'none'}}>
-              ↑ Import Doctolib
-            </Link>
-            <Link href="/dashboard/bilans/new" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:6,height:40,borderRadius:10,background:'var(--dark)',border:'none',fontSize:13,fontWeight:500,color:'var(--accent)',textDecoration:'none'}}>
-              + Nouveau bilan
-            </Link>
-          </div>
-        </div>
-
-        {/* KPIs 2x2 */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:14}}>
-          {[
-            { label:'Patients', value:data.totalPat, sub:`+${data.newPat} ce mois` },
-            { label:'Facturé ce mois', value:`${data.totalMois} €`, sub:`${data.nbFact} factures` },
-            { label:`Ma part (${data.retro}%)`, value:`${Math.round(data.totalMois*data.retro/100)} €`, sub:'après rétrocession' },
-            { label:'Bilans ce mois', value:data.nbBilans, sub:'rédigés' },
-          ].map((k,i) => (
-            <div key={i} style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:14,padding:'14px'}}>
-              <span style={{fontSize:10,fontWeight:500,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--fg-3)',display:'block',marginBottom:6}}>{k.label}</span>
-              <span style={{fontFamily:'var(--font-display)',fontSize:26,fontWeight:400,color:'var(--fg)',display:'block',marginBottom:3}}>{k.value}</span>
-              <span style={{fontSize:11,color:'var(--fg-3)'}}>{k.sub}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Raccourcis 2x2 */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:14}}>
-          {[
-            { href:'/dashboard/bilans/new', label:'Nouveau bilan', sub:'PDF' },
-            { href:'/dashboard/factures/new', label:'Nouvelle facture', sub:'Facturer' },
-            { href:'/dashboard/patients/import', label:'Import Doctolib', sub:'Planning' },
-            { href:'/dashboard/patients/new', label:'Nouveau patient', sub:'Créer fiche' },
-          ].map((s,i) => (
-            <Link key={i} href={s.href} style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:14,padding:'14px',display:'flex',alignItems:'center',gap:10,textDecoration:'none'}}>
-              <div style={{width:30,height:30,borderRadius:8,background:'var(--dark)',color:'var(--accent)',display:'grid',placeItems:'center',flexShrink:0,fontSize:14}}>→</div>
-              <div>
-                <div style={{fontSize:12,fontWeight:600,color:'var(--fg)',lineHeight:1.3}}>{s.label}</div>
-                <div style={{fontSize:11,color:'var(--fg-3)'}}>{s.sub}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Facturation 7j */}
-        <div style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:14,overflow:'hidden',marginBottom:14}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 14px',borderBottom:'1px solid var(--line)'}}>
-            <span style={{fontSize:11,fontWeight:600,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--fg-3)'}}>7 derniers jours</span>
-            <span style={{fontSize:14,fontWeight:600,color:'var(--fg)'}}>{totalSem} €</span>
-          </div>
-          <div style={{padding:'12px 14px',display:'flex',flexDirection:'column',gap:8}}>
-            {data.bars.map((b:any,i:number) => (
-              <div key={i} style={{display:'flex',alignItems:'center',gap:10}}>
-                <span style={{width:14,fontSize:11,color:'var(--fg-3)',fontWeight:500}}>{b.label}</span>
-                <div style={{flex:1,height:6,background:'var(--surface-3)',borderRadius:999,overflow:'hidden'}}>
-                  <div style={{width:`${b.total/maxBar*100}%`,height:'100%',background:'var(--accent)',borderRadius:999}}/>
-                </div>
-                <span style={{width:44,textAlign:'right',fontSize:11,fontWeight:b.total?600:400,color:b.total?'var(--fg)':'var(--fg-4)'}}>{b.total} €</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Patients récents */}
-        <div style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:14,overflow:'hidden'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 14px',borderBottom:'1px solid var(--line)'}}>
-            <span style={{fontSize:11,fontWeight:600,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--fg-3)'}}>Patients récents</span>
-            <Link href="/dashboard/patients" style={{fontSize:12,fontWeight:500,color:'var(--accent)',textDecoration:'none'}}>Voir tout →</Link>
-          </div>
-          {data.recents.map((p:any,i:number) => (
-            <Link key={p.id} href={`/dashboard/patients/${p.id}`} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',borderBottom:i<data.recents.length-1?'1px solid var(--line)':'none',textDecoration:'none'}}>
-              <div style={{width:34,height:34,borderRadius:'50%',background:'var(--dark)',color:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:600,flexShrink:0}}>
-                {p.prenom?.[0]}{p.nom?.[0]}
-              </div>
-              <span style={{flex:1,fontSize:13,fontWeight:500,color:'var(--fg)'}}>{p.nom} {p.prenom}</span>
-              <span style={{color:'var(--fg-4)',fontSize:16}}>›</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    )
+  let debut: Date, fin: Date, debutPrec: Date, finPrec: Date, libelle: string, libellePrec: string
+  if (periode === 'mois') {
+    debut = new Date(y, m, 1); fin = new Date(y, m + 1, 0); debutPrec = new Date(y, m - 1, 1); finPrec = new Date(y, m, 0)
+    libelle = MOIS[m].toLowerCase(); libellePrec = MOIS[(m + 11) % 12].toLowerCase()
+  } else if (periode === 'semaine') {
+    const j = (maintenant.getDay() + 6) % 7
+    debut = new Date(y, m, jourMois - j); fin = new Date(y, m, jourMois - j + 6)
+    debutPrec = new Date(y, m, jourMois - j - 7); finPrec = new Date(y, m, jourMois - j - 1)
+    libelle = 'cette semaine'; libellePrec = 'la semaine dernière'
+  } else {
+    debut = new Date(y, 0, 1); fin = new Date(y, 11, 31); debutPrec = new Date(y - 1, 0, 1); finPrec = new Date(y - 1, 11, 31)
+    libelle = String(y); libellePrec = String(y - 1)
   }
 
-  // Desktop
+  const periodeF = entre(debut, fin)
+  const ca = somme(periodeF)
+  const caPrec = somme(entre(debutPrec, finPrec))
+  const evolution = caPrec > 0 ? Math.round((ca - caPrec) / caPrec * 100) : null
+  const part = periodeF.reduce((s, f) => s + Number(f.total || 0) * partDe(f) / 100, 0)
+  const panier = periodeF.length ? ca / periodeF.length : 0
+  const joursTravailles = new Set(periodeF.filter(f => Number(f.total || 0) > 0).map(f => f.date_facture)).size
+  const moyenneJour = joursTravailles ? ca / joursTravailles : 0
+
+  const parMois = MOIS_COURTS.map((_, i) => somme(actives.filter(f => f.date_facture.startsWith(`${y}-${String(i + 1).padStart(2, '0')}`))))
+  const maxMois = Math.max(1, ...parMois)
+  const caAnnee = parMois.reduce((a, b) => a + b, 0)
+  const partAnnee = actives.filter(f => f.date_facture.startsWith(String(y))).reduce((s, f) => s + Number(f.total || 0) * partDe(f) / 100, 0)
+  const meilleurMois = periode === 'mois' && parMois[m] > 0 && parMois[m] === maxMois
+
+  const objectif = Number(prat?.objectif_mensuel || 0)
+  const caMois = parMois[m]
+  const progression = objectif ? Math.min(100, Math.round(caMois / objectif * 100)) : 0
+  let joursRestants = 0
+  for (let d = jourMois + 1; d <= new Date(y, m + 1, 0).getDate(); d++) { const w = new Date(y, m, d).getDay(); if (w !== 0 && w !== 6) joursRestants++ }
+  const reste = Math.max(0, objectif - caMois)
+  const parJourRestant = joursRestants ? reste / joursRestants : reste
+
+  const parCabinet = cabinets
+    .filter(c => filtre === 'tous' || c.nom === filtre)
+    .map(c => { const l = periodeF.filter(f => f.cabinet === c.nom); return { nom: c.nom, ca: somme(l), actes: l.length, part: c.retrocession ?? partDefaut } })
+  const sansCab = periodeF.filter(f => !cabinets.some(c => c.nom === f.cabinet))
+  if (filtre === 'tous' && sansCab.length) parCabinet.push({ nom: 'Non précisé', ca: somme(sansCab), actes: sansCab.length, part: partDefaut })
+  const maxCab = Math.max(1, ...parCabinet.map(c => c.ca))
+
+  const duJour = factures.filter(f => f.date_facture === auj && f.statut !== 'annulee' && (filtre === 'tous' || f.cabinet === filtre))
+  const totalJour = somme(duJour)
+
+  const actesMap: Record<string, { n: number; total: number }> = {}
+  periodeF.forEach(f => {
+    const a = f.actes?.[0]?.designation || 'Sans acte'
+    actesMap[a] = actesMap[a] || { n: 0, total: 0 }
+    actesMap[a].n++; actesMap[a].total += Number(f.total || 0)
+  })
+  const actesListe = Object.entries(actesMap).sort((a, b) => b[1].total - a[1].total)
+
+  const zeros = actives.filter(f => f.date_facture >= iso(new Date(y, m, 1)) && f.date_facture <= auj && Number(f.total || 0) === 0).length
+  const sansSynthese = bilans.filter(b => !String(b.donnees?.synthese || '').trim())
+  const dans14 = iso(new Date(y, m, jourMois + 14))
+  const controles = bilans
+    .filter(b => { const c = b.donnees?.semelles?.controle; return c && c >= auj && c <= dans14 })
+    .sort((a, b) => String(a.donnees.semelles.controle).localeCompare(String(b.donnees.semelles.controle)))
+
+  const dateTexte = maintenant.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const dateLongue = dateTexte.charAt(0).toUpperCase() + dateTexte.slice(1)
+
+  const definirObjectif = async () => {
+    const v = prompt("Objectif de chiffre d'affaires mensuel (en €)", objectif ? String(objectif) : '')
+    if (v === null) return
+    const n = parseFloat(v.replace(',', '.').replace(/\s/g, ''))
+    if (isNaN(n) || n < 0) { alert('Montant invalide'); return }
+    const { error } = await createClient().from('praticiens').update({ objectif_mensuel: n }).eq('id', uid)
+    if (error) { alert('Erreur : ' + error.message); return }
+    setPrat((p: any) => ({ ...p, objectif_mensuel: n }))
+  }
+
   return (
-    <div style={{padding:'32px 36px', background:'var(--bg)', minHeight:'100vh', overflowY:'auto'}}>
-      <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:28}}>
+    <div className="tb">
+      <style>{CSS}</style>
+
+      <header className="tb-tete">
         <div>
-          <p style={{fontSize:11,fontWeight:500,letterSpacing:'.08em',textTransform:'uppercase',color:'var(--fg-3)',marginBottom:6}}>{today}</p>
-          <h1 style={{fontFamily:'var(--font-display)',fontWeight:400,fontSize:36,letterSpacing:'-0.015em',color:'var(--fg)',margin:0}}>Bonjour, {data.prenom}</h1>
+          <div className="tb-petit">{dateLongue}, bonjour {prat?.prenom || ''}</div>
+          <h1 className="tb-titre">Ton activité</h1>
         </div>
-        <div style={{display:'flex',gap:8}}>
-          <Link href="/dashboard/patients/import" style={{display:'inline-flex',alignItems:'center',gap:6,height:36,padding:'0 14px',borderRadius:10,background:'var(--surface)',border:'1px solid var(--line)',fontSize:13,fontWeight:500,color:'var(--fg)',textDecoration:'none'}}>
-            ↑ Import Doctolib
-          </Link>
-          <Link href="/dashboard/bilans/new" style={{display:'inline-flex',alignItems:'center',gap:6,height:36,padding:'0 14px',borderRadius:10,background:'var(--accent)',border:'none',fontSize:13,fontWeight:500,color:'var(--dark)',textDecoration:'none'}}>
-            + Nouveau bilan
-          </Link>
-        </div>
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
-        {[
-          { label:'Patients total', value:data.totalPat, sub:`+${data.newPat} ce mois` },
-          { label:'Facturé ce mois', value:`${data.totalMois} €`, sub:`${data.nbFact} factures` },
-          { label:`Ma part (${data.retro}%)`, value:`${Math.round(data.totalMois*data.retro/100)} €`, sub:'après rétrocession' },
-          { label:'Bilans ce mois', value:data.nbBilans, sub:'rédigés' },
-        ].map((k,i) => (
-          <div key={i} style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:16,padding:'18px 20px',display:'flex',flexDirection:'column',gap:8}}>
-            <span style={{fontSize:11,fontWeight:500,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--fg-3)'}}>{k.label}</span>
-            <span style={{fontFamily:'var(--font-display)',fontSize:32,fontWeight:400,color:'var(--fg)'}}>{k.value}</span>
-            <span style={{fontSize:12,color:'var(--fg-3)'}}>{k.sub}</span>
+        <div className="tb-actions">
+          <div className="tb-seg" role="group" aria-label="Période">
+            {(['semaine', 'mois', 'annee'] as const).map(p => (
+              <button key={p} aria-pressed={periode === p} onClick={() => setPeriode(p)}>{p === 'annee' ? 'Année' : p === 'mois' ? 'Mois' : 'Semaine'}</button>
+            ))}
           </div>
-        ))}
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
-        {[
-          { href:'/dashboard/bilans/new', label:'Nouveau bilan', sub:'Générer en PDF' },
-          { href:'/dashboard/factures/new', label:'Nouvelle facture', sub:'Facturer un patient' },
-          { href:'/dashboard/patients/import', label:'Import Doctolib', sub:'Planning du jour' },
-          { href:'/dashboard/patients/new', label:'Nouveau patient', sub:'Créer une fiche' },
-        ].map((s,i) => (
-          <Link key={i} href={s.href} style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:16,padding:14,display:'flex',alignItems:'center',gap:12,textDecoration:'none'}}>
-            <div style={{width:40,height:40,borderRadius:10,background:'var(--dark)',color:'var(--accent)',display:'grid',placeItems:'center',flexShrink:0,fontSize:18}}>→</div>
-            <div>
-              <div style={{fontSize:13,fontWeight:600,color:'var(--fg)'}}>{s.label}</div>
-              <div style={{fontSize:12,color:'var(--fg-3)',marginTop:2}}>{s.sub}</div>
+          {cabinets.length > 1 && (
+            <div className="tb-seg" role="group" aria-label="Cabinet">
+              <button aria-pressed={filtre === 'tous'} onClick={() => setFiltre('tous')}>Les deux</button>
+              {cabinets.map(c => <button key={c.id} aria-pressed={filtre === c.nom} onClick={() => setFiltre(c.nom)}>{c.nom}</button>)}
             </div>
-          </Link>
-        ))}
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:14}}>
-        <div style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:16,overflow:'hidden'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 18px',borderBottom:'1px solid var(--line)'}}>
-            <h3 style={{fontSize:12,fontWeight:600,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--fg-3)',margin:0}}>Facturation · 7 derniers jours</h3>
-            <span style={{fontSize:14,fontWeight:600,color:'var(--fg)'}}>{totalSem} €</span>
+          )}
+          <Link href="/dashboard/bilans/nouveau" className="tb-principal">Nouveau bilan</Link>
+        </div>
+      </header>
+
+      <section className="tb-kpis">
+        <div className="tb-hero">
+          <div className="tb-ligne">
+            <span className="tb-hero-label">Chiffre d'affaires, {libelle}</span>
+            {meilleurMois && <span className="tb-badge">Meilleur mois de l'année</span>}
           </div>
-          <div style={{padding:18,display:'flex',flexDirection:'column',gap:10}}>
-            {data.bars.map((b:any,i:number) => (
-              <div key={i} style={{display:'flex',alignItems:'center',gap:12}}>
-                <span style={{width:16,fontSize:12,color:'var(--fg-3)',fontWeight:500}}>{b.label}</span>
-                <div style={{flex:1,height:8,background:'var(--surface-3)',borderRadius:999,overflow:'hidden'}}>
-                  <div style={{width:`${b.total/maxBar*100}%`,height:'100%',background:'var(--accent)',borderRadius:999}}/>
-                </div>
-                <span style={{width:52,textAlign:'right',fontSize:12,fontWeight:b.total?600:400,color:b.total?'var(--fg)':'var(--fg-4)'}}>{b.total} €</span>
+          <div className="tb-hero-chiffre">{eur(ca)}</div>
+          {periode === 'mois' && objectif > 0 && <div className="tb-jauge"><i style={{ width: progression + '%' }} /></div>}
+          <div className="tb-ligne tb-hero-bas">
+            <span>{periode === 'mois' && objectif > 0 ? `${progression} % de l'objectif de ${eur(objectif)}` : `${periodeF.length} actes`}</span>
+            {evolution !== null && <span>{evolution >= 0 ? '+' : ''}{evolution} % vs {libellePrec}</span>}
+          </div>
+        </div>
+        <div className="tb-carte tb-kpi"><span className="tb-petit">Ma part nette</span><b>{eur(part)}</b><span className="tb-petit">après rétrocession</span></div>
+        <div className="tb-carte tb-kpi"><span className="tb-petit">Panier moyen</span><b>{eur(panier)}</b><span className="tb-petit">{periodeF.length} actes</span></div>
+        <button className="tb-carte tb-kpi tb-objectif" onClick={definirObjectif} title="Modifier l'objectif mensuel">
+          {!objectif ? (
+            <><span className="tb-petit">Objectif mensuel</span><b>Définir</b><span className="tb-petit">pour suivre ta progression</span></>
+          ) : reste > 0 ? (
+            <><span className="tb-petit">Pour atteindre l'objectif</span><b>{eur(parJourRestant)}</b><span className="tb-petit">{joursRestants ? `par jour, sur ${joursRestants} jour${joursRestants > 1 ? 's' : ''} ouvré${joursRestants > 1 ? 's' : ''}` : "à faire aujourd'hui"}</span></>
+          ) : (
+            <><span className="tb-petit">Objectif de {MOIS[m].toLowerCase()}</span><b>Atteint</b><span className="tb-petit">{eur(caMois - objectif)} au-delà</span></>
+          )}
+        </button>
+      </section>
+
+      <section className="tb-milieu">
+        <div className="tb-carte">
+          <div className="tb-ligne" style={{ flexWrap: 'wrap' }}>
+            <h2 className="tb-h2">Chiffre d'affaires {y}</h2>
+            <div className="tb-petit">Total <b className="tb-fort">{eur(caAnnee)}</b>, ma part <b className="tb-fort">{eur(partAnnee)}</b></div>
+          </div>
+          <div className="tb-graph">
+            {parMois.map((v, i) => (
+              <div key={i} className="tb-col" title={`${MOIS[i]} : ${eur(v)}`}>
+                {v > 0 && <span className={i === m ? 'tb-val tb-val-on' : 'tb-val'}>{Math.round(v).toLocaleString('fr-FR')}</span>}
+                <div className="tb-barre" style={{ height: v > 0 ? Math.max(4, Math.round(v / maxMois * 150)) : 3, background: i === m ? 'var(--accent)' : v > 0 ? 'var(--dark)' : 'var(--line)' }} />
+                <span className={i === m ? 'tb-mois tb-mois-on' : 'tb-mois'}>{MOIS_COURTS[i]}</span>
               </div>
             ))}
           </div>
         </div>
-        <div style={{background:'var(--surface)',border:'1px solid var(--line)',borderRadius:16,overflow:'hidden'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 18px',borderBottom:'1px solid var(--line)'}}>
-            <h3 style={{fontSize:12,fontWeight:600,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--fg-3)',margin:0}}>Patients récents</h3>
-            <Link href="/dashboard/patients" style={{fontSize:12,fontWeight:500,color:'var(--accent)',textDecoration:'none'}}>Voir tout →</Link>
-          </div>
-          {data.recents.map((p:any,i:number) => (
-            <Link key={p.id} href={`/dashboard/patients/${p.id}`} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 18px',borderBottom:i<data.recents.length-1?'1px solid var(--line)':'none',textDecoration:'none'}}>
-              <div style={{width:36,height:36,borderRadius:'50%',background:'var(--dark)',color:'var(--accent)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:600,flexShrink:0}}>
-                {p.prenom?.[0]}{p.nom?.[0]}
+        <div className="tb-carte">
+          <h2 className="tb-h2">Par cabinet</h2>
+          {parCabinet.length === 0 && <p className="tb-petit">Aucune recette sur la période.</p>}
+          {parCabinet.map((c, i) => (
+            <div key={c.nom} className="tb-cab">
+              <div className="tb-ligne">
+                <span className="tb-point-nom"><span className="tb-point" style={{ background: i % 2 === 0 ? 'var(--dark)' : 'var(--accent)' }} />{c.nom}</span>
+                <b>{eur(c.ca)}</b>
               </div>
-              <span style={{flex:1,fontSize:13,fontWeight:500,color:'var(--fg)'}}>{p.nom} {p.prenom}</span>
-              <span style={{color:'var(--fg-4)',fontSize:16}}>›</span>
-            </Link>
+              <div className="tb-piste"><i style={{ width: Math.round(c.ca / maxCab * 100) + '%', background: i % 2 === 0 ? 'var(--dark)' : 'var(--accent)' }} /></div>
+              <div className="tb-petit">part {c.part} %, {c.actes} actes</div>
+            </div>
           ))}
+          <div className="tb-ligne tb-pied"><span className="tb-petit">Moyenne par jour travaillé</span><b>{eur(moyenneJour)}</b></div>
         </div>
-      </div>
+      </section>
+
+      <section className="tb-bas">
+        <div className="tb-carte">
+          <div className="tb-ligne"><h2 className="tb-h2">Aujourd'hui</h2><span className="tb-vert">{eur(totalJour)} encaissés</span></div>
+          {duJour.length === 0 && <p className="tb-petit" style={{ margin: 0 }}>Aucune recette pour l'instant. Importe ta journée depuis la page Compta.</p>}
+          {duJour.slice(0, 7).map(f => {
+            const a = f.actes?.[0]?.designation || 'Sans acte'
+            const c = couleurActe(a)
+            return (
+              <div key={f.id} className="tb-rdv">
+                <span className="tb-rdv-nom">{f.patient_nom || f.numero}</span>
+                <span className="tb-chip" style={{ background: c.fond, color: c.texte }}>{a}</span>
+                <b>{eur(Number(f.total || 0))}</b>
+              </div>
+            )
+          })}
+          {duJour.length > 7 && <div className="tb-petit">et {duJour.length - 7} autres</div>}
+          <Link href="/dashboard/comptabilite/journal" className="tb-lien">Ouvrir le journal</Link>
+        </div>
+
+        <div className="tb-carte">
+          <h2 className="tb-h2">Actes, {libelle}</h2>
+          {actesListe.length === 0 && <p className="tb-petit" style={{ margin: 0 }}>Aucun acte sur la période.</p>}
+          {actesListe.slice(0, 6).map(([a, v]) => {
+            const c = couleurActe(a)
+            return (
+              <div key={a} className="tb-cab">
+                <div className="tb-ligne"><span>{a} <span className="tb-petit">({v.n})</span></span><b>{eur(v.total)}</b></div>
+                <div className="tb-piste"><i style={{ width: Math.round(v.total / Math.max(1, ca) * 100) + '%', background: c.barre }} /></div>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="tb-carte" style={{ gap: 0 }}>
+          <h2 className="tb-h2" style={{ marginBottom: 8 }}>À traiter</h2>
+          <Link href="/dashboard/comptabilite/journal" className="tb-tache"><span>Recettes à 0 € ce mois</span><span className="tb-compte" data-alerte={zeros > 0}>{zeros}</span></Link>
+          <Link href="/dashboard/bilans/nouveau" className="tb-tache"><span>Bilans sans synthèse</span><span className="tb-compte" data-alerte={sansSynthese.length > 0}>{sansSynthese.length}</span></Link>
+          {sansSynthese.slice(0, 3).map(b => { const p = pat(b); return <Link key={b.id} href={`/dashboard/bilans/${b.id}/saisie`} className="tb-sous">{p?.prenom} {p?.nom}</Link> })}
+          <div className="tb-tache"><span>Contrôles semelles sous 14 jours</span><span className="tb-compte" data-alerte={controles.length > 0}>{controles.length}</span></div>
+          {controles.slice(0, 3).map(b => { const p = pat(b); return <Link key={b.id} href={`/dashboard/bilans/${b.id}/saisie`} className="tb-sous">{p?.prenom} {p?.nom}, le {new Date(`${b.donnees.semelles.controle}T12:00:00`).toLocaleDateString('fr-FR')}</Link> })}
+        </div>
+      </section>
     </div>
   )
 }
