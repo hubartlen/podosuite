@@ -377,6 +377,7 @@ export default function SaisieBilan() {
               </div>
             ))}
             <button type="button" className="bs-lien" style={{ marginTop: 12, alignSelf: 'flex-start' }} onClick={ajouterElement}>+ Ajouter un élément</button>
+            <a className="bs-bouton" style={{ alignSelf: 'flex-start', marginTop: 10 }} href={'/dashboard/devis/nouveau?patient=' + (patient?.id || '') + '&bilan=' + id + (cabinetId ? '&cabinet=' + cabinetId : '')}>Créer un devis pour ces semelles</a>
           </div>
           <div className="bs-carte">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
