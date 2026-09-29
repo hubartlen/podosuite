@@ -33,6 +33,7 @@ const NAV_CABINET: Lien[] = [
   { href: '/dashboard/patients', label: 'Patients', icon: IC.patients },
   { href: '/dashboard/calendrier', label: 'Agenda', icon: IC.agenda },
   { href: '/dashboard/bilans', label: 'Bilans', icon: IC.bilans, badge: true },
+  { href: '/dashboard/ordonnances', label: 'Ordonnances', icon: svg(<><path d="M6 3h9l4 4v14H6z" /><path d="M9 11h6M9 15h6M12 8v6" /></>) },
 ]
 const NAV_GESTION: Lien[] = [
   { href: '/dashboard/devis', label: 'Devis', icon: svg(<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6M9 13h6M9 17h4" /></>) },
@@ -43,6 +44,7 @@ const NAV_GESTION: Lien[] = [
 const REGLAGES: Lien = { href: '/dashboard/settings', label: 'Réglages', icon: IC.reglages }
 const CREER = [
   { href: '/dashboard/bilans/nouveau', label: 'Bilan podologique', touche: 'b', fond: '#dde8f6', texte: '#1d4a80', icon: svg(<><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /></>, 16) },
+  { href: '/dashboard/ordonnances/nouvelle', label: 'Ordonnance', touche: 'o', fond: '#e9eaf2', texte: '#1c1f3f', icon: svg(<><path d="M6 3h9l4 4v14H6z" /><path d="M9 11h6M9 15h6M12 8v6" /></>, 16) },
   { href: '/dashboard/factures/new', label: 'Facture', touche: 'f', fond: '#e3f1e7', texte: '#23633a', icon: IC.facture },
   { href: '/dashboard/devis/nouveau', label: 'Devis', touche: 'd', fond: '#fdebd6', texte: '#9a4a0b', icon: IC.facture },
   { href: '/dashboard/patients/new', label: 'Patient', touche: 'p', fond: '#efe4f4', texte: '#6a3f7c', icon: IC.patient },
@@ -272,7 +274,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="nvg-sheet" role="dialog" aria-label="Plus">
             <div className="nvg-poignee" />
             <h2>Plus</h2>
-            {[{ href: '/dashboard/calendrier', label: 'Agenda', icon: IC.agenda }, { href: '/dashboard/bilans', label: 'Bilans', icon: IC.bilans }, { href: '/dashboard/devis', label: 'Devis', icon: IC.facture },
+            {[{ href: '/dashboard/calendrier', label: 'Agenda', icon: IC.agenda }, { href: '/dashboard/bilans', label: 'Bilans', icon: IC.bilans }, { href: '/dashboard/devis', label: 'Devis', icon: IC.facture }, { href: '/dashboard/ordonnances', label: 'Ordonnances', icon: IC.facture },
               { href: '/dashboard/comptabilite/journal', label: 'Journal', icon: IC.journal }, { href: '/dashboard/comptabilite/charges', label: 'Charges', icon: IC.charges },
               REGLAGES].map(l => (
               <Link key={l.href} href={l.href} className="nvg-op"><span className="nvg-op-ic">{l.icon}</span>{l.label}</Link>
