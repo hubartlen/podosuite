@@ -109,22 +109,22 @@ export default function EditeurDevis() {
         .de{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;padding:28px 32px 60px;max-width:1400px;margin:0 auto;font-family:Inter,sans-serif;color:var(--fg);box-sizing:border-box}
         .de *:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
         .de-col{display:flex;flex-direction:column;gap:16px;min-width:0}
-        .de-carte{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+        .de-carte{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
         .de-grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
         .de-champ{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--fg-3)}
-        .de-champ input,.de-champ select,.de-champ textarea,.de-mini{font:inherit;font-size:14px;color:var(--fg);padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface);box-sizing:border-box;width:100%}
+        .de-champ input,.de-champ select,.de-champ textarea,.de-mini{font:inherit;font-size:14px;color:var(--fg);padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--surface);box-sizing:border-box;width:100%}
         .de-champ textarea{resize:vertical;min-height:70px}
         .de-ligne{display:grid;grid-template-columns:minmax(0,1fr) 70px 110px 100px 32px;gap:8px;align-items:center}
         .de-num{text-align:right;font-variant-numeric:tabular-nums}
         .de-x{border:1px solid var(--line);background:none;width:32px;height:32px;border-radius:8px;cursor:pointer;color:var(--fg-2)}
-        .de-bouton{font:inherit;font-size:13.5px;padding:10px 15px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+        .de-bouton{font:inherit;font-size:13.5px;padding:10px 15px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
         .de-bouton:hover{border-color:var(--accent)}
-        .de-principal{font:inherit;font-size:13.5px;font-weight:600;padding:11px 16px;border-radius:10px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+        .de-principal{font:inherit;font-size:13.5px;font-weight:600;padding:11px 16px;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
         .de-principal:disabled{opacity:.5;cursor:default}
         .de-seg{display:flex;gap:6px;flex-wrap:wrap}
         .de-seg button{font:inherit;font-size:13px;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);cursor:pointer}
         .de-seg button[aria-pressed=true]{background:var(--dark);color:var(--on-dark);border-color:var(--dark)}
-        .de-apercu{position:sticky;top:16px;align-self:start;background:var(--surface-3);border-radius:16px;padding:16px;max-height:calc(100vh - 32px);overflow:auto}
+        .de-apercu{position:sticky;top:16px;align-self:start;background:var(--surface-3);border-radius:8px;padding:16px;max-height:calc(100vh - 32px);overflow:auto}
         .de-apercu>.podian-doc{zoom:.46;box-shadow:0 2px 10px rgba(0,0,0,.15)}
         @media (max-width:1150px){.de{grid-template-columns:1fr}.de-apercu{display:none}}
         @media (max-width:640px){.de{padding:18px 14px 90px}.de-grille{grid-template-columns:1fr}.de-ligne{grid-template-columns:1fr 60px 90px 32px}.de-ligne>.de-num:nth-child(4){display:none}}
@@ -146,7 +146,7 @@ export default function EditeurDevis() {
         </div>
 
         {d.statut === 'facture' && (
-          <div style={{ background: '#efe4f4', color: '#6a3f7c', borderRadius: 12, padding: '12px 16px', fontSize: 14 }}>
+          <div style={{ background: '#efe4f4', color: '#6a3f7c', borderRadius: 8, padding: '12px 16px', fontSize: 14 }}>
             Ce devis a été facturé{facture ? ' (' + facture.numero + ')' : ''}. Tu peux encore le consulter ou l'imprimer.
           </div>
         )}

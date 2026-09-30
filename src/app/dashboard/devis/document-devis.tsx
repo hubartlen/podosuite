@@ -37,7 +37,7 @@ export default function DocumentDevis({ devis, patient, praticien, cabinet }: an
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px 24px', background: C.lin, borderRadius: 10, padding: '16px 20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px 24px', background: C.lin, borderRadius: 6, padding: '16px 20px' }}>
         <div style={{ gridColumn: '1 / span 2' }}>
           <div style={{ fontSize: 11.5, color: C.gris }}>Établi pour</div>
           <div style={{ fontFamily: SERIF, fontSize: 20, color: C.ink }}>{[civ, patient?.nom?.toUpperCase(), patient?.prenom].filter(Boolean).join(' ') || '[Patient]'}</div>
@@ -71,7 +71,7 @@ export default function DocumentDevis({ devis, patient, praticien, cabinet }: an
       </table>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <div style={{ minWidth: 280, border: '1.5px solid ' + C.ink, borderRadius: 10, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 20 }}>
+        <div style={{ minWidth: 280, border: '1.5px solid ' + C.ink, borderRadius: 6, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 20 }}>
           <span style={{ fontSize: 13, color: C.brun }}>Total à payer</span>
           <span style={{ fontFamily: SERIF, fontSize: 26, color: C.ink, fontVariantNumeric: 'tabular-nums' }}>{eur2(devis.total)}</span>
         </div>

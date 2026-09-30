@@ -225,18 +225,18 @@ export default function JournalRecettes() {
         .jr-sous{font-size:13px;color:var(--taupe);margin-top:6px}
         .jr-sous a{color:var(--brun);text-decoration:none;border-bottom:1px solid var(--grege)}
         .jr-controles{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-        .jr-mois{display:flex;align-items:center;background:#fff;border:1px solid var(--grege);border-radius:12px;padding:3px}
+        .jr-mois{display:flex;align-items:center;background:#fff;border:1px solid var(--grege);border-radius:8px;padding:3px}
         .jr-mois button{border:none;background:none;width:32px;height:32px;border-radius:9px;cursor:pointer;color:var(--brun);font-size:17px}
         .jr-mois button:hover{background:var(--lin)}
         .jr-mois span{font-size:14px;min-width:130px;text-align:center}
-        .jr-segment{display:flex;background:var(--lin);border:1px solid var(--grege);border-radius:12px;padding:3px}
+        .jr-segment{display:flex;background:var(--lin);border:1px solid var(--grege);border-radius:8px;padding:3px}
         .jr-segment button{border:none;background:none;padding:8px 14px;border-radius:9px;font-size:13px;color:var(--brun);cursor:pointer;font-family:inherit}
         .jr-segment button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(26,20,16,.08)}
-        .jr-lien{border:1px solid var(--grege);background:#fff;border-radius:12px;padding:9px 14px;font-family:inherit;font-size:13px;color:var(--brun);cursor:pointer}
+        .jr-lien{border:1px solid var(--grege);background:#fff;border-radius:8px;padding:9px 14px;font-family:inherit;font-size:13px;color:var(--brun);cursor:pointer}
         .jr-lien:hover{border-color:var(--sable)}
 
         .jr-ruban{display:grid;grid-template-columns:repeat(var(--nb),minmax(40px,1fr));gap:5px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:28px}
-        .jr-jour{position:relative;overflow:hidden;border:1px solid var(--grege);background:#fff;border-radius:12px;height:104px;padding:10px 2px 8px;
+        .jr-jour{position:relative;overflow:hidden;border:1px solid var(--grege);background:#fff;border-radius:8px;height:104px;padding:10px 2px 8px;
           display:flex;flex-direction:column;align-items:center;cursor:pointer;font-family:inherit;color:var(--ink)}
         .jr-jour::before{content:'';position:absolute;left:0;right:0;bottom:0;height:var(--h);background:rgba(200,184,154,.32);transition:height .25s ease}
         .jr-jour > *{position:relative}
@@ -251,14 +251,14 @@ export default function JournalRecettes() {
         @media (prefers-reduced-motion:reduce){.jr-jour::before{transition:none}}
 
         .jr-corps{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
-        .jr-panneau{background:#fff;border:1px solid var(--grege);border-radius:18px;padding:26px 28px}
+        .jr-panneau{background:#fff;border:1px solid var(--grege);border-radius:8px;padding:26px 28px}
         .jr-entete{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
         .jr-date{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;margin:0}
         .jr-etat{font-size:12px;color:var(--taupe);min-height:16px;margin-top:4px}
-        .jr-principal{border:none;background:var(--ink);color:var(--lin);border-radius:12px;padding:11px 18px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer}
+        .jr-principal{border:none;background:var(--ink);color:var(--lin);border-radius:8px;padding:11px 18px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer}
         .jr-principal:hover{background:var(--brun)}
 
-        .jr-ligne{display:grid;grid-template-columns:minmax(150px,1.5fr) 130px minmax(160px,1.4fr) 140px 104px 92px;gap:6px;align-items:center;padding:5px 6px;border-radius:10px}
+        .jr-ligne{display:grid;grid-template-columns:minmax(150px,1.5fr) 130px minmax(160px,1.4fr) 140px 104px 92px;gap:6px;align-items:center;padding:5px 6px;border-radius:6px}
         .jr-ligne + .jr-ligne{margin-top:2px}
         .jr-ligne:not(.jr-titres):hover{background:var(--lin)}
         .jr-titres{font-size:12px;color:var(--taupe);padding-bottom:8px;border-bottom:1px solid var(--lin);border-radius:0;margin-bottom:6px}
@@ -285,7 +285,7 @@ export default function JournalRecettes() {
         .jr-vide{padding:40px 0 24px;text-align:center;color:var(--taupe);font-size:14px;line-height:1.6}
 
         .jr-cote{display:flex;flex-direction:column;gap:16px;position:sticky;top:24px}
-        .jr-carte{background:#fff;border:1px solid var(--grege);border-radius:18px;padding:22px}
+        .jr-carte{background:#fff;border:1px solid var(--grege);border-radius:8px;padding:22px}
         .jr-carte h3{font-size:13px;font-weight:500;color:var(--taupe);margin:0 0 14px}
         .jr-grand{font-family:'Playfair Display',serif;font-size:34px;font-weight:400;line-height:1.1;font-variant-numeric:tabular-nums}
         .jr-ligne-stat{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-top:1px solid var(--lin);font-size:14px}
@@ -293,7 +293,7 @@ export default function JournalRecettes() {
         .jr-ligne-stat b{font-weight:500;font-variant-numeric:tabular-nums}
         .jr-ligne-stat span{color:var(--brun)}
         .jr-actes{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 6px}
-        .jr-actes span{font-size:12px;background:var(--lin);color:var(--brun);border-radius:20px;padding:5px 10px}
+        .jr-actes span{font-size:12px;background:var(--lin);color:var(--brun);border-radius:6px;padding:5px 10px}
         .jr-sombre{background:var(--ink);border-color:var(--ink);color:var(--lin)}
         .jr-sombre h3{color:var(--sable)}
         .jr-sombre .jr-ligne-stat{border-top-color:rgba(245,242,238,.1)}
@@ -411,7 +411,7 @@ export default function JournalRecettes() {
                       <span>€</span>
                     </div>
                     <div className="jr-actions">
-                      <button className="jr-icone" title={String(f.numero).startsWith('FAC-') ? 'Facture ' + f.numero : 'Éditer la facture'} aria-label="Facture" onClick={() => facturer([f])}>📄</button>
+                      <button className="jr-icone" title={String(f.numero).startsWith('FAC-') ? 'Facture ' + f.numero : 'Éditer la facture'} aria-label="Facture" onClick={() => facturer([f])}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6M9 13h6M9 17h4" /></svg></button>
                       <button className="jr-icone" title={annulee ? 'Rétablir' : 'Annuler'} aria-label={annulee ? 'Rétablir' : 'Annuler'}
                         onClick={() => enregistrer(f.id, { statut: annulee ? 'payee' : 'annulee' })}>{annulee ? '↺' : '⊘'}</button>
                       <button className="jr-icone" title="Supprimer" aria-label="Supprimer" onClick={() => supprimer(f)}>✕</button>

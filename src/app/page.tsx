@@ -19,32 +19,32 @@ const CSS = `
 .lp-serif{font-family:'Playfair Display',Georgia,serif;font-weight:400}
 .lp-tete{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,5vw,72px);background:#1c1f3f;color:#fff;position:sticky;top:0;z-index:10}
 .lp-logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
-.lp-p{width:36px;height:36px;border-radius:10px;background:#f08a24;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',Georgia,serif;font-size:18px;color:#fff}
+.lp-p{width:36px;height:36px;border-radius:6px;background:#f08a24;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',Georgia,serif;font-size:18px;color:#fff}
 .lp-nav{display:flex;gap:30px;font-size:14.5px}
 .lp-nav a{color:rgba(255,255,255,.75);text-decoration:none}
 .lp-nav a:hover{color:#fff}
-.lp-btn{display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#fff;text-decoration:none;padding:10px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.25);white-space:nowrap}
+.lp-btn{display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px;border:1px solid rgba(255,255,255,.25);white-space:nowrap}
 .lp-btn-accent{background:#f08a24;border-color:#f08a24;font-weight:600}
 .lp-btn-accent:hover{background:#d9730f}
-.lp-grand{font-size:16px;padding:15px 22px;border-radius:13px}
+.lp-grand{font-size:16px;padding:15px 22px;border-radius:8px}
 .lp-hero{background:#1c1f3f;color:#fff;padding:70px clamp(18px,5vw,72px) 0;display:grid;grid-template-columns:minmax(0,540px) minmax(0,1fr);gap:56px;align-items:end;overflow:hidden}
 .lp-hero-texte{display:flex;flex-direction:column;gap:22px;padding-bottom:90px}
 .lp-hero h1{margin:0;font-size:clamp(40px,5vw,62px);line-height:1.05}
 .lp-hero em{color:#f08a24}
-.lp-apercu{background:#f4f4f7;border-radius:18px 18px 0 0;box-shadow:0 -10px 60px rgba(0,0,0,.35);display:flex;height:470px;overflow:hidden}
+.lp-apercu{background:#f4f4f7;border-radius:8px 8px 0 0;box-shadow:0 -10px 60px rgba(0,0,0,.35);display:flex;height:470px;overflow:hidden}
 .lp-sq{border-radius:8px}
 .lp-section{padding:90px clamp(18px,5vw,72px) 30px;display:flex;flex-direction:column;gap:34px;max-width:1440px;margin:0 auto}
 .lp-h2{margin:0;font-size:clamp(32px,3.5vw,44px);line-height:1.1}
 .lp-grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.lp-carte{background:#fff;border:1px solid #e1e2ea;border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:10px}
+.lp-carte{background:#fff;border:1px solid #e1e2ea;border-radius:6px;padding:26px;display:flex;flex-direction:column;gap:10px}
 .lp-carte h3{margin:0;font-size:23px}
 .lp-carte p{margin:0;font-size:15px;line-height:1.6;color:#3b3f5c}
-.lp-pastille{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center}
+.lp-pastille{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center}
 .lp-temps{display:flex;flex-direction:column;gap:10px;padding-top:18px}
 .lp-temps h3{margin:0;font-size:24px}
 .lp-temps p{margin:0;font-size:15px;line-height:1.6;color:#3b3f5c}
-.lp-auteur{margin:40px clamp(18px,5vw,72px) 0;background:#fff;border:1px solid #e1e2ea;border-radius:24px;padding:44px 52px;display:grid;grid-template-columns:110px minmax(0,1fr);gap:34px;align-items:center}
-.lp-final{margin:70px clamp(18px,5vw,72px) 0;background:#1c1f3f;color:#fff;border-radius:24px;padding:52px;display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+.lp-auteur{margin:40px clamp(18px,5vw,72px) 0;background:#fff;border:1px solid #e1e2ea;border-radius:6px;padding:44px 52px;display:grid;grid-template-columns:110px minmax(0,1fr);gap:34px;align-items:center}
+.lp-final{margin:70px clamp(18px,5vw,72px) 0;background:#1c1f3f;color:#fff;border-radius:6px;padding:52px;display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
 .lp-pied{padding:44px clamp(18px,5vw,72px) 50px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:13.5px;color:#676b8a}
 @media (max-width:1000px){.lp-hero{grid-template-columns:1fr}.lp-hero-texte{padding-bottom:30px}.lp-apercu{height:320px}.lp-grille{grid-template-columns:1fr 1fr}.lp-nav{display:none}}
 @media (max-width:640px){.lp-grille{grid-template-columns:1fr}.lp-auteur{grid-template-columns:1fr;padding:28px}.lp-final{padding:32px}.lp-tete .lp-btn:not(.lp-btn-accent){display:none}.lp-apercu-cote{display:none}}
@@ -108,23 +108,23 @@ export default function Accueil() {
           <div style={{ flex: 1, padding: 22, display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
             <div className="lp-serif" style={{ fontSize: 24, color: '#1b1d2e' }}>Ton activité</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 10 }}>
-              <div style={{ background: '#1c1f3f', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ background: '#1c1f3f', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {barre('55%', 10, 'rgba(255,255,255,.25)')}{barre('70%', 22, 'rgba(255,255,255,.85)')}
                 <div style={{ height: 6, background: 'rgba(255,255,255,.15)', borderRadius: 6 }}><div style={{ width: '72%', height: '100%', background: '#f08a24', borderRadius: 6 }} /></div>
               </div>
-              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>{barre('50%', 10)}{barre('70%', 20, '#1b1d2e')}</div>
-              <div style={{ background: '#fdebd6', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>{barre('50%', 10, '#f5c998')}{barre('70%', 20, '#9a4a0b')}</div>
+              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>{barre('50%', 10)}{barre('70%', 20, '#1b1d2e')}</div>
+              <div style={{ background: '#fdebd6', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>{barre('50%', 10, '#f5c998')}{barre('70%', 20, '#9a4a0b')}</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 10, flex: 1 }}>
-              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 14, padding: 14, display: 'grid', gridTemplateColumns: 'repeat(9,1fr)', gap: 6, alignItems: 'end' }}>
+              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 8, padding: 14, display: 'grid', gridTemplateColumns: 'repeat(9,1fr)', gap: 6, alignItems: 'end' }}>
                 {[30, 24, 55, 60, 70, 12, 92, 4, 4].map((h, i) => <div key={i} style={{ height: h + '%', background: i === 6 ? '#f08a24' : h > 4 ? '#1c1f3f' : '#e1e2ea', borderRadius: 4 }} />)}
               </div>
-              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 14, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {barre('40%', 10)}
                 {[['Soin', '#e3f1e7', '#23633a'], ['Bilan', '#dde8f6', '#1d4a80'], ['Orthonyxie', '#fbe3d8', '#9a3b16']].map(([t, f, c]) => (
                   <div key={t} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
                     {barre('45%', 10)}
-                    <span style={{ fontSize: 11, background: f, color: c, borderRadius: 20, padding: '2px 8px', fontWeight: 600 }}>{t}</span>
+                    <span style={{ fontSize: 11, background: f, color: c, borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{t}</span>
                   </div>
                 ))}
               </div>

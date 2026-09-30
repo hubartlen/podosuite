@@ -277,23 +277,23 @@ export default function Charges() {
         .ch-petit{font-size:12.5px;color:var(--fg-3)}
         .ch-petit a{color:var(--fg-2)}
         .ch-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-        .ch-mois{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px}
+        .ch-mois{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px}
         .ch-mois button{border:none;background:none;width:32px;height:32px;border-radius:9px;cursor:pointer;color:var(--fg-2);font-size:17px}
         .ch-mois span{font-size:14px;min-width:130px;text-align:center}
-        .ch-principal{font:inherit;font-size:13.5px;font-weight:600;padding:11px 16px;border-radius:11px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+        .ch-principal{font:inherit;font-size:13.5px;font-weight:600;padding:11px 16px;border-radius:6px;border:none;background:var(--accent);color:var(--accent-fg);cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}
         .ch-principal[aria-disabled=true]{opacity:.6;cursor:default}
-        .ch-bouton{font:inherit;font-size:13.5px;padding:11px 16px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);cursor:pointer}
+        .ch-bouton{font:inherit;font-size:13.5px;padding:11px 16px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);cursor:pointer}
         .ch-bouton:hover{border-color:var(--accent)}
         .ch-onglets{display:flex;gap:4px;border-bottom:1px solid var(--line)}
         .ch-onglets button{font:inherit;font-size:14px;border:none;background:none;padding:10px 14px;color:var(--fg-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
         .ch-onglets button[aria-selected=true]{color:var(--fg);border-bottom-color:var(--accent);font-weight:600}
         .ch-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-        .ch-carte{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;min-width:0;box-sizing:border-box}
+        .ch-carte{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;min-width:0;box-sizing:border-box}
         .ch-kpi b{font-family:var(--font-display);font-weight:400;font-size:30px;font-variant-numeric:tabular-nums}
         .ch-resultat{background:var(--dark);color:var(--on-dark);border-color:transparent}
         .ch-resultat .ch-petit{color:inherit;opacity:.75}
         .ch-corps{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
-        .ch-ligne{display:grid;grid-template-columns:130px minmax(0,1.4fr) minmax(0,1.3fr) 120px 110px 92px;gap:6px;align-items:center;padding:5px 4px;border-radius:10px}
+        .ch-ligne{display:grid;grid-template-columns:130px minmax(0,1.4fr) minmax(0,1.3fr) 120px 110px 92px;gap:6px;align-items:center;padding:5px 4px;border-radius:6px}
         .ch-ligne:not(.ch-titres):hover{background:var(--surface-2)}
         .ch-titres{font-size:12px;color:var(--fg-3);border-bottom:1px solid var(--line-2);border-radius:0;padding-bottom:8px;margin-bottom:4px}
         .ch-titres span{padding-left:9px}
@@ -305,7 +305,7 @@ export default function Charges() {
         .ch-montant::-webkit-outer-spin-button,.ch-montant::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
         .ch-double{display:flex;flex-direction:column}
         .ch-double .ch-champ:last-child{font-size:12.5px;color:var(--fg-3);padding-top:2px}
-        .ch-badge{font-size:11px;font-weight:600;border-radius:20px;padding:2px 8px;background:var(--accent-soft);color:var(--fg-2);margin-left:9px;align-self:flex-start}
+        .ch-badge{font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px;background:var(--accent-soft);color:var(--fg-2);margin-left:9px;align-self:flex-start}
         .ch-icones{display:flex;justify-content:flex-end;gap:2px}
         .ch-icone{border:none;background:none;width:28px;height:28px;border-radius:8px;cursor:pointer;color:var(--fg-2);font-size:13px}
         .ch-icone:hover{background:var(--surface-3)}
@@ -316,7 +316,7 @@ export default function Charges() {
         .ch-piste i{display:block;height:100%;background:var(--accent);border-radius:8px}
         .ch-vide{padding:36px 0 20px;text-align:center;color:var(--fg-3);font-size:14px;line-height:1.6}
         .ch-rec{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1.3fr) 130px 110px 90px 90px 36px;gap:6px;align-items:center;padding:5px 4px}
-        .ch-suggestion{font:inherit;font-size:13px;padding:9px 13px;border-radius:10px;border:1px dashed var(--accent);background:var(--accent-soft);color:var(--fg);cursor:pointer}
+        .ch-suggestion{font:inherit;font-size:13px;padding:9px 13px;border-radius:6px;border:1px dashed var(--accent);background:var(--accent-soft);color:var(--fg);cursor:pointer}
         @media (max-width:1100px){.ch-corps{grid-template-columns:1fr}.ch-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
         @media (max-width:760px){.ch{padding:18px 14px 90px}.ch-titres{display:none!important}.ch-ligne,.ch-rec{grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line-2);border-radius:0;padding:10px 0}}
       `}</style>

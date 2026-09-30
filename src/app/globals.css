@@ -66,8 +66,8 @@ h1 {
   letter-spacing: -0.01em !important;
 }
 
-.rounded-xl  { border-radius: 12px !important; }
-.rounded-2xl { border-radius: 16px !important; }
+.rounded-xl  { border-radius: 8px !important; }
+.rounded-2xl { border-radius: 8px !important; }
 .border { border-color: var(--line) !important; }
 
 input:focus, select:focus, textarea:focus {
@@ -121,7 +121,7 @@ input:focus, select:focus, textarea:focus {
   gap: 6px;
   height: 36px;
   padding: 0 14px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface);
   color: var(--fg);
   border: 1px solid var(--line);
@@ -144,7 +144,7 @@ input:focus, select:focus, textarea:focus {
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow-1);
 }
@@ -157,7 +157,7 @@ input:focus, select:focus, textarea:focus {
   height: 38px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 6px;
   font-size: 13px;
   color: var(--fg);
 }
@@ -213,7 +213,7 @@ input:focus, select:focus, textarea:focus {
 .tag {
   display: inline-block;
   padding: 2px 9px;
-  border-radius: 20px;
+  border-radius: 6px;
   background: var(--surface-3);
   color: var(--fg-2);
   font-size: 11px;
@@ -223,7 +223,7 @@ input:focus, select:focus, textarea:focus {
 .kpi {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
@@ -268,3 +268,11 @@ main [style*="max-width"][style*="padding"] { margin-left: auto; margin-right: a
   --fg:#1b1d2e; --fg-2:#3b3f5c; --fg-3:#676b8a; --fg-4:#a7aac2;
   --line:#e1e2ea; --line-2:#ebecf2; --dark:#1c1f3f; --dark-2:#2a2e57; --on-dark:#ffffff;
 }
+
+
+/* PODian pro : titres nets et sobres */
+@font-face{font-family:'PODian Titres';src:url('/fonts/inter-latin-600-normal.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'PODian Titres';src:url('/fonts/inter-latin-ext-600-normal.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+20A0-20AB,U+20AD-20C0,U+2C60-2C7F,U+A720-A7FF}
+html, html[data-theme] { --font-display: 'PODian Titres', 'Inter', system-ui, sans-serif; }
+[style*="var(--font-display)"] { letter-spacing: -0.02em; font-style: normal !important; }
+main h1[style*="var(--font-display)"] { font-size: 26px !important; line-height: 1.2 !important; }

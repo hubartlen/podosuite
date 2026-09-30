@@ -53,8 +53,8 @@ function NouveauBilan() {
     router.push(`/dashboard/bilans/${data.id}/saisie`)
   }
 
-  const carte: React.CSSProperties = { background: '#fff', border: '1px solid var(--line)', borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }
-  const champ: React.CSSProperties = { font: 'inherit', fontSize: 14, padding: '11px 13px', border: '1px solid var(--line)', borderRadius: 10, background: '#fff', color: 'var(--fg)', outline: 'none', width: '100%', boxSizing: 'border-box' }
+  const carte: React.CSSProperties = { background: '#fff', border: '1px solid var(--line)', borderRadius: 8, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }
+  const champ: React.CSSProperties = { font: 'inherit', fontSize: 14, padding: '11px 13px', border: '1px solid var(--line)', borderRadius: 6, background: '#fff', color: 'var(--fg)', outline: 'none', width: '100%', boxSizing: 'border-box' }
   const etiquette: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12.5, color: 'var(--fg-3)' }
 
   return (
@@ -73,7 +73,7 @@ function NouveauBilan() {
             )}
           </label>
           {!choisi && filtres.length > 0 && (
-            <div style={{ border: '1px solid var(--line)', borderRadius: 12, maxHeight: 280, overflow: 'auto' }}>
+            <div style={{ border: '1px solid var(--line)', borderRadius: 8, maxHeight: 280, overflow: 'auto' }}>
               {filtres.map(p => (
                 <button key={p.id} type="button" onClick={() => setPatientId(p.id)} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '11px 14px', border: 'none', borderBottom: '1px solid var(--bg)', background: '#fff', font: 'inherit', fontSize: 14, cursor: 'pointer', textAlign: 'left', color: 'var(--fg)' }}>
                   <span>{p.nom} {p.prenom}</span>
@@ -90,12 +90,12 @@ function NouveauBilan() {
             <div style={etiquette}>Cabinet
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {cabinets.map(c => (
-                  <button key={c.id} type="button" onClick={() => setCabinetId(c.id)} aria-pressed={cabinetId === c.id} style={{ font: 'inherit', fontSize: 13, padding: '10px 14px', borderRadius: 10, cursor: 'pointer', border: `1px solid ${cabinetId === c.id ? 'var(--dark)' : 'var(--line)'}`, background: cabinetId === c.id ? 'var(--dark)' : '#fff', color: cabinetId === c.id ? 'var(--bg)' : 'var(--fg-2)' }}>{c.nom}</button>
+                  <button key={c.id} type="button" onClick={() => setCabinetId(c.id)} aria-pressed={cabinetId === c.id} style={{ font: 'inherit', fontSize: 13, padding: '10px 14px', borderRadius: 6, cursor: 'pointer', border: `1px solid ${cabinetId === c.id ? 'var(--dark)' : 'var(--line)'}`, background: cabinetId === c.id ? 'var(--dark)' : '#fff', color: cabinetId === c.id ? 'var(--bg)' : 'var(--fg-2)' }}>{c.nom}</button>
                 ))}
               </div>
             </div>
           </div>
-          <button onClick={commencer} disabled={!patientId || creation} style={{ alignSelf: 'flex-start', font: 'inherit', fontSize: 14, fontWeight: 600, padding: '12px 22px', borderRadius: 12, border: 'none', background: 'var(--dark)', color: 'var(--on-dark)', cursor: 'pointer', opacity: !patientId || creation ? 0.5 : 1 }}>
+          <button onClick={commencer} disabled={!patientId || creation} style={{ alignSelf: 'flex-start', font: 'inherit', fontSize: 14, fontWeight: 600, padding: '12px 22px', borderRadius: 8, border: 'none', background: 'var(--dark)', color: 'var(--on-dark)', cursor: 'pointer', opacity: !patientId || creation ? 0.5 : 1 }}>
             {creation ? 'Création…' : 'Commencer le bilan'}
           </button>
         </div>
@@ -106,7 +106,7 @@ function NouveauBilan() {
           {bilans.map((b: any) => {
             const p = Array.isArray(b.patient) ? b.patient[0] : b.patient
             return (
-              <Link key={b.id} href={`/dashboard/bilans/${b.id}/saisie`} style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '10px 12px', borderRadius: 10, border: '1px solid var(--surface-3)', textDecoration: 'none', color: 'var(--fg)' }}>
+              <Link key={b.id} href={`/dashboard/bilans/${b.id}/saisie`} style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '10px 12px', borderRadius: 6, border: '1px solid var(--surface-3)', textDecoration: 'none', color: 'var(--fg)' }}>
                 <span style={{ fontWeight: 500 }}>{p?.nom} {p?.prenom}</span>
                 <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>Bilan du {new Date(`${b.date_bilan}T12:00:00`).toLocaleDateString('fr-FR')}</span>
               </Link>

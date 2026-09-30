@@ -128,9 +128,9 @@ function SettingsContent() {
   const removeTarif = (ci: number, ti: number) => setCabinets(c => c.map((cab, i) => i === ci ? { ...cab, tarifs: cab.tarifs.filter((_, idx) => idx !== ti) } : cab))
   const updateTarif = (ci: number, ti: number, k: string, v: any) => setCabinets(c => c.map((cab, i) => i === ci ? { ...cab, tarifs: cab.tarifs.map((t, j) => j === ti ? { ...t, [k]: v } : t) } : cab))
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '14px', color: 'var(--fg)', outline: 'none', fontFamily: 'Inter, sans-serif' }
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', background: '#fff', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '14px', color: 'var(--fg)', outline: 'none', fontFamily: 'Inter, sans-serif' }
   const labelStyle: React.CSSProperties = { display: 'block', fontSize: '11px', color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '6px' }
-  const sectionStyle: React.CSSProperties = { background: '#fff', border: '1px solid var(--line)', borderRadius: '14px', padding: '24px', marginBottom: '20px' }
+  const sectionStyle: React.CSSProperties = { background: '#fff', border: '1px solid var(--line)', borderRadius: '8px', padding: '24px', marginBottom: '20px' }
   const sectionTitle: React.CSSProperties = { fontFamily: 'Playfair Display, serif', fontSize: '16px', color: 'var(--fg)', fontWeight: '400', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--surface-3)' }
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}><div style={{ width: '28px', height: '28px', border: '2px solid var(--line)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
@@ -138,7 +138,7 @@ function SettingsContent() {
   return (
     <div style={{ padding: '32px 36px', maxWidth: '800px' }}>
       {welcome && (
-        <div style={{ background: 'var(--surface-3)', border: '1px solid var(--accent)', borderRadius: '12px', padding: '16px 20px', marginBottom: '24px', fontSize: '14px', color: 'var(--fg-2)' }}>
+        <div style={{ background: 'var(--surface-3)', border: '1px solid var(--accent)', borderRadius: '8px', padding: '16px 20px', marginBottom: '24px', fontSize: '14px', color: 'var(--fg-2)' }}>
           Bienvenue sur PODian ! Complète ton profil pour personnaliser tes bilans et factures.
         </div>
       )}
@@ -148,7 +148,7 @@ function SettingsContent() {
           <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', color: 'var(--fg)', fontWeight: '400' }}>Réglages</h1>
           <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginTop: '4px' }}>Ton profil et tes cabinets</p>
         </div>
-        <button onClick={handleSave} disabled={saving} style={{ padding: '11px 22px', background: 'var(--dark)', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', fontFamily: 'Inter, sans-serif', opacity: saving ? 0.7 : 1 }}>
+        <button onClick={handleSave} disabled={saving} style={{ padding: '11px 22px', background: 'var(--dark)', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', fontFamily: 'Inter, sans-serif', opacity: saving ? 0.7 : 1 }}>
           {saved ? '✓ Enregistré' : saving ? 'Enregistrement...' : 'Enregistrer'}
         </button>
       </div>
@@ -159,7 +159,7 @@ function SettingsContent() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(165px, 1fr))', gap: 12 }}>
           {THEMES.map(t => (
             <button key={t.cle} type="button" onClick={() => choisirTheme(t.cle)} aria-pressed={theme === t.cle}
-              style={{ textAlign: 'left', padding: 10, borderRadius: 14, border: theme === t.cle ? '2px solid ' + t.accent : '1px solid var(--line)', background: '#ffffff', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 8, fontFamily: 'inherit' }}>
+              style={{ textAlign: 'left', padding: 10, borderRadius: 8, border: theme === t.cle ? '2px solid ' + t.accent : '1px solid var(--line)', background: '#ffffff', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 8, fontFamily: 'inherit' }}>
               <div style={{ display: 'flex', height: 70, borderRadius: 9, overflow: 'hidden', border: '1px solid rgba(0,0,0,.06)' }}>
                 <div style={{ width: 24, background: t.nav }} />
                 <div style={{ flex: 1, background: t.bg, padding: 9, display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -216,7 +216,7 @@ function SettingsContent() {
                 onChange={e => setPraticien(p => ({ ...p, retrocession: parseInt(e.target.value) }))}
                 style={{ flex:1, accentColor:'var(--dark)' }}
               />
-              <div style={{ background:'var(--dark)', color: 'var(--on-dark)', borderRadius:'10px', padding:'8px 16px', fontSize:'18px', fontWeight:'500', minWidth:'70px', textAlign:'center', fontFamily:'Playfair Display, serif' }}>
+              <div style={{ background:'var(--dark)', color: 'var(--on-dark)', borderRadius: '6px', padding:'8px 16px', fontSize:'18px', fontWeight:'500', minWidth:'70px', textAlign:'center', fontFamily:'Playfair Display, serif' }}>
                 {praticien.retrocession}%
               </div>
             </div>
@@ -239,7 +239,7 @@ function SettingsContent() {
         )}
 
         {cabinets.map((cab, ci) => (
-          <div key={ci} style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
+          <div key={ci} style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: '8px', padding: '20px', marginBottom: '16px' }}>
             <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
               <div style={{ flex: 1 }}>
                 <label style={labelStyle}>Nom du cabinet</label>
@@ -282,9 +282,9 @@ function SettingsContent() {
         ))}
       </div>
       {modifie && (
-        <div style={{ position: 'sticky', bottom: 20, marginTop: 20, background: 'var(--dark)', color: 'var(--on-dark)', borderRadius: 14, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, boxShadow: '0 6px 24px rgba(0,0,0,.25)', zIndex: 20 }}>
+        <div style={{ position: 'sticky', bottom: 20, marginTop: 20, background: 'var(--dark)', color: 'var(--on-dark)', borderRadius: 8, padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, boxShadow: '0 6px 24px rgba(0,0,0,.25)', zIndex: 20 }}>
           <span style={{ fontSize: 14 }}>Modifications non enregistrées</span>
-          <button onClick={handleSave} disabled={saving} style={{ padding: '10px 18px', background: 'var(--accent)', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, color: 'var(--dark)', cursor: 'pointer' }}>{saving ? 'Enregistrement…' : 'Enregistrer'}</button>
+          <button onClick={handleSave} disabled={saving} style={{ padding: '10px 18px', background: 'var(--accent)', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, color: 'var(--dark)', cursor: 'pointer' }}>{saving ? 'Enregistrement…' : 'Enregistrer'}</button>
         </div>
       )}
     </div>

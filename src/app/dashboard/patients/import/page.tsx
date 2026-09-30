@@ -111,7 +111,7 @@ export default function ImportDoctolib() {
 
       {etape === 'upload' && (
         <div
-          style={{ border: '2px dashed var(--line)', borderRadius: '16px', padding: '48px', textAlign: 'center', cursor: 'pointer', background: '#fff', transition: 'all 0.15s' }}
+          style={{ border: '2px dashed var(--line)', borderRadius: '8px', padding: '48px', textAlign: 'center', cursor: 'pointer', background: '#fff', transition: 'all 0.15s' }}
           onClick={() => document.getElementById('file-input')?.click()}
           onDragOver={e => e.preventDefault()}
           onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}>
@@ -137,13 +137,13 @@ export default function ImportDoctolib() {
       {etape === 'review' && (
         <div>
           {nbDoublons > 0 && (
-            <div style={{ background: '#fdf8f0', border: '1px solid #e8d5a3', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+            <div style={{ background: '#fdf8f0', border: '1px solid #e8d5a3', borderRadius: '8px', padding: '12px 16px', marginBottom: '16px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <AlertTriangle size={16} style={{ color: 'var(--accent)', flexShrink: 0, marginTop: '1px' }} />
               <p style={{ fontSize: '13px', color: 'var(--fg-2)' }}><strong>{nbDoublons} doublon(s) détecté(s)</strong> — déjà présents dans ta liste, désélectionnés automatiquement.</p>
             </div>
           )}
 
-          <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '6px', padding: '12px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p style={{ fontSize: '13px', color: 'var(--fg)', fontWeight: '500' }}>{nbSelectionnes} nouveau(x) patient(s) à créer</p>
             <button onClick={() => { const all = patients.filter(p => !p.doublon); const allSel = all.every(p => p.selected); setPatients(ps => ps.map(x => x.doublon ? x : { ...x, selected: !allSel })) }}
               style={{ fontSize: '12px', color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -151,7 +151,7 @@ export default function ImportDoctolib() {
             </button>
           </div>
 
-          <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '14px', overflow: 'hidden', marginBottom: '20px' }}>
+          <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}>
             {patients.map((p, i) => (
               <div key={i}
                 style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: i < patients.length - 1 ? '1px solid var(--bg)' : 'none', cursor: p.doublon ? 'default' : 'pointer', opacity: p.doublon ? 0.5 : 1 }}
@@ -163,7 +163,7 @@ export default function ImportDoctolib() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--fg)' }}>{p.civilite} {p.nom} {p.prenom}</p>
-                    {p.doublon && <span style={{ fontSize: '10px', background: 'var(--bg)', color: 'var(--fg-3)', padding: '2px 8px', borderRadius: '20px' }}>Déjà enregistré</span>}
+                    {p.doublon && <span style={{ fontSize: '10px', background: 'var(--bg)', color: 'var(--fg-3)', padding: '2px 8px', borderRadius: '6px' }}>Déjà enregistré</span>}
                   </div>
                   {(p.heure || p.motif) && <p style={{ fontSize: '12px', color: 'var(--fg-3)', marginTop: '2px' }}>{p.heure && `${p.heure}${p.motif ? ' · ' : ''}`}{p.motif}</p>}
                 </div>
@@ -173,12 +173,12 @@ export default function ImportDoctolib() {
 
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={handleImport} disabled={importing || nbSelectionnes === 0}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '11px 20px', background: 'var(--dark)', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', opacity: importing || nbSelectionnes === 0 ? 0.5 : 1 }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '11px 20px', background: 'var(--dark)', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', opacity: importing || nbSelectionnes === 0 ? 0.5 : 1 }}>
               <UserPlus size={15} />
               {importing ? 'Création...' : `Créer ${nbSelectionnes} fiche(s)`}
             </button>
             <button onClick={() => setEtape('upload')}
-              style={{ padding: '11px 20px', background: '#fff', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>
+              style={{ padding: '11px 20px', background: '#fff', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>
               Recommencer
             </button>
           </div>
@@ -194,7 +194,7 @@ export default function ImportDoctolib() {
           {nbDoublons > 0 && <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginBottom: '4px' }}>{nbDoublons} doublon(s) ignoré(s)</p>}
           <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginBottom: '24px' }}>Les patients ont été ajoutés à ta liste.</p>
           <Link href="/dashboard/patients"
-            style={{ padding: '11px 24px', background: 'var(--dark)', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', textDecoration: 'none' }}>
+            style={{ padding: '11px 24px', background: 'var(--dark)', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', textDecoration: 'none' }}>
             Voir les patients
           </Link>
         </div>

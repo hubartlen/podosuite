@@ -55,7 +55,7 @@ function Nouvelle() {
     <div className="or" style={{ padding: '30px 36px 60px', maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
       <style>{CSS_OR + `
         .or-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-        .or-choix{text-align:left;font:inherit;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;color:var(--fg)}
+        .or-choix{text-align:left;font:inherit;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;color:var(--fg)}
         .or-choix:hover:not(:disabled){border-color:var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.06)}
         .or-choix:disabled{opacity:.45;cursor:default}
       `}</style>
@@ -73,7 +73,7 @@ function Nouvelle() {
           ) : <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Tape le nom du patient…" />}
         </label>
         {!choisi && filtres.length > 0 && (
-          <div style={{ border: '1px solid var(--line)', borderRadius: 12, maxHeight: 240, overflow: 'auto' }}>
+          <div style={{ border: '1px solid var(--line)', borderRadius: 8, maxHeight: 240, overflow: 'auto' }}>
             {filtres.map(p => (
               <button key={p.id} type="button" onClick={() => setPatientId(p.id)} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '11px 14px', border: 'none', borderBottom: '1px solid var(--line-2)', background: 'var(--surface)', font: 'inherit', fontSize: 14, cursor: 'pointer', textAlign: 'left', color: 'var(--fg)' }}>
                 <span>{p.nom} {p.prenom}</span><span style={{ fontSize: 12.5, color: 'var(--fg-3)' }}>{p.date_naissance ? new Date(p.date_naissance).toLocaleDateString('fr-FR') : ''}</span>

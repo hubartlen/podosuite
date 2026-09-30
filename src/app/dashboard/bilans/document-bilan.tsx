@@ -96,7 +96,7 @@ export default function DocumentBilan({ d, patient, praticien, cabinet, date, ph
         </div>
       </div>
 
-      <div style={{ ...cadre('contexte'), display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px 24px', background: C.lin, borderRadius: 10, padding: '18px 20px' }}>
+      <div style={{ ...cadre('contexte'), display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '14px 24px', background: C.lin, borderRadius: 6, padding: '18px 20px' }}>
         <div style={{ gridColumn: '1 / span 2' }}>
           <div style={petit}>Patient</div>
           <div style={{ fontFamily: SERIF, fontSize: 20, color: C.ink }}>{[civ, patient?.nom?.toUpperCase(), patient?.prenom].filter(Boolean).join(' ')}</div>
@@ -180,7 +180,7 @@ export default function DocumentBilan({ d, patient, praticien, cabinet, date, ph
       )}
 
       {(elements.length > 0 || metaSemelles.length > 0) && (
-        <section style={{ ...cadre('semelles'), ...col, gap: 14, border: `1.5px solid ${C.ink}`, borderRadius: 12, padding: '20px 22px' }}>
+        <section style={{ ...cadre('semelles'), ...col, gap: 14, border: `1.5px solid ${C.ink}`, borderRadius: 8, padding: '20px 22px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 16, flexWrap: 'wrap' }}>
             <h2 style={{ ...h2, borderBottom: 'none', paddingBottom: 0 }}>Orthèses plantaires</h2>
             <div style={{ display: 'flex', gap: 18, fontSize: 12.5, color: C.brun }}>{metaSemelles.map((m: any) => <span key={m}>{m}</span>)}</div>

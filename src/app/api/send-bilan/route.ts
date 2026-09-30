@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="margin:0;padding:0;background:#f5f2ee;font-family:Arial,sans-serif;">
-<div style="max-width:580px;margin:32px auto;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e2dbd0;">
+<div style="max-width:580px;margin:32px auto;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e2dbd0;">
   <div style="background:#1a1410;padding:28px 32px;">
     <div style="font-family:Georgia,serif;font-size:22px;color:#c8b89a;">Cabinet de Podologie</div>
     <div style="font-size:13px;color:#9b8f7e;margin-top:4px;">Arthur Le Neué — Pédicure Podologue DE</div>

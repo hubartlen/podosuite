@@ -31,7 +31,7 @@ export default function DocumentPage() {
 
   if (!v) return <div style={{ padding: 40, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Préparation du document…</div>
 
-  const bouton: React.CSSProperties = { font: 'inherit', fontSize: 13, padding: '10px 16px', borderRadius: 10, border: '1px solid var(--line)', background: '#fff', color: 'var(--fg-2)', textDecoration: 'none', cursor: 'pointer' }
+  const bouton: React.CSSProperties = { font: 'inherit', fontSize: 13, padding: '10px 16px', borderRadius: 6, border: '1px solid var(--line)', background: '#fff', color: 'var(--fg-2)', textDecoration: 'none', cursor: 'pointer' }
 
   return (
     <div style={{ background: 'var(--line-2)', minHeight: '100vh', padding: '28px 20px 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, fontFamily: 'Inter, sans-serif' }}>

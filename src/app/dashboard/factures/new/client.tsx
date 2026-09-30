@@ -30,7 +30,7 @@ const TARIFS: Record<string, Acte[]> = {
 
 const inp: React.CSSProperties = {
   width: '100%', padding: '10px 14px', border: '1px solid var(--line)',
-  borderRadius: 10, fontSize: 13, color: 'var(--fg)', background: 'var(--surface)',
+  borderRadius: 6, fontSize: 13, color: 'var(--fg)', background: 'var(--surface)',
   fontFamily: 'Inter, sans-serif', outline: 'none',
 }
 
@@ -40,7 +40,7 @@ const lbl: React.CSSProperties = {
 }
 
 const Section = ({ title, children }: any) => (
-  <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 14, padding: 24, marginBottom: 12 }}>
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: 24, marginBottom: 12 }}>
     <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 20 }}>{title}</p>
     {children}
   </div>
@@ -156,7 +156,7 @@ export default function NewFactureClient() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {[['saint-denis', 'Saint-Denis'], ['livry-gargan', 'Livry-Gargan']].map(([val, label]) => (
             <button key={val} onClick={() => handleCabinetChange(val)} style={{
-              padding: '12px 20px', borderRadius: 12, fontSize: 14, fontWeight: 500,
+              padding: '12px 20px', borderRadius: 8, fontSize: 14, fontWeight: 500,
               border: `2px solid ${cabinet === val ? 'var(--dark)' : 'var(--line)'}`,
               background: cabinet === val ? 'var(--dark)' : 'var(--surface)',
               color: cabinet === val ? 'var(--accent)' : 'var(--fg-2)',
@@ -188,7 +188,7 @@ export default function NewFactureClient() {
             </select>
           </div>
         </div>
-        <div style={{ background: 'var(--surface-2)', borderRadius: 10, padding: '10px 14px' }}>
+        <div style={{ background: 'var(--surface-2)', borderRadius: 6, padding: '10px 14px' }}>
           <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>N° facture : </span>
           <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)' }}>{numero}</span>
         </div>
@@ -203,7 +203,7 @@ export default function NewFactureClient() {
         </select>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {actes.map((a, i) => (
-            <div key={i} style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 12, padding: 14 }}>
+            <div key={i} style={{ background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 8, padding: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                 <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg)', flex: 1, paddingRight: 12 }}>{a.designation}</p>
                 <button onClick={() => removeActe(i)} style={{ background: 'none', border: 'none', color: 'var(--fg-3)', cursor: 'pointer', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
@@ -239,17 +239,17 @@ export default function NewFactureClient() {
 
       {saved && (
         <div style={{ marginBottom: 16 }}>
-          <div style={{ background: 'var(--success-soft)', color: 'var(--success)', border: '1px solid #b8dfc0', borderRadius: 12, padding: '12px 16px', fontSize: 13, marginBottom: 10 }}>
+          <div style={{ background: 'var(--success-soft)', color: 'var(--success)', border: '1px solid #b8dfc0', borderRadius: 8, padding: '12px 16px', fontSize: 13, marginBottom: 10 }}>
             ✓ Facture enregistrée
           </div>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 14, padding: 20 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: 20 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Envoyer par email</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <input type="email" value={emailTo} onChange={e => setEmailTo(e.target.value)}
                 placeholder="email@patient.com" style={{ ...inp, flex: 1 }}/>
               <button onClick={sendEmail} disabled={sending || !emailTo || emailSent} style={{
                 padding: '10px 18px', background: 'var(--dark)', color: 'var(--accent)',
-                border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 500,
+                border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', opacity: sending || emailSent ? 0.6 : 1, whiteSpace: 'nowrap',
               }}>{emailSent ? '✓ Envoyé' : sending ? '...' : 'Envoyer'}</button>
             </div>
@@ -260,12 +260,12 @@ export default function NewFactureClient() {
       <div style={{ display: 'flex', gap: 10 }}>
         <button onClick={() => handleSubmit(true)} disabled={loading} style={{
           flex: 1, padding: '13px 20px', background: 'var(--dark)', color: 'var(--accent)',
-          border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer',
           opacity: loading ? 0.6 : 1,
         }}>{loading ? 'Enregistrement...' : 'Enregistrer + PDF'}</button>
         <button onClick={() => handleSubmit(false)} disabled={loading} style={{
           padding: '13px 20px', background: 'var(--surface-3)', color: 'var(--fg-2)',
-          border: '1px solid var(--line)', borderRadius: 12, fontSize: 13, fontWeight: 500,
+          border: '1px solid var(--line)', borderRadius: 8, fontSize: 13, fontWeight: 500,
           cursor: 'pointer', opacity: loading ? 0.6 : 1,
         }}>Sans PDF</button>
       </div>

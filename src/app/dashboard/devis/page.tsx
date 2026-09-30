@@ -55,15 +55,15 @@ export default function ListeDevis() {
         .dv-tete{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
         .dv-titre{font-family:var(--font-display);font-weight:400;font-size:34px;margin:0}
         .dv-petit{font-size:13px;color:var(--fg-3)}
-        .dv-principal{font-size:14px;font-weight:600;padding:11px 18px;border-radius:11px;background:var(--accent);color:var(--accent-fg);text-decoration:none}
-        .dv-recherche{font:inherit;font-size:14px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--fg);width:280px;max-width:100%}
+        .dv-principal{font-size:14px;font-weight:600;padding:11px 18px;border-radius:6px;background:var(--accent);color:var(--accent-fg);text-decoration:none}
+        .dv-recherche{font:inherit;font-size:14px;padding:11px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);width:280px;max-width:100%}
         .dv-seg{display:flex;flex-wrap:wrap;gap:6px}
         .dv-seg button{font:inherit;font-size:13px;padding:7px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--fg-2);cursor:pointer}
         .dv-seg button[aria-pressed=true]{background:var(--dark);color:var(--on-dark);border-color:var(--dark)}
-        .dv-carte{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:6px 18px}
+        .dv-carte{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 18px}
         .dv-ligne{display:grid;grid-template-columns:130px minmax(0,1.4fr) 150px 110px 110px 160px;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line-2)}
         .dv-ligne:first-child{border-top:none}
-        .dv-etat{justify-self:start;font-size:12px;font-weight:600;border-radius:20px;padding:4px 10px}
+        .dv-etat{justify-self:start;font-size:12px;font-weight:600;border-radius:6px;padding:4px 10px}
         .dv-bouton{font-size:13px;padding:7px 12px;border-radius:9px;border:1px solid var(--line);color:var(--fg-2);text-decoration:none;background:var(--surface)}
         .dv-bouton:hover{border-color:var(--accent)}
         .dv-vide{padding:26px 0;text-align:center;color:var(--fg-3);font-size:14px;margin:0}

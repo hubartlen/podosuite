@@ -66,7 +66,7 @@ function Ordonnances() {
         .or-rang{display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1.6fr) 250px;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line-2)}
         .or-rang:first-child{border-top:none}
         .or-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-        .or-modele{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+        .or-modele{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
         @media (max-width:860px){.or-rang{grid-template-columns:1fr}}
       `}</style>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>

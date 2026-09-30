@@ -63,10 +63,10 @@ function NouveauDevis() {
     router.push('/dashboard/devis/' + data.id)
   }
 
-  const carte: React.CSSProperties = { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 16, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }
-  const champ: React.CSSProperties = { font: 'inherit', fontSize: 14, padding: '11px 13px', border: '1px solid var(--line)', borderRadius: 10, background: 'var(--surface)', color: 'var(--fg)', width: '100%', boxSizing: 'border-box' }
+  const carte: React.CSSProperties = { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }
+  const champ: React.CSSProperties = { font: 'inherit', fontSize: 14, padding: '11px 13px', border: '1px solid var(--line)', borderRadius: 6, background: 'var(--surface)', color: 'var(--fg)', width: '100%', boxSizing: 'border-box' }
   const etiquette: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12.5, color: 'var(--fg-3)' }
-  const pill = (actif: boolean): React.CSSProperties => ({ font: 'inherit', fontSize: 13, padding: '9px 13px', borderRadius: 10, cursor: 'pointer', border: '1px solid ' + (actif ? 'var(--dark)' : 'var(--line)'), background: actif ? 'var(--dark)' : 'var(--surface)', color: actif ? 'var(--on-dark)' : 'var(--fg-2)' })
+  const pill = (actif: boolean): React.CSSProperties => ({ font: 'inherit', fontSize: 13, padding: '9px 13px', borderRadius: 6, cursor: 'pointer', border: '1px solid ' + (actif ? 'var(--dark)' : 'var(--line)'), background: actif ? 'var(--dark)' : 'var(--surface)', color: actif ? 'var(--on-dark)' : 'var(--fg-2)' })
 
   return (
     <div style={{ padding: '30px 36px 60px', maxWidth: 820, fontFamily: 'Inter, sans-serif', color: 'var(--fg)' }}>
@@ -82,7 +82,7 @@ function NouveauDevis() {
           ) : <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Tape le nom du patient…" style={champ} />}
         </label>
         {!choisi && filtres.length > 0 && (
-          <div style={{ border: '1px solid var(--line)', borderRadius: 12, maxHeight: 260, overflow: 'auto' }}>
+          <div style={{ border: '1px solid var(--line)', borderRadius: 8, maxHeight: 260, overflow: 'auto' }}>
             {filtres.map(p => (
               <button key={p.id} type="button" onClick={() => setPatientId(p.id)} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '11px 14px', border: 'none', borderBottom: '1px solid var(--line-2)', background: 'var(--surface)', font: 'inherit', fontSize: 14, cursor: 'pointer', textAlign: 'left', color: 'var(--fg)' }}>
                 <span>{p.nom} {p.prenom}</span><span style={{ fontSize: 12.5, color: 'var(--fg-3)' }}>{p.date_naissance ? new Date(p.date_naissance).toLocaleDateString('fr-FR') : ''}</span>
@@ -102,7 +102,7 @@ function NouveauDevis() {
             ))}
           </div>
         </div>
-        <button onClick={creer} disabled={!patientId || creation} style={{ alignSelf: 'flex-start', font: 'inherit', fontSize: 14, fontWeight: 600, padding: '12px 22px', borderRadius: 12, border: 'none', background: 'var(--accent)', color: 'var(--accent-fg)', cursor: 'pointer', opacity: !patientId || creation ? 0.5 : 1 }}>
+        <button onClick={creer} disabled={!patientId || creation} style={{ alignSelf: 'flex-start', font: 'inherit', fontSize: 14, fontWeight: 600, padding: '12px 22px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: 'var(--accent-fg)', cursor: 'pointer', opacity: !patientId || creation ? 0.5 : 1 }}>
           {creation ? 'Création…' : 'Créer le devis'}
         </button>
       </div>

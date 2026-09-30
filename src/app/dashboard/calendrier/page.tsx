@@ -155,7 +155,7 @@ export default function CalendrierPage() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 12px', border: '1px solid var(--line)',
-    borderRadius: 10, fontSize: 14, color: 'var(--fg)', background: 'var(--surface)', fontFamily: 'Inter, sans-serif', outline: 'none',
+    borderRadius: 6, fontSize: 14, color: 'var(--fg)', background: 'var(--surface)', fontFamily: 'Inter, sans-serif', outline: 'none',
   }
   const labelStyle: React.CSSProperties = {
     fontSize: 11, color: 'var(--fg-3)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 6,
@@ -238,7 +238,7 @@ export default function CalendrierPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 32 }}>
                   {dayRdvs.sort((a,b) => new Date(a.date_heure).getTime() - new Date(b.date_heure).getTime()).map(rdv => (
                     <div key={rdv.id} onClick={() => openEdit(rdv)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 10, cursor: 'pointer', borderLeft: `3px solid ${getTypeColor(rdv.type)}` }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 6, cursor: 'pointer', borderLeft: `3px solid ${getTypeColor(rdv.type)}` }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg)', minWidth: 40 }}>{formatHeure(rdv.date_heure)}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -274,7 +274,7 @@ export default function CalendrierPage() {
         {modal && (
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 100 }}
             onClick={() => setModal(null)}>
-            <div style={{ background: 'var(--surface)', borderRadius: '20px 20px 0 0', padding: '20px 20px 40px', width: '100%', maxHeight: '85vh', overflowY: 'auto' }}
+            <div style={{ background: 'var(--surface)', borderRadius: '6px 6px 0 0', padding: '20px 20px 40px', width: '100%', maxHeight: '85vh', overflowY: 'auto' }}
               onClick={e => e.stopPropagation()}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--line)', margin: '0 auto 20px' }} />
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: 'var(--fg)', marginBottom: 20 }}>
@@ -322,16 +322,16 @@ export default function CalendrierPage() {
                 <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
                   {modal.mode === 'edit' && (
                     <button onClick={handleDelete} disabled={saving}
-                      style={{ padding: '12px 16px', border: '1px solid var(--line)', borderRadius: 12, background: 'var(--surface)', color: 'var(--danger)', cursor: 'pointer', fontSize: 13 }}>
+                      style={{ padding: '12px 16px', border: '1px solid var(--line)', borderRadius: 8, background: 'var(--surface)', color: 'var(--danger)', cursor: 'pointer', fontSize: 13 }}>
                       Supprimer
                     </button>
                   )}
                   <button onClick={() => setModal(null)}
-                    style={{ flex: 1, padding: '12px', border: '1px solid var(--line)', borderRadius: 12, background: 'var(--surface)', color: 'var(--fg-2)', cursor: 'pointer', fontSize: 13 }}>
+                    style={{ flex: 1, padding: '12px', border: '1px solid var(--line)', borderRadius: 8, background: 'var(--surface)', color: 'var(--fg-2)', cursor: 'pointer', fontSize: 13 }}>
                     Annuler
                   </button>
                   <button onClick={handleSave} disabled={saving}
-                    style={{ flex: 2, padding: '12px', border: 'none', borderRadius: 12, background: 'var(--dark)', color: 'var(--accent)', cursor: 'pointer', fontSize: 13, fontWeight: 500, opacity: saving ? 0.7 : 1 }}>
+                    style={{ flex: 2, padding: '12px', border: 'none', borderRadius: 8, background: 'var(--dark)', color: 'var(--accent)', cursor: 'pointer', fontSize: 13, fontWeight: 500, opacity: saving ? 0.7 : 1 }}>
                     {saving ? 'Enregistrement...' : modal.mode === 'create' ? 'Créer' : 'Enregistrer'}
                   </button>
                 </div>
@@ -359,10 +359,10 @@ export default function CalendrierPage() {
           <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginTop: '4px' }}>{rdvs.length} rendez-vous ce mois</p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Link href="/dashboard/calendrier/import" style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '10px 16px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', color: 'var(--fg-2)', textDecoration: 'none', fontWeight: '500' }}>
+          <Link href="/dashboard/calendrier/import" style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '10px 16px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', color: 'var(--fg-2)', textDecoration: 'none', fontWeight: '500' }}>
             ↑ Import Doctolib
           </Link>
-          <button onClick={() => openCreate()} style={{ padding: '10px 18px', background: 'var(--dark)', borderRadius: '10px', border: 'none', fontSize: '13px', color: 'var(--accent)', cursor: 'pointer', fontWeight: '500' }}>
+          <button onClick={() => openCreate()} style={{ padding: '10px 18px', background: 'var(--dark)', borderRadius: '6px', border: 'none', fontSize: '13px', color: 'var(--accent)', cursor: 'pointer', fontWeight: '500' }}>
             + Nouveau RDV
           </button>
         </div>
@@ -382,7 +382,7 @@ export default function CalendrierPage() {
         </button>
       </div>
 
-      <div style={{ background: 'var(--surface)', borderRadius: '14px', border: '1px solid var(--line)', overflow: 'hidden' }}>
+      <div style={{ background: 'var(--surface)', borderRadius: '8px', border: '1px solid var(--line)', overflow: 'hidden' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--line)' }}>
           {JOURS.map(j => (
             <div key={j} style={{ padding: '10px', textAlign: 'center', fontSize: '11px', fontWeight: '500', color: 'var(--fg-3)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{j}</div>
@@ -430,7 +430,7 @@ export default function CalendrierPage() {
       {modal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
           onClick={() => setModal(null)}>
-          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '28px', width: '460px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
+          <div style={{ background: 'var(--surface)', borderRadius: '8px', padding: '28px', width: '460px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
             onClick={e => e.stopPropagation()}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: 'var(--fg)', fontWeight: '400', marginBottom: '22px' }}>
               {modal.mode === 'create' ? 'Nouveau rendez-vous' : 'Modifier le rendez-vous'}
@@ -477,17 +477,17 @@ export default function CalendrierPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
                 {modal.mode === 'edit' ? (
                   <button onClick={handleDelete} disabled={saving}
-                    style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid var(--line)', background: 'var(--surface)', fontSize: '13px', color: 'var(--danger)', cursor: 'pointer' }}>
+                    style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', fontSize: '13px', color: 'var(--danger)', cursor: 'pointer' }}>
                     Supprimer
                   </button>
                 ) : <div />}
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button onClick={() => setModal(null)}
-                    style={{ padding: '10px 16px', borderRadius: '10px', border: '1px solid var(--line)', background: 'var(--surface)', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>
+                    style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--surface)', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>
                     Annuler
                   </button>
                   <button onClick={handleSave} disabled={saving}
-                    style={{ padding: '10px 20px', borderRadius: '10px', border: 'none', background: 'var(--dark)', fontSize: '13px', color: 'var(--accent)', cursor: 'pointer', fontWeight: '500', opacity: saving ? 0.7 : 1 }}>
+                    style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: 'var(--dark)', fontSize: '13px', color: 'var(--accent)', cursor: 'pointer', fontWeight: '500', opacity: saving ? 0.7 : 1 }}>
                     {saving ? 'Enregistrement...' : modal.mode === 'create' ? 'Créer le RDV' : 'Enregistrer'}
                   </button>
                 </div>

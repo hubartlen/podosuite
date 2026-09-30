@@ -322,8 +322,8 @@ export default function SaisieBilan() {
                 {d.photos.map((p: string) => (
                   <div key={p} style={{ position: 'relative' }}>
                     {photosUrls[p]
-                      ? <img src={photosUrls[p]} alt="" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 10, border: '1px solid var(--line)', display: 'block' }} />
-                      : <div style={{ width: 120, height: 120, borderRadius: 10, background: 'var(--bg)' }} />}
+                      ? <img src={photosUrls[p]} alt="" style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--line)', display: 'block' }} />
+                      : <div style={{ width: 120, height: 120, borderRadius: 6, background: 'var(--bg)' }} />}
                     <button type="button" className="bs-x" style={{ position: 'absolute', top: 4, right: 4, background: '#fff' }} aria-label="Retirer la photo" onClick={() => retirerPhoto(p)}>✕</button>
                   </div>
                 ))}
@@ -403,7 +403,7 @@ export default function SaisieBilan() {
         .bs *:focus-visible{outline:2px solid var(--sable);outline-offset:2px}
         .bs-etapes{position:sticky;top:0;align-self:start;height:100vh;box-sizing:border-box;padding:28px 16px 24px 24px;border-right:1px solid var(--grege);display:flex;flex-direction:column;gap:4px}
         .bs-patient{font-family:'Playfair Display',Georgia,serif;font-size:19px;line-height:1.2;margin-bottom:14px}
-        .bs-etape{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:10px;border:1px solid transparent;background:none;font:inherit;font-size:14px;color:var(--brun);cursor:pointer;text-align:left}
+        .bs-etape{display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:6px;border:1px solid transparent;background:none;font:inherit;font-size:14px;color:var(--brun);cursor:pointer;text-align:left}
         .bs-etape:hover{background:#fff}
         .bs-etape[aria-current=step]{background:#fff;border-color:var(--grege);color:var(--ink);font-weight:600}
         .bs-num{width:22px;height:22px;border-radius:50%;border:1px solid var(--sable);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;box-sizing:border-box}
@@ -412,10 +412,10 @@ export default function SaisieBilan() {
         .bs-centre{padding:24px 32px 48px;display:flex;flex-direction:column;gap:18px;min-width:0}
         .bs-tete{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
         .bs-titre{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:400;margin:4px 0 2px}
-        .bs-carte{background:#fff;border:1px solid var(--grege);border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+        .bs-carte{background:#fff;border:1px solid var(--grege);border-radius:8px;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
         .bs-grille{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
         .bs-champ{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--taupe)}
-        .bs-champ input,.bs-champ textarea{font:inherit;font-size:14px;color:var(--ink);padding:10px 12px;border:1px solid var(--grege);border-radius:10px;background:#fff;outline:none;box-sizing:border-box;width:100%}
+        .bs-champ input,.bs-champ textarea{font:inherit;font-size:14px;color:var(--ink);padding:10px 12px;border:1px solid var(--grege);border-radius:6px;background:#fff;outline:none;box-sizing:border-box;width:100%}
         .bs-champ textarea{resize:vertical;min-height:76px;line-height:1.5}
         .bs-champ input:focus,.bs-champ textarea:focus,.bs-mini:focus{border-color:var(--sable)}
         .bs-mini{font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--grege);border-radius:9px;width:100%;box-sizing:border-box;outline:none;color:var(--ink);background:#fff}
@@ -429,12 +429,12 @@ export default function SaisieBilan() {
         .bs-lien{border:none;background:none;font:inherit;font-size:12.5px;color:var(--brun);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px}
         .bs-x{border:1px solid var(--grege);background:none;width:28px;height:28px;border-radius:8px;cursor:pointer;color:var(--brun);font-size:12px}
         .bs-x:hover{border-color:var(--sable);color:var(--ink)}
-        .bs-depot{width:120px;height:120px;border:1.5px dashed var(--sable);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--brun);cursor:pointer;font-size:13px;font-weight:500}
+        .bs-depot{width:120px;height:120px;border:1.5px dashed var(--sable);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--brun);cursor:pointer;font-size:13px;font-weight:500}
         .bs-depot:hover{background:var(--lin)}
-        .bs-bouton{font:inherit;font-size:13px;padding:10px 16px;border-radius:10px;border:1px solid var(--grege);background:#fff;color:var(--brun);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+        .bs-bouton{font:inherit;font-size:13px;padding:10px 16px;border-radius:6px;border:1px solid var(--grege);background:#fff;color:var(--brun);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
         .bs-bouton:hover{border-color:var(--sable)}
         .bs-bouton:disabled{opacity:.4;cursor:default}
-        .bs-principal{font:inherit;font-size:13px;font-weight:600;padding:11px 18px;border-radius:10px;border:none;background:var(--ink);color:var(--lin);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+        .bs-principal{font:inherit;font-size:13px;font-weight:600;padding:11px 18px;border-radius:6px;border:none;background:var(--ink);color:var(--lin);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
         .bs-apercu{position:sticky;top:0;align-self:start;height:100vh;box-sizing:border-box;border-left:1px solid var(--grege);background:var(--line-2);padding:24px 18px;display:flex;flex-direction:column;gap:10px}
         .bs-feuille{overflow:auto;flex:1}
         .bs-feuille > .podian-doc{zoom:.4;box-shadow:0 2px 10px rgba(26,20,16,.18)}
@@ -473,7 +473,7 @@ export default function SaisieBilan() {
 
       {qr && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setQr('')}>
-          <div role="dialog" aria-label="Photo avec le téléphone" style={{ background: '#fff', borderRadius: 18, padding: 28, width: 340, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }} onClick={e => e.stopPropagation()}>
+          <div role="dialog" aria-label="Photo avec le téléphone" style={{ background: '#fff', borderRadius: 8, padding: 28, width: 340, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }} onClick={e => e.stopPropagation()}>
             <strong style={{ fontSize: 17 }}>Scanne avec ton téléphone</strong>
             <img src={qr} alt="QR code vers l'appareil photo" style={{ width: 240, height: 240, margin: '0 auto' }} />
             <p className="bs-petit" style={{ margin: 0 }}>Prends la photo sur le téléphone : elle arrive ici toute seule, dans l'étape Examen.</p>

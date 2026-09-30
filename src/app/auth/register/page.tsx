@@ -41,7 +41,7 @@ export default function RegisterPage() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '13px 16px', background: '#2a2018', border: '1px solid #3a3028',
-    borderRadius: '12px', fontSize: '14px', color: 'var(--on-dark)', outline: 'none', fontFamily: 'Inter, sans-serif'
+    borderRadius: '8px', fontSize: '14px', color: 'var(--on-dark)', outline: 'none', fontFamily: 'Inter, sans-serif'
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '11px', color: 'var(--fg-3)', letterSpacing: '0.06em',
@@ -52,7 +52,7 @@ export default function RegisterPage() {
     <div style={{ minHeight: '100vh', background: 'var(--dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ width: '52px', height: '52px', background: 'var(--bg)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', position: 'relative' }}>
+          <div style={{ width: '52px', height: '52px', background: 'var(--bg)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', position: 'relative' }}>
             <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '22px', color: 'var(--fg)' }}>P</span>
             <div style={{ position: 'absolute', top: -4, right: -4, width: 10, height: 10, borderRadius: '50%', background: 'var(--accent)' }}/>
           </div>
@@ -61,7 +61,7 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleRegister}>
-          {error && <div style={{ background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: '10px', padding: '11px 14px', marginBottom: '16px', fontSize: '13px', color: '#f09595', textAlign: 'center' }}>{error}</div>}
+          {error && <div style={{ background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: '6px', padding: '11px 14px', marginBottom: '16px', fontSize: '13px', color: '#f09595', textAlign: 'center' }}>{error}</div>}
 
           {/* RPPS en premier */}
           <div style={{ marginBottom: '16px' }}>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
             <input type="password" value={form.confirm} onChange={e => set('confirm', e.target.value)} placeholder="••••••••" required style={inputStyle} />
           </div>
 
-          <button type="submit" disabled={loading || !rppsValid} style={{ width: '100%', padding: '14px', background: rppsValid ? 'var(--accent)' : '#3a3028', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '500', color: rppsValid ? 'var(--dark)' : 'var(--fg-3)', cursor: rppsValid ? 'pointer' : 'not-allowed', fontFamily: 'Inter, sans-serif', opacity: loading ? 0.7 : 1 }}>
+          <button type="submit" disabled={loading || !rppsValid} style={{ width: '100%', padding: '14px', background: rppsValid ? 'var(--accent)' : '#3a3028', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '500', color: rppsValid ? 'var(--dark)' : 'var(--fg-3)', cursor: rppsValid ? 'pointer' : 'not-allowed', fontFamily: 'Inter, sans-serif', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Création du compte...' : 'Créer mon compte'}
           </button>
 

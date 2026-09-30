@@ -26,7 +26,7 @@ export default function DocumentDevisPage() {
   if (!v) return <div style={{ padding: 40, color: '#6b6255', fontFamily: 'Inter, sans-serif' }}>Préparation du devis…</div>
   const patient = Array.isArray(v.dv.patient) ? v.dv.patient[0] : v.dv.patient
   const cabinet = Array.isArray(v.dv.cabinet) ? v.dv.cabinet[0] : v.dv.cabinet
-  const bouton: React.CSSProperties = { font: 'inherit', fontSize: 13, padding: '10px 16px', borderRadius: 10, border: '1px solid #e2dbd0', background: '#fff', color: '#4a3f35', textDecoration: 'none', cursor: 'pointer' }
+  const bouton: React.CSSProperties = { font: 'inherit', fontSize: 13, padding: '10px 16px', borderRadius: 6, border: '1px solid #e2dbd0', background: '#fff', color: '#4a3f35', textDecoration: 'none', cursor: 'pointer' }
 
   return (
     <div style={{ background: '#ece6dc', minHeight: '100vh', padding: '28px 20px 60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, fontFamily: 'Inter, sans-serif' }}>

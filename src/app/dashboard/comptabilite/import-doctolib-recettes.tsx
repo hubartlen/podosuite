@@ -166,25 +166,25 @@ export default function ImportDoctolibRecettes({ onImported }: { onImported: () 
 
   return (
     <>
-      <button onClick={() => setOpen(true)} style={{ padding: '9px 16px', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>
+      <button onClick={() => setOpen(true)} style={{ padding: '9px 16px', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>
         📸 Import Doctolib
       </button>
 
       {open && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', padding: '28px', width: 'min(960px, 95vw)', maxHeight: '85vh', overflow: 'auto' }}>
+          <div style={{ background: '#fff', borderRadius: '8px', padding: '28px', width: 'min(960px, 95vw)', maxHeight: '85vh', overflow: 'auto' }}>
             <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '20px', color: 'var(--fg)', fontWeight: '400', marginBottom: '6px' }}>Import Doctolib</h2>
             <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginBottom: '18px' }}>Dépose une ou plusieurs captures de ton agenda, ou colle-les avec Cmd + V. Vérifie ensuite chaque ligne avant d'importer.</p>
 
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '12px' }}>
-              <select value={cabinetId} onChange={e => changerCabinet(e.target.value)} style={{ padding: '9px 14px', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', background: '#fff' }}>
+              <select value={cabinetId} onChange={e => changerCabinet(e.target.value)} style={{ padding: '9px 14px', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', background: '#fff' }}>
                 {cabinets.length === 0 && <option value="">Aucun cabinet</option>}
                 {cabinets.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
-              <select value={paiementDefaut} onChange={e => setPaiementDefaut(e.target.value)} style={{ padding: '9px 14px', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', background: '#fff' }}>
+              <select value={paiementDefaut} onChange={e => setPaiementDefaut(e.target.value)} style={{ padding: '9px 14px', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', background: '#fff' }}>
                 {PAIEMENTS.map(p => <option key={p} value={p}>Paiement par défaut : {p}</option>)}
               </select>
-              <label style={{ padding: '9px 16px', background: 'var(--dark)', borderRadius: '10px', fontSize: '13px', color: 'var(--on-dark)', cursor: analyse ? 'default' : 'pointer', opacity: analyse ? 0.6 : 1 }}>
+              <label style={{ padding: '9px 16px', background: 'var(--dark)', borderRadius: '6px', fontSize: '13px', color: 'var(--on-dark)', cursor: analyse ? 'default' : 'pointer', opacity: analyse ? 0.6 : 1 }}>
                 {analyse ? 'Analyse…' : 'Ajouter des captures'}
                 <input type="file" accept="image/*" multiple hidden disabled={analyse || !cabinetId} onChange={e => { const f = Array.from(e.target.files || []); e.target.value = ''; analyser(f) }} />
               </label>
@@ -196,7 +196,7 @@ export default function ImportDoctolibRecettes({ onImported }: { onImported: () 
             {statut && <p style={{ fontSize: '13px', color: 'var(--fg-2)', marginBottom: '12px' }}>{statut}</p>}
 
             {lignes.length > 0 && (
-              <div style={{ border: '1px solid var(--line)', borderRadius: '10px', overflow: 'hidden', marginBottom: '18px' }}>
+              <div style={{ border: '1px solid var(--line)', borderRadius: '6px', overflow: 'hidden', marginBottom: '18px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: grille, gap: '6px', padding: '10px 12px', background: 'var(--surface-2)', borderBottom: '1px solid var(--line)' }}>
                   {['Date', 'Heure', 'Patient', 'Acte', 'Paiement', 'Montant', ''].map(h => <span key={h} style={{ fontSize: '10px', color: 'var(--fg-3)', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '.05em' }}>{h}</span>)}
                 </div>
@@ -227,10 +227,10 @@ export default function ImportDoctolibRecettes({ onImported }: { onImported: () 
             )}
 
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={confirmer} disabled={importing || lignes.length === 0} style={{ padding: '10px 20px', background: 'var(--dark)', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', opacity: importing || lignes.length === 0 ? 0.5 : 1 }}>
+              <button onClick={confirmer} disabled={importing || lignes.length === 0} style={{ padding: '10px 20px', background: 'var(--dark)', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: '500', color: 'var(--on-dark)', cursor: 'pointer', opacity: importing || lignes.length === 0 ? 0.5 : 1 }}>
                 {importing ? 'Import...' : `Importer ${lignes.length} recette(s)`}
               </button>
-              <button onClick={() => { setOpen(false); setLignes([]); setStatut('') }} style={{ padding: '10px 20px', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>Annuler</button>
+              <button onClick={() => { setOpen(false); setLignes([]); setStatut('') }} style={{ padding: '10px 20px', background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer' }}>Annuler</button>
             </div>
           </div>
         </div>

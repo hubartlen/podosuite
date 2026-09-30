@@ -125,7 +125,7 @@ export default function ImportRdvPage() {
             onClick={() => document.getElementById('rdv-file-input')?.click()}
             onDragOver={e => e.preventDefault()}
             onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
-            style={{ border: '2px dashed var(--line)', borderRadius: '14px', padding: '52px 32px', textAlign: 'center', cursor: 'pointer', background: '#fff', transition: 'all 0.15s' }}
+            style={{ border: '2px dashed var(--line)', borderRadius: '8px', padding: '52px 32px', textAlign: 'center', cursor: 'pointer', background: '#fff', transition: 'all 0.15s' }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)'; (e.currentTarget as HTMLElement).style.background = 'var(--surface-2)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)'; (e.currentTarget as HTMLElement).style.background = '#fff' }}>
             <input id="rdv-file-input" type="file" accept=".pdf,image/*" style={{ display: 'none' }}
@@ -147,12 +147,12 @@ export default function ImportRdvPage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
-            <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '8px', padding: '16px' }}>
               <div style={{ fontSize: '22px', marginBottom: '8px' }}>📸</div>
               <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--fg)' }}>Capture d'écran</p>
               <p style={{ fontSize: '12px', color: 'var(--fg-3)', marginTop: '4px' }}>App Doctolib iPhone</p>
             </div>
-            <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px' }}>
+            <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: '8px', padding: '16px' }}>
               <div style={{ fontSize: '22px', marginBottom: '8px' }}>📄</div>
               <p style={{ fontSize: '13px', fontWeight: '500', color: 'var(--fg)' }}>PDF</p>
               <p style={{ fontSize: '12px', color: 'var(--fg-3)', marginTop: '4px' }}>Doctolib web</p>
@@ -164,10 +164,10 @@ export default function ImportRdvPage() {
       {etape === 'review' && (
         <div>
           {preview && (
-            <img src={preview} alt="Planning" style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '1px solid var(--line)', maxHeight: '160px', objectFit: 'cover', objectPosition: 'top' }} />
+            <img src={preview} alt="Planning" style={{ width: '100%', borderRadius: '8px', marginBottom: '16px', border: '1px solid var(--line)', maxHeight: '160px', objectFit: 'cover', objectPosition: 'top' }} />
           )}
 
-          <div style={{ background: 'var(--bg)', borderRadius: '10px', padding: '12px 16px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ background: 'var(--bg)', borderRadius: '6px', padding: '12px 16px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p style={{ fontSize: '13px', color: 'var(--fg-2)', fontWeight: '500' }}>{nbSelectionnes} rendez-vous sélectionné{nbSelectionnes > 1 ? 's' : ''}</p>
             <button
               onClick={() => { const all = rdvs.every(r => r.selected); setRdvs(rs => rs.map(r => ({ ...r, selected: !all }))) }}
@@ -176,7 +176,7 @@ export default function ImportRdvPage() {
             </button>
           </div>
 
-          <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid var(--line)', overflow: 'hidden', marginBottom: '16px' }}>
+          <div style={{ background: '#fff', borderRadius: '8px', border: '1px solid var(--line)', overflow: 'hidden', marginBottom: '16px' }}>
             {rdvs.map((r, i) => (
               <div key={i}
                 onClick={() => setRdvs(rs => rs.map((x, j) => j === i ? { ...x, selected: !x.selected } : x))}
@@ -197,7 +197,7 @@ export default function ImportRdvPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '14px', fontWeight: '500', color: 'var(--fg)' }}>{r.nom} {r.prenom}</span>
                     {r.patient_id && (
-                      <span style={{ fontSize: '11px', background: '#c8b89a22', color: '#9b7d5a', padding: '2px 8px', borderRadius: '20px', fontWeight: '500', border: '1px solid #c8b89a44' }}>
+                      <span style={{ fontSize: '11px', background: '#c8b89a22', color: '#9b7d5a', padding: '2px 8px', borderRadius: '6px', fontWeight: '500', border: '1px solid #c8b89a44' }}>
                         Patient connu
                       </span>
                     )}
@@ -213,11 +213,11 @@ export default function ImportRdvPage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button onClick={handleImport} disabled={importing || nbSelectionnes === 0}
-              style={{ width: '100%', padding: '14px', background: 'var(--dark)', borderRadius: '12px', border: 'none', fontSize: '14px', color: 'var(--on-dark)', cursor: nbSelectionnes === 0 ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: '500', opacity: importing || nbSelectionnes === 0 ? 0.6 : 1 }}>
+              style={{ width: '100%', padding: '14px', background: 'var(--dark)', borderRadius: '8px', border: 'none', fontSize: '14px', color: 'var(--on-dark)', cursor: nbSelectionnes === 0 ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: '500', opacity: importing || nbSelectionnes === 0 ? 0.6 : 1 }}>
               {importing ? 'Importation...' : `Importer ${nbSelectionnes} RDV dans le calendrier`}
             </button>
             <button onClick={() => { setEtape('upload'); setPreview(null); setRdvs([]) }}
-              style={{ width: '100%', padding: '12px', background: 'var(--surface-3)', borderRadius: '12px', border: 'none', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+              style={{ width: '100%', padding: '12px', background: 'var(--surface-3)', borderRadius: '8px', border: 'none', fontSize: '13px', color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
               Recommencer
             </button>
           </div>
@@ -235,7 +235,7 @@ export default function ImportRdvPage() {
           <p style={{ fontSize: '13px', color: 'var(--fg-3)', marginBottom: '28px' }}>
             Les rendez-vous ont été ajoutés à ton calendrier.
           </p>
-          <Link href="/dashboard/calendrier" style={{ padding: '12px 28px', background: 'var(--dark)', borderRadius: '12px', fontSize: '14px', color: 'var(--on-dark)', textDecoration: 'none', fontWeight: '500' }}>
+          <Link href="/dashboard/calendrier" style={{ padding: '12px 28px', background: 'var(--dark)', borderRadius: '8px', fontSize: '14px', color: 'var(--on-dark)', textDecoration: 'none', fontWeight: '500' }}>
             Voir le calendrier
           </Link>
         </div>

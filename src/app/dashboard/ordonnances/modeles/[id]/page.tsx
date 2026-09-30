@@ -51,7 +51,7 @@ export default function EditeurModele() {
   return (
     <div className="or" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 400px', gap: 24, padding: '28px 32px 60px', maxWidth: 1400, margin: '0 auto' }}>
       <style>{CSS_OR + `
-        .or-apercu{position:sticky;top:16px;align-self:start;background:var(--surface-3);border-radius:16px;padding:16px;max-height:calc(100vh - 32px);overflow:auto}
+        .or-apercu{position:sticky;top:16px;align-self:start;background:var(--surface-3);border-radius:8px;padding:16px;max-height:calc(100vh - 32px);overflow:auto}
         .or-apercu>.podian-doc{zoom:.46;box-shadow:0 2px 10px rgba(0,0,0,.15)}
         @media (max-width:1150px){.or{grid-template-columns:1fr!important}.or-apercu{display:none}}
       `}</style>

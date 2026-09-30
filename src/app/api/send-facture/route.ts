@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       html: `<!DOCTYPE html>
 <html lang="fr">
 <body style="margin:0;padding:0;background:#f5f2ee;font-family:Arial,sans-serif;">
-<div style="max-width:580px;margin:32px auto;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e2dbd0;">
+<div style="max-width:580px;margin:32px auto;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e2dbd0;">
   <div style="background:#1a1410;padding:28px 32px;">
     <div style="font-family:Georgia,serif;font-size:22px;color:#c8b89a;">Cabinet de Podologie</div>
     <div style="font-size:13px;color:#9b8f7e;margin-top:4px;">Arthur Le Neué — Pédicure Podologue DE</div>
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   <div style="padding:28px 32px;">
     <p style="color:#1a1410;font-size:15px;margin:0 0 14px;">Bonjour ${patient.prenom} ${patient.nom},</p>
     <p style="color:#4a3f35;font-size:15px;margin:0 0 24px;">Veuillez trouver ci-joint votre facture <strong>${facture.numero}</strong> d'un montant de <strong>${facture.total.toFixed(2)}&nbsp;€</strong>.</p>
-    <div style="background:#f9f7f4;border:1px solid #e2dbd0;border-radius:10px;padding:20px;margin-bottom:24px;">
+    <div style="background:#f9f7f4;border:1px solid #e2dbd0;border-radius:6px;padding:20px;margin-bottom:24px;">
       <table style="width:100%;border-collapse:collapse;">
         <tr>
           <td style="font-size:11px;color:#9b8f7e;text-transform:uppercase;padding-bottom:4px;">Facture N°</td>

@@ -29,7 +29,7 @@ export default function PatientsPage() {
     setFiltered(patients.filter(p => p.nom?.toLowerCase().includes(s) || p.prenom?.toLowerCase().includes(s)))
   }, [search, patients])
 
-  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}><div style={{width:'24px',height:'24px',border:'2px solid var(--line)',borderTopColor:'var(--accent)',borderRadius:'50%',animation:'spin .8s linear infinite'}}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
+  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}><div style={{width:'24px',height:'24px',border:'2px solid var(--line)',borderTopColor:'var(--accent)',borderRadius: '50%',animation:'spin .8s linear infinite'}}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
 
   return (
     <div className="page">

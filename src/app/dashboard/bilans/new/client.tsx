@@ -11,7 +11,7 @@ const Toggle = ({ label, options, value, onChange }: any) => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
       {options.map(([val, txt]: [string, string]) => (
         <button key={val} type="button" onClick={() => onChange(val)} style={{
-          padding: '7px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500,
+          padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
           border: `1.5px solid ${value === val ? 'var(--dark)' : 'var(--line)'}`,
           background: value === val ? 'var(--dark)' : 'var(--surface)',
           color: value === val ? 'var(--accent)' : 'var(--fg-2)',
@@ -36,7 +36,7 @@ const Check = ({ label, checked, onChange }: any) => (
 )
 
 const Section = ({ title, children }: any) => (
-  <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 14, padding: 24, marginBottom: 12 }}>
+  <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: 24, marginBottom: 12 }}>
     <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 20 }}>{title}</p>
     {children}
   </div>
@@ -44,7 +44,7 @@ const Section = ({ title, children }: any) => (
 
 const inp: React.CSSProperties = {
   width: '100%', padding: '10px 14px', border: '1px solid var(--line)',
-  borderRadius: 10, fontSize: 13, color: 'var(--fg)', background: 'var(--surface)',
+  borderRadius: 6, fontSize: 13, color: 'var(--fg)', background: 'var(--surface)',
   fontFamily: 'Inter, sans-serif', outline: 'none',
 }
 
@@ -193,7 +193,7 @@ export default function NewBilanClient() {
             <div style={{ display: 'flex', gap: 8 }}>
               {[['aucune','Aucune'],['gauche','Gauche'],['droite','Droite'],['bilat','Bilatérale']].map(([v, t]) => (
                 <button key={v} type="button" onClick={() => set('talonnette_cote', v)} style={{
-                  padding: '7px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500,
+                  padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500,
                   border: `1.5px solid ${form.talonnette_cote === v ? 'var(--dark)' : 'var(--line)'}`,
                   background: form.talonnette_cote === v ? 'var(--dark)' : 'var(--surface)',
                   color: form.talonnette_cote === v ? 'var(--accent)' : 'var(--fg-2)',
@@ -219,17 +219,17 @@ export default function NewBilanClient() {
 
       {saved && (
         <div style={{ marginBottom: 16 }}>
-          <div style={{ background: 'var(--success-soft)', color: 'var(--success)', border: '1px solid #b8dfc0', borderRadius: 12, padding: '12px 16px', fontSize: 13, marginBottom: 10 }}>
+          <div style={{ background: 'var(--success-soft)', color: 'var(--success)', border: '1px solid #b8dfc0', borderRadius: 8, padding: '12px 16px', fontSize: 13, marginBottom: 10 }}>
             ✓ Bilan enregistré
           </div>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 14, padding: 20 }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 8, padding: 20 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>Envoyer par email</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <input type="email" value={emailTo} onChange={e => setEmailTo(e.target.value)}
                 placeholder="email@patient.com" style={{ ...inp, flex: 1 }}/>
               <button onClick={sendEmail} disabled={sending || !emailTo || emailSent} style={{
                 padding: '10px 18px', background: 'var(--dark)', color: 'var(--accent)',
-                border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 500,
+                border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', opacity: sending || emailSent ? 0.6 : 1, whiteSpace: 'nowrap',
               }}>{emailSent ? '✓ Envoyé' : sending ? '...' : 'Envoyer'}</button>
             </div>
@@ -240,16 +240,16 @@ export default function NewBilanClient() {
       <div style={{ display: 'flex', gap: 10 }}>
         <button onClick={() => handleSubmit(false)} disabled={loading} style={{
           padding: '11px 22px', background: 'var(--dark)', color: 'var(--accent)',
-          border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer',
           opacity: loading ? 0.6 : 1,
         }}>{loading ? 'Enregistrement...' : 'Enregistrer'}</button>
         <button onClick={() => handleSubmit(true)} disabled={loading} style={{
           padding: '11px 22px', background: 'var(--accent)', color: 'var(--dark)',
-          border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer',
           opacity: loading ? 0.6 : 1,
         }}>Enregistrer + PDF</button>
         <Link href="/dashboard/patients" style={{
-          padding: '11px 20px', borderRadius: 12, fontSize: 13,
+          padding: '11px 20px', borderRadius: 8, fontSize: 13,
           border: '1px solid var(--line)', color: 'var(--fg-2)',
           textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
         }}>Annuler</Link>

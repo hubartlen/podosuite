@@ -65,7 +65,7 @@ function Capture() {
   const choisir = (e: React.ChangeEvent<HTMLInputElement>) => { const f = Array.from(e.target.files || []); e.target.value = ''; envoyer(f) }
 
   const page: React.CSSProperties = { minHeight: '100vh', background: 'var(--bg)', fontFamily: 'Inter, sans-serif', color: 'var(--fg)', display: 'flex', flexDirection: 'column' }
-  const bouton: React.CSSProperties = { display: 'block', textAlign: 'center', fontSize: 17, fontWeight: 600, padding: '20px', borderRadius: 16, cursor: 'pointer' }
+  const bouton: React.CSSProperties = { display: 'block', textAlign: 'center', fontSize: 17, fontWeight: 600, padding: '20px', borderRadius: 8, cursor: 'pointer' }
 
   if (etat === 'chargement') return <div style={{ ...page, alignItems: 'center', justifyContent: 'center' }}>Chargement…</div>
   if (etat === 'deconnecte') return (
@@ -94,7 +94,7 @@ function Capture() {
         {message && <p aria-live="polite" style={{ margin: '4px 0', fontSize: 15, textAlign: 'center' }}>{message}</p>}
         {apercus.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-            {apercus.map(u => <img key={u} src={u} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: 10 }} />)}
+            {apercus.map(u => <img key={u} src={u} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: 6 }} />)}
           </div>
         )}
       </main>

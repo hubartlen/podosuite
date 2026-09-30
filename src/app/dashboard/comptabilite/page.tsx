@@ -199,10 +199,10 @@ export default function ComptabilitePage() {
     const a = document.createElement('a'); a.href=url; a.download=`PODian_${MOIS[mois]}_${annee}.csv`; a.click()
   }
 
-  const card: React.CSSProperties = { background:'#fff', border:'1px solid var(--line)', borderRadius:'16px', padding:'20px' }
+  const card: React.CSSProperties = { background:'#fff', border:'1px solid var(--line)', borderRadius: '8px', padding:'20px' }
   const dotColors = ['var(--dark)','var(--accent)','var(--fg-3)','var(--line)']
 
-  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}><div style={{width:'28px',height:'28px',border:'2px solid var(--line)',borderTopColor:'var(--accent)',borderRadius:'50%',animation:'spin 0.8s linear infinite'}}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
+  if (loading) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}><div style={{width:'28px',height:'28px',border:'2px solid var(--line)',borderTopColor:'var(--accent)',borderRadius: '50%',animation:'spin 0.8s linear infinite'}}></div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>
 
   return (
     <div style={{ padding:'32px 36px', maxWidth:'1100px' }}>
@@ -211,10 +211,10 @@ export default function ComptabilitePage() {
       {/* Modal import */}
       {showImport && (
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:100, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <div style={{ background:'#fff', borderRadius:'16px', padding:'28px', width:'600px', maxHeight:'80vh', overflow:'auto' }}>
+          <div style={{ background:'#fff', borderRadius: '8px', padding:'28px', width:'600px', maxHeight:'80vh', overflow:'auto' }}>
             <h2 style={{ fontFamily:'Playfair Display, serif', fontSize:'20px', color: 'var(--fg)', fontWeight:'400', marginBottom:'8px' }}>Import Excel — {importPreview.length} lignes</h2>
             <p style={{ fontSize:'13px', color:'var(--fg-3)', marginBottom:'20px' }}>Vérifie les données avant de confirmer l'import.</p>
-            <div style={{ border:'1px solid var(--line)', borderRadius:'10px', overflow:'hidden', marginBottom:'20px' }}>
+            <div style={{ border:'1px solid var(--line)', borderRadius: '6px', overflow:'hidden', marginBottom:'20px' }}>
               <div style={{ display:'grid', gridTemplateColumns:'100px 1fr 120px 80px', padding:'10px 14px', background:'var(--surface-2)', borderBottom:'1px solid var(--line)' }}>
                 {['Date','Patient','Paiement','Montant'].map(h => <span key={h} style={{ fontSize:'10px', color:'var(--fg-3)', fontWeight:'500', textTransform:'uppercase', letterSpacing:'.05em' }}>{h}</span>)}
               </div>
@@ -228,10 +228,10 @@ export default function ComptabilitePage() {
               ))}
             </div>
             <div style={{ display:'flex', gap:'10px' }}>
-              <button onClick={confirmerImport} disabled={importing} style={{ padding:'10px 20px', background:'var(--dark)', border:'none', borderRadius:'10px', fontSize:'13px', fontWeight:'500', color: 'var(--on-dark)', cursor:'pointer', opacity: importing?0.6:1 }}>
+              <button onClick={confirmerImport} disabled={importing} style={{ padding:'10px 20px', background:'var(--dark)', border:'none', borderRadius: '6px', fontSize:'13px', fontWeight:'500', color: 'var(--on-dark)', cursor:'pointer', opacity: importing?0.6:1 }}>
                 {importing ? 'Import...' : `Importer ${importPreview.length} lignes`}
               </button>
-              <button onClick={() => setShowImport(false)} style={{ padding:'10px 20px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>Annuler</button>
+              <button onClick={() => setShowImport(false)} style={{ padding:'10px 20px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>Annuler</button>
             </div>
           </div>
         </div>
@@ -244,19 +244,19 @@ export default function ComptabilitePage() {
           <p style={{ fontSize:'13px', color:'var(--fg-3)', marginTop:'4px' }}>Recettes et gestion des factures</p>
         </div>
         <div style={{ display:'flex', gap:'10px', alignItems:'center', flexWrap:'wrap' }}>
-          <select value={mois} onChange={e => setMois(Number(e.target.value))} style={{ padding:'9px 14px', background:'#fff', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color: 'var(--fg)', outline:'none' }}>
+          <select value={mois} onChange={e => setMois(Number(e.target.value))} style={{ padding:'9px 14px', background:'#fff', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'13px', color: 'var(--fg)', outline:'none' }}>
             {MOIS.map((m, i) => <option key={i} value={i}>{m}</option>)}
           </select>
-          <select value={annee} onChange={e => setAnnee(Number(e.target.value))} style={{ padding:'9px 14px', background:'#fff', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color: 'var(--fg)', outline:'none' }}>
+          <select value={annee} onChange={e => setAnnee(Number(e.target.value))} style={{ padding:'9px 14px', background:'#fff', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'13px', color: 'var(--fg)', outline:'none' }}>
             {[2024, 2025, 2026, 2027].map(a => <option key={a} value={a}>{a}</option>)}
           </select>
-          <a href="/dashboard/comptabilite/charges" style={{ padding: '9px 16px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '13px', color: 'var(--fg-2)', textDecoration: 'none' }}>Charges</a>
-          <a href="/dashboard/comptabilite/journal" style={{ padding: '9px 16px', background: 'var(--dark)', borderRadius: '10px', fontSize: '13px', color: 'var(--on-dark)', textDecoration: 'none' }}>Journal des recettes</a>
+          <a href="/dashboard/comptabilite/charges" style={{ padding: '9px 16px', background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '13px', color: 'var(--fg-2)', textDecoration: 'none' }}>Charges</a>
+          <a href="/dashboard/comptabilite/journal" style={{ padding: '9px 16px', background: 'var(--dark)', borderRadius: '6px', fontSize: '13px', color: 'var(--on-dark)', textDecoration: 'none' }}>Journal des recettes</a>
           <ImportDoctolibRecettes onImported={loadFactures} />
-          <button onClick={() => fileRef.current?.click()} style={{ padding:'9px 16px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>
+          <button onClick={() => fileRef.current?.click()} style={{ padding:'9px 16px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>
             📥 Import Excel
           </button>
-          <button onClick={exportCSV} style={{ padding:'9px 16px', background:'#fff', border:'1px solid var(--line)', borderRadius:'10px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>Export CSV</button>
+          <button onClick={exportCSV} style={{ padding:'9px 16px', background:'#fff', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'13px', color:'var(--fg-2)', cursor:'pointer' }}>Export CSV</button>
           <button onClick={async () => {
             const { jsPDF } = await import('jspdf')
             const doc = new jsPDF({ unit:'mm', format:'a4' })
@@ -287,28 +287,28 @@ export default function ComptabilitePage() {
             doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(200,200,200)
             doc.text('Généré par PODian', W/2, 285, { align:'center' })
             doc.save(`PODian_${MOIS[mois]}_${annee}.pdf`)
-          }} style={{ padding:'9px 16px', background:'var(--dark)', border:'none', borderRadius:'10px', fontSize:'13px', color: 'var(--on-dark)', cursor:'pointer' }}>Export PDF</button>
+          }} style={{ padding:'9px 16px', background:'var(--dark)', border:'none', borderRadius: '6px', fontSize:'13px', color: 'var(--on-dark)', cursor:'pointer' }}>Export PDF</button>
         </div>
       </div>
 
       {/* KPIs */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'12px', marginBottom:'20px' }}>
-        <div style={{ background:'#fff', border:'1px solid var(--line)', borderRadius:'16px', padding:'20px 18px' }}>
+        <div style={{ background:'#fff', border:'1px solid var(--line)', borderRadius: '8px', padding:'20px 18px' }}>
           <div style={{ fontSize:'10px', color:'var(--fg-3)', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Total brut {MOIS[mois]}</div>
           <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: 'var(--fg)', fontWeight:'400' }}>{Math.round(totalMois)} €</div>
           <div style={{ fontSize:'11px', color:'var(--fg-3)', marginTop:'5px' }}>{facturesMois.filter(f=>f.statut!=='annulee').length} factures</div>
         </div>
-        <div style={{ background:'var(--accent)', borderRadius:'16px', padding:'20px 18px' }}>
+        <div style={{ background:'var(--accent)', borderRadius: '8px', padding:'20px 18px' }}>
           <div style={{ fontSize:'10px', color:'rgba(26,20,16,0.55)', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Ma part ({retrocession}%)</div>
           <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: 'var(--fg)', fontWeight:'400' }}>{Math.round(totalMois * retrocession / 100)} €</div>
           <div style={{ fontSize:'11px', color:'rgba(26,20,16,0.55)', marginTop:'5px' }}>après rétrocession</div>
         </div>
-        <div style={{ background:'#fff', border:'1px solid var(--line)', borderRadius:'16px', padding:'20px 18px' }}>
+        <div style={{ background:'#fff', border:'1px solid var(--line)', borderRadius: '8px', padding:'20px 18px' }}>
           <div style={{ fontSize:'10px', color:'var(--fg-3)', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Total annuel</div>
           <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: 'var(--fg)', fontWeight:'400' }}>{Math.round(totalAnnee)} €</div>
           <div style={{ fontSize:'11px', color:'var(--fg-3)', marginTop:'5px' }}>Ma part : {Math.round(totalAnnee * retrocession / 100)} €</div>
         </div>
-        <div style={{ background:'#fff', border:'1px solid var(--line)', borderRadius:'16px', padding:'20px 18px' }}>
+        <div style={{ background:'#fff', border:'1px solid var(--line)', borderRadius: '8px', padding:'20px 18px' }}>
           <div style={{ fontSize:'10px', color:'var(--fg-3)', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'8px' }}>Annulées</div>
           <div style={{ fontFamily:'Playfair Display, serif', fontSize:'24px', color: 'var(--fg)', fontWeight:'400' }}>{facturesMois.filter(f=>f.statut==='annulee').length}</div>
           <div style={{ fontSize:'11px', color:'var(--fg-3)', marginTop:'5px' }}>ce mois</div>
@@ -322,7 +322,7 @@ export default function ComptabilitePage() {
           {statsMensuelles.map((s, i) => (
             <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'4px', cursor:'pointer' }} onClick={() => setMois(i)}>
               <div style={{ fontSize:'9px', color: i===mois?'var(--dark)':'var(--fg-3)', fontWeight: i===mois?'500':'400' }}>{s.total>0?`${Math.round(s.total)}€`:''}</div>
-              <div style={{ width:'100%', background: i===mois?'var(--dark)':'var(--line)', borderRadius:'4px 4px 0 0', height:`${Math.max(s.total/maxMois*70, s.total>0?3:0)}px`, minHeight: s.total>0?'3px':'0' }}></div>
+              <div style={{ width:'100%', background: i===mois?'var(--dark)':'var(--line)', borderRadius: '4px 4px 0 0', height:`${Math.max(s.total/maxMois*70, s.total>0?3:0)}px`, minHeight: s.total>0?'3px':'0' }}></div>
               <div style={{ fontSize:'9px', color: i===mois?'var(--dark)':'var(--fg-3)', fontWeight: i===mois?'500':'400' }}>{MOIS[i].slice(0,3)}</div>
             </div>
           ))}
@@ -335,7 +335,7 @@ export default function ComptabilitePage() {
           {Object.keys(paiements).length === 0 ? <p style={{ fontSize:'13px', color:'var(--fg-3)' }}>Aucune donnée</p> :
             Object.entries(paiements).sort((a,b)=>b[1]-a[1]).map(([k,v],i) => (
               <div key={k} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'7px 0', borderBottom:'1px solid var(--bg)' }}>
-                <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:dotColors[i%4] }}></div>
+                <div style={{ width:'8px', height:'8px', borderRadius: '50%', background:dotColors[i%4] }}></div>
                 <span style={{ flex:1, fontSize:'13px', color:'var(--fg-2)' }}>{k}</span>
                 <span style={{ fontSize:'13px', fontWeight:'500', color: 'var(--fg)' }}>{Math.round(v)} €</span>
                 <span style={{ fontSize:'11px', color:'var(--fg-3)', width:'36px', textAlign:'right' }}>{totalMois>0?Math.round(v/totalMois*100):0}%</span>
@@ -365,7 +365,7 @@ export default function ComptabilitePage() {
         <div style={{ fontSize:'10px', color:'var(--fg-3)', letterSpacing:'.06em', textTransform:'uppercase', marginBottom:'16px' }}>
           Détail — {MOIS[mois]} {annee}
         </div>
-        <div style={{ background:'var(--surface-2)', borderRadius:'10px', overflow:'hidden' }}>
+        <div style={{ background:'var(--surface-2)', borderRadius: '6px', overflow:'hidden' }}>
           <div style={{ display:'grid', gridTemplateColumns:'100px 1fr 130px 90px 80px 120px', padding:'10px 16px', borderBottom:'1px solid var(--line)' }}>
             {['Date','Patient / N°','Paiement','Montant','Statut','Actions'].map(h => (
               <span key={h} style={{ fontSize:'10px', color:'var(--fg-3)', fontWeight:'500', letterSpacing:'.05em', textTransform:'uppercase' }}>{h}</span>
@@ -384,19 +384,19 @@ export default function ComptabilitePage() {
                 {isEditing ? (
                   <div style={{ display:'grid', gridTemplateColumns:'100px 1fr 130px 90px 80px 120px', padding:'10px 16px', alignItems:'center', gap:'6px' }}>
                     <input type="date" value={editData.date_facture} onChange={e => setEditData({...editData, date_facture: e.target.value})}
-                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius:'6px', fontSize:'12px' }} />
+                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius: '6px', fontSize:'12px' }} />
                     <input value={editData.patient_nom || ''} onChange={e => setEditData({...editData, patient_nom: e.target.value})}
-                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius:'6px', fontSize:'12px' }} />
+                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius: '6px', fontSize:'12px' }} />
                     <select value={editData.mode_paiement} onChange={e => setEditData({...editData, mode_paiement: e.target.value})}
-                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius:'6px', fontSize:'12px' }}>
+                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius: '6px', fontSize:'12px' }}>
                       {['Chèque','Espèces','Carte bancaire','Virement','Tiers payant'].map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
                     <input type="number" value={editData.total} onChange={e => setEditData({...editData, total: e.target.value})}
-                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius:'6px', fontSize:'12px', textAlign:'right' }} />
+                      style={{ padding:'4px 8px', border:'1px solid var(--accent)', borderRadius: '6px', fontSize:'12px', textAlign:'right' }} />
                     <span></span>
                     <div style={{ display:'flex', gap:'4px' }}>
-                      <button onClick={() => sauvegarderEdit(f.id)} style={{ padding:'4px 10px', background:'var(--dark)', border:'none', borderRadius:'6px', fontSize:'11px', color: 'var(--on-dark)', cursor:'pointer' }}>✓</button>
-                      <button onClick={() => setEditingId(null)} style={{ padding:'4px 10px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius:'6px', fontSize:'11px', color:'var(--fg-2)', cursor:'pointer' }}>✕</button>
+                      <button onClick={() => sauvegarderEdit(f.id)} style={{ padding:'4px 10px', background:'var(--dark)', border:'none', borderRadius: '6px', fontSize:'11px', color: 'var(--on-dark)', cursor:'pointer' }}>✓</button>
+                      <button onClick={() => setEditingId(null)} style={{ padding:'4px 10px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'11px', color:'var(--fg-2)', cursor:'pointer' }}>✕</button>
                     </div>
                   </div>
                 ) : (
@@ -405,20 +405,20 @@ export default function ComptabilitePage() {
                     <span style={{ fontSize:'13px', fontWeight:'500', color: isAnnulee?'var(--fg-3)':'var(--dark)', textDecoration: isAnnulee?'line-through':'none', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{nomAffiche}</span>
                     <span style={{ fontSize:'12px', color:'var(--fg-2)' }}>{f.mode_paiement || '—'}</span>
                     <span style={{ fontSize:'13px', fontWeight:'500', color: isAnnulee?'var(--fg-3)':'var(--dark)', textAlign:'right' }}>{(f.total||0).toFixed(2)} €</span>
-                    <span style={{ fontSize:'10px', padding:'3px 8px', borderRadius:'20px', background: isAnnulee?'var(--bg)':'var(--surface-3)', color: isAnnulee?'var(--fg-3)':'var(--fg-2)', textAlign:'center' }}>
+                    <span style={{ fontSize:'10px', padding:'3px 8px', borderRadius: '6px', background: isAnnulee?'var(--bg)':'var(--surface-3)', color: isAnnulee?'var(--fg-3)':'var(--fg-2)', textAlign:'center' }}>
                       {isAnnulee ? 'Annulée' : 'Payée'}
                     </span>
                     <div style={{ display:'flex', gap:'4px' }}>
                       {!isAnnulee && (
                         <button onClick={() => { setEditingId(f.id); setEditData({ date_facture: f.date_facture, patient_nom: f.patient_nom||'', mode_paiement: f.mode_paiement||'Chèque', total: f.total||0 }) }}
-                          style={{ padding:'4px 8px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius:'6px', fontSize:'10px', color:'var(--fg-2)', cursor:'pointer' }}>Modifier</button>
+                          style={{ padding:'4px 8px', background:'var(--bg)', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'10px', color:'var(--fg-2)', cursor:'pointer' }}>Modifier</button>
                       )}
                       {isAnnulee ? (
-                        <button onClick={() => reactiver(f.id)} style={{ padding:'4px 8px', background:'var(--surface-3)', border:'none', borderRadius:'6px', fontSize:'10px', color:'var(--fg-2)', cursor:'pointer' }}>Réactiver</button>
+                        <button onClick={() => reactiver(f.id)} style={{ padding:'4px 8px', background:'var(--surface-3)', border:'none', borderRadius: '6px', fontSize:'10px', color:'var(--fg-2)', cursor:'pointer' }}>Réactiver</button>
                       ) : (
-                        <button onClick={() => annulerFacture(f.id)} style={{ padding:'4px 8px', background:'none', border:'1px solid var(--line)', borderRadius:'6px', fontSize:'10px', color:'var(--fg-3)', cursor:'pointer' }}>Annuler</button>
+                        <button onClick={() => annulerFacture(f.id)} style={{ padding:'4px 8px', background:'none', border:'1px solid var(--line)', borderRadius: '6px', fontSize:'10px', color:'var(--fg-3)', cursor:'pointer' }}>Annuler</button>
                       )}
-                      <button onClick={() => supprimer(f.id)} style={{ padding:'4px 8px', background:'none', border:'none', borderRadius:'6px', fontSize:'10px', color:'var(--accent)', cursor:'pointer' }}>✕</button>
+                      <button onClick={() => supprimer(f.id)} style={{ padding:'4px 8px', background:'none', border:'none', borderRadius: '6px', fontSize:'10px', color:'var(--accent)', cursor:'pointer' }}>✕</button>
                     </div>
                   </div>
                 )}
