@@ -99,32 +99,62 @@ export default function Accueil() {
         </div>
 
         <div className="lp-apercu" aria-hidden="true">
-          <div className="lp-apercu-cote" style={{ width: 150, background: '#151836', padding: '16px 10px', display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
-            <div style={{ height: 30, borderRadius: 9, background: '#f08a24', marginBottom: 8 }} />
-            {[0.12, 0.05, 0.05, 0.05].map((o, i) => <div key={i} style={{ height: 26, borderRadius: 8, background: `rgba(255,255,255,${o})` }} />)}
-            <div style={{ height: 12 }} />
-            {[0.05, 0.05, 0.05].map((o, i) => <div key={'g' + i} style={{ height: 26, borderRadius: 8, background: `rgba(255,255,255,${o})` }} />)}
-          </div>
-          <div style={{ flex: 1, padding: 22, display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-            <div className="lp-serif" style={{ fontSize: 24, color: '#1b1d2e' }}>Ton activité</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr', gap: 10 }}>
-              <div style={{ background: '#1c1f3f', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {barre('55%', 10, 'rgba(255,255,255,.25)')}{barre('70%', 22, 'rgba(255,255,255,.85)')}
-                <div style={{ height: 6, background: 'rgba(255,255,255,.15)', borderRadius: 6 }}><div style={{ width: '72%', height: '100%', background: '#f08a24', borderRadius: 6 }} /></div>
-              </div>
-              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>{barre('50%', 10)}{barre('70%', 20, '#1b1d2e')}</div>
-              <div style={{ background: '#fdebd6', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>{barre('50%', 10, '#f5c998')}{barre('70%', 20, '#9a4a0b')}</div>
+          <div className="lp-apercu-cote" style={{ width: 172, background: '#151836', padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0, fontSize: 12.5, color: 'rgba(255,255,255,.72)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#fff', fontWeight: 600, fontSize: 14, marginBottom: 12 }}>
+              <span style={{ width: 22, height: 22, borderRadius: 6, background: '#f08a24', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontFamily: "'Playfair Display', Georgia, serif" }}>P</span>PODian
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 10, flex: 1 }}>
-              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 8, padding: 14, display: 'grid', gridTemplateColumns: 'repeat(9,1fr)', gap: 6, alignItems: 'end' }}>
-                {[30, 24, 55, 60, 70, 12, 92, 4, 4].map((h, i) => <div key={i} style={{ height: h + '%', background: i === 6 ? '#f08a24' : h > 4 ? '#1c1f3f' : '#e1e2ea', borderRadius: 4 }} />)}
+            <div style={{ background: '#f08a24', color: '#fff', borderRadius: 8, padding: '7px 10px', fontWeight: 600, textAlign: 'center', marginBottom: 12 }}>+ Nouveau</div>
+            <div style={{ fontSize: 10.5, opacity: 0.6, margin: '2px 8px 4px' }}>Au cabinet</div>
+            {[['Tableau de bord', true, ''], ['Patients', false, ''], ['Agenda', false, ''], ['Bilans', false, '2'], ['Ordonnances', false, '']].map(([t, actif, badge]: any) => (
+              <div key={t} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 8px', borderRadius: 6, background: actif ? 'rgba(255,255,255,.1)' : 'transparent', color: actif ? '#fff' : undefined, fontWeight: actif ? 600 : 400 }}>
+                {t}{badge && <span style={{ background: '#f08a24', color: '#fff', borderRadius: 10, fontSize: 10, padding: '0 6px', fontWeight: 700 }}>{badge}</span>}
               </div>
-              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 8, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {barre('40%', 10)}
-                {[['Soin', '#e3f1e7', '#23633a'], ['Bilan', '#dde8f6', '#1d4a80'], ['Orthonyxie', '#fbe3d8', '#9a3b16']].map(([t, f, c]) => (
-                  <div key={t} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
-                    {barre('45%', 10)}
-                    <span style={{ fontSize: 11, background: f, color: c, borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{t}</span>
+            ))}
+            <div style={{ fontSize: 10.5, opacity: 0.6, margin: '10px 8px 4px' }}>Gestion</div>
+            {['Devis', 'Recettes', 'Journal', 'Charges'].map(t => <div key={t} style={{ padding: '6px 8px' }}>{t}</div>)}
+          </div>
+          <div style={{ flex: 1, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0, color: '#1b1d2e' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 10 }}>
+              <span className="lp-serif" style={{ fontSize: 22 }}>Ton activité</span>
+              <span style={{ fontSize: 11.5, color: '#676b8a' }}>Septembre, tous cabinets</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 8 }}>
+              <div style={{ background: '#1c1f3f', color: '#fff', borderRadius: 12, padding: '10px 12px' }}>
+                <div style={{ fontSize: 10.5, opacity: 0.7 }}>Chiffre d'affaires</div>
+                <div className="lp-serif" style={{ fontSize: 24, lineHeight: 1.15 }}>5 842 €</div>
+                <div style={{ height: 4, background: 'rgba(255,255,255,.15)', borderRadius: 4, marginTop: 6 }}><div style={{ width: '97%', height: '100%', background: '#f08a24', borderRadius: 4 }} /></div>
+                <div style={{ fontSize: 10, opacity: 0.7, marginTop: 4 }}>97 % de l'objectif</div>
+              </div>
+              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 12, padding: '10px 12px' }}>
+                <div style={{ fontSize: 10.5, color: '#676b8a' }}>Ma part</div>
+                <div className="lp-serif" style={{ fontSize: 20, lineHeight: 1.2 }}>4 817 €</div>
+                <div style={{ fontSize: 10, color: '#676b8a', marginTop: 4 }}>après rétrocession</div>
+              </div>
+              <div style={{ background: '#fdebd6', borderRadius: 12, padding: '10px 12px' }}>
+                <div style={{ fontSize: 10.5, color: '#9a4a0b' }}>Résultat</div>
+                <div className="lp-serif" style={{ fontSize: 20, lineHeight: 1.2, color: '#9a4a0b' }}>3 214 €</div>
+                <div style={{ fontSize: 10, color: '#9a4a0b', marginTop: 4 }}>charges déduites</div>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.35fr 1fr', gap: 8, flex: 1, minHeight: 0 }}>
+              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 12, padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6, minHeight: 0 }}>
+                <div style={{ fontSize: 11, color: '#676b8a' }}>Chiffre d'affaires par mois</div>
+                <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: 6, alignItems: 'end' }}>
+                  {[[48, 'J'], [55, 'F'], [62, 'M'], [58, 'A'], [70, 'M'], [66, 'J'], [52, 'J'], [78, 'A'], [92, 'S']].map(([h, m], i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%', justifyContent: 'flex-end' }}>
+                      <div style={{ width: '100%', height: h + '%', background: i === 8 ? '#f08a24' : '#1c1f3f', borderRadius: 3 }} />
+                      <span style={{ fontSize: 9.5, color: '#676b8a' }}>{m}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ background: '#fff', border: '1px solid #e1e2ea', borderRadius: 12, padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8, minHeight: 0, overflow: 'hidden' }}>
+                <div style={{ fontSize: 11, color: '#676b8a' }}>Aujourd'hui</div>
+                {[['09:00', 'Claire M.', 'Soin', '#e3f1e7', '#23633a'], ['09:30', 'Idrissa D.', 'Bilan', '#dde8f6', '#1d4a80'], ['10:30', 'Luc B.', 'Orthonyxie', '#fbe3d8', '#9a3b16'], ['11:00', 'Thi N.', 'Soin', '#e3f1e7', '#23633a'], ['14:15', 'Marc R.', 'Semelles', '#efe4f4', '#6a3f7c'], ['15:00', 'Sofia M.', 'Soin', '#e3f1e7', '#23633a']].map(([h, n, a, f, c]) => (
+                  <div key={h} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11.5 }}>
+                    <span style={{ color: '#676b8a', width: 32, flexShrink: 0 }}>{h}</span>
+                    <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{n}</span>
+                    <span style={{ fontSize: 10, background: f, color: c, borderRadius: 20, padding: '2px 7px', fontWeight: 600 }}>{a}</span>
                   </div>
                 ))}
               </div>
