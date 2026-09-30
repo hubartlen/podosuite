@@ -199,12 +199,13 @@ export default function SaisieBilan() {
       const res = await fetch('/api/bilan-synthese', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-        body: JSON.stringify({ donnees: d, age, sexe: patient?.sexe || null }),
+        body: JSON.stringify({ donnees: d, age, sexe: patient?.sexe || null, champ }),
       })
       const r = await res.json()
       if (!res.ok) throw new Error(r.error || 'Erreur')
       if (champ === 'synthese' && r.synthese) maj('synthese', r.synthese)
       if (champ === 'conseils' && r.conseils) maj('semelles.conseils', r.conseils)
+      if ((champ === 'conseils' && !r.conseils) || (champ === 'synthese' && !r.synthese)) throw new Error('rien n\'a été proposé, réessaie')
     } catch (e: any) {
       alert('Rédaction impossible : ' + (e?.message || ''))
     }

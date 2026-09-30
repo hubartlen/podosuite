@@ -56,6 +56,14 @@ export default function JournalRecettes() {
         supabase.from('praticiens').select('*').eq('id', session.user.id).single(),
       ])
       setPatientsListe(pts || []); setPraticienComplet(prc)
+      import('@/lib/factures').then(async ({ relierRecettes }) => {
+        const res = await relierRecettes(supabase, session.user.id)
+        if (!res.relies.length) return
+        res.relies.forEach(([fid, pid]) => modifierLocal(fid, { patient_id: pid }))
+        const { data: pts2 } = await supabase.from('patients').select('*').eq('praticien_id', session.user.id).range(0, 4999)
+        setPatientsListe(pts2 || [])
+        setEtat(res.relies.length + ' recette' + (res.relies.length > 1 ? 's reliées' : ' reliée') + ' aux fiches patients' + (res.crees ? ', dont ' + res.crees + ' nouvelle' + (res.crees > 1 ? 's fiches' : ' fiche') : ''))
+      })
     })()
   }, [])
 

@@ -43,7 +43,7 @@ Règles :
         'x-api-key': process.env.ANTHROPIC_VALUE_KEY!,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 800, messages: [{ role: 'user', content: [contenu, { type: 'text', text: prompt }] }] }),
+      body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 800, messages: [{ role: 'user', content: [contenu, { type: 'text', text: prompt }] }] }),
     })
     if (!response.ok) {
       console.error('Anthropic error:', await response.text())
